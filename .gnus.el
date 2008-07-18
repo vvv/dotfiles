@@ -1,0 +1,20 @@
+;;; GETTING STARTED:
+;;;   When in `*Group*' buffer, press `B' (gnus-group-browse-foreign-server).
+;;;   Choose `nnfolder' backend, leaving address empty.
+;;;   Subscribe to group (`mail.misc') with `u' key.
+
+(setq gnus-select-method '(nnfolder ""))
+
+(gnus-demon-add-handler 'gnus-demon-scan-mail 2 nil) ; scan every 2 minutes
+(setq gnus-verbose-backends 3) ; do not report mail scans
+
+(defun split-with-osd (split)
+  (osd "Mail")
+  split)
+(setq nnmail-split-methods 'nnmail-split-fancy
+      nnmail-split-fancy '(: split-with-osd "mail.misc"))
+
+(setq gnus-message-archive-group "mail.sent") ; where to store sent messages
+
+(setq gnus-treat-display-smileys nil) ; don't display smileys
+(setq trailing-whitespace-allowed (concat "^" (expand-file-name "~/Mail")))
