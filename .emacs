@@ -195,7 +195,9 @@ asking user for confirmation."
 ;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
 ;; (add-to-list 'load-path "~/.elisp")
 (load "~/.elisp/haskell-mode/haskell-site-file")
-;; (remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(eval-after-load "inf-haskell"
+  '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
+(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 
 ;; dictionary-el
 (global-set-key (kbd "<f9> d") 'dictionary-search)
