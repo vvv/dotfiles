@@ -99,16 +99,16 @@ all yubnub commands."
 ;; ---------------------------------------------------------------------
 ;; Dayjob-specific stuff
 
-(defun job-lan-p ()
+(defun work-lan-p ()
   ; netstat -rn | grep -qE '^(0\.){3}0 +192\.168\.1\.1 '
-  (zerop (call-process "/usr/local/bin/job-lan-p.sh")))
+  (zerop (call-process "/usr/local/bin/work-lan-p.sh")))
 
-(when (job-lan-p)
-  (defun insert-job-tag ()
+(when (work-lan-p)
+  (defun insert-dayjob-tag ()
     "Insert fashioned CVS tag (e.g., \"TESTING_17_JUL_2008\")."
     (interactive)
     (insert (upcase (format-time-string "TESTING_%d_%b_%Y"))))
-  (global-set-key (kbd "<f9> r") 'insert-job-tag)
+  (global-set-key (kbd "<f9> r") 'insert-dayjob-tag)
 
   (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE=")
 	sendmail-program "/usr/bin/msmtp"))
@@ -124,7 +124,7 @@ all yubnub commands."
 	   (list
 	    (append `(,(base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ==")
 		      (:connection-type . ssl))
-		    (if (job-lan-p)
+		    (if (work-lan-p)
 			'((:network-server . "127.0.0.1") (:port . 12345))
 		      '((:network-server . "talk.google.com"))))))
 

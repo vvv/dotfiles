@@ -1,5 +1,6 @@
+#!/bin/sh
 xscreensaver -no-splash &
-[ -d ~/bin ] && export PATH=~/bin:$PATH
+[ -f ~/.profile ] && . ~/.profile
 statusbar.sh &
 xterm -e 'reset; screen -DR' &
 xmonad
