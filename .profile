@@ -10,4 +10,4 @@ em () {
 }
 export -f em
 
-[ -f ~/.bash-work ] && /usr/local/bin/work-lan-p.sh && . ~/.bash-work
+[ -f ~/.bash-work ] . ~/.bash-work

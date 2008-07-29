@@ -25,7 +25,7 @@ main :: IO ()
 main = xmonad defaultConfig
        { workspaces         = ["1:term", "2:emacs", "3:web"]
        , layoutHook = avoidStruts (tiled ||| Mirror tiled ||| noBorders Full)
-       , focusedBorderColor = "#00ff00"
+--        , focusedBorderColor = "#00ff00"
        , modMask            = mod4Mask
        , keys               = customKeys delKeys insKeys
        }

@@ -9,10 +9,12 @@
 (setq gnus-verbose-backends 3) ; do not report mail scans
 
 (defun split-with-osd (split)
-  (osd "Mail")
+  (osd split)
   split)
 (setq nnmail-split-methods 'nnmail-split-fancy
-      nnmail-split-fancy '(: split-with-osd "mail.misc"))
+      nnmail-split-fancy
+      '(| (from "servicedesk@.*" (: split-with-osd "mail.sdesk"))
+	  (: split-with-osd "mail.misc")))
 
 (setq gnus-message-archive-group "mail.sent") ; where to store sent messages
 
