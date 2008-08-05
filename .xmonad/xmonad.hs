@@ -15,7 +15,7 @@ import XMonad.Prompt
 import XMonad.Prompt.Man
 import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
-import XMonad.Util.CustomKeys
+import XMonad.Util.CustomKeys -- XXX TODO use EZConfig instead
 
 import Data.Bits ((.|.))
 import qualified Data.Map as M
@@ -25,7 +25,6 @@ main :: IO ()
 main = xmonad defaultConfig
        { workspaces         = ["1:term", "2:emacs", "3:web"]
        , layoutHook = avoidStruts (tiled ||| Mirror tiled ||| noBorders Full)
---        , focusedBorderColor = "#00ff00"
        , modMask            = mod4Mask
        , keys               = customKeys delKeys insKeys
        }

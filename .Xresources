@@ -2,3 +2,6 @@ emacs.background: DarkSeaGreen3
 emacs*font: -misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
 
 *VT100.font: -misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
+
+xpdf.paperColor:  DarkSeaGreen3
+xpdf.initialZoom: width

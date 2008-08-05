@@ -1,0 +1,47 @@
+auto lo
+iface lo inet loopback
+  up iptables -N INI -m comment --comment "common initiating rules"
+  up iptables -A INI -m state --state RELATED,ESTABLISHED -j ACCEPT
+  up iptables -A INI -p icmp --icmp-type echo-request -j ACCEPT
+  up iptables -A INI -j RETURN
+
+  up iptables -N FIN -m comment --comment "common finalizing rules"
+  up iptables -A FIN -j ULOG
+  up iptables -A FIN -j DROP
+
+  up iptables -N INET -m comment --comment "from Internet"
+  up iptables -A INET -j INI
+  up iptables -A INET -j FIN
+
+  up iptables -N QNIC -m comment --comment "from [q]emulated NIC"
+  up iptables -A QNIC -j INI
+  up iptables -A QNIC -p udp --dport domain -j ACCEPT
+  up iptables -A QNIC -j FIN
+
+  up iptables -A INPUT -i lo -j ACCEPT -m comment --comment "main dispatch"
+  up iptables -A INPUT -i eth+  -j INET
+  up iptables -A INPUT -i wlan+ -j INET
+  up iptables -A INPUT -i tap+ -j QNIC
+  up iptables -P INPUT DROP
+  up iptables -A FORWARD -i eth+  -j INET
+  up iptables -A FORWARD -i wlan+ -j INET
+  up iptables -A FORWARD -i tap+ -j ACCEPT
+  up iptables -P FORWARD DROP
+
+  down iptables -F -m comment --comment "cleanup"
+  down iptables -X
+
+iface eth0 inet dhcp
+
+iface wlan0 inet dhcp
+  wireless-channel 11
+  wpa-conf /etc/wpa_supplicant/home.conf
+
+iface tap0 inet static
+  address 192.168.2.1
+  netmask 255.255.255.0
+  tunctl_user win
+  up   iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j MASQUERADE
+  up   echo 1 >/proc/sys/net/ipv4/ip_forward
+  down echo 0 >/proc/sys/net/ipv4/ip_forward || true
+  down iptables -t nat -D POSTROUTING -s 192.168.2.0/24 -j MASQUERADE || true

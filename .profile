@@ -10,4 +10,4 @@ em () {
 }
 export -f em
 
-[ -f ~/.bash-work ] . ~/.bash-work
+[ -f ~/.bash-work ] && . ~/.bash-work
