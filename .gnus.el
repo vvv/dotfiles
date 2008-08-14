@@ -18,5 +18,9 @@
 
 (setq gnus-message-archive-group "mail.sent") ; where to store sent messages
 
+(setq nnmail-expiry-target 'nnmail-fancy-expiry-target
+      nnmail-fancy-expiry-targets '(("from" ".*" "nnfolder:mail.archive-%y%m"))
+      gnus-auto-expirable-newsgroups ".*")
+
 (setq gnus-treat-display-smileys nil) ; don't display smileys
 (setq trailing-whitespace-allowed (concat "^" (expand-file-name "~/Mail")))

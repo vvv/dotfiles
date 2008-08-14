@@ -111,7 +111,16 @@ all yubnub commands."
   (global-set-key (kbd "<f9> r") 'insert-dayjob-tag)
 
   (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE=")
-	sendmail-program "/usr/bin/msmtp"))
+	sendmail-program "/usr/bin/msmtp")
+
+  (defun mts-search (substring)
+    "Search MTS address book for a given substring.
+
+XXX [FIXME] Depends on custom Opera search `mts' to be available.
+All we need is just to send HTTP POST request."
+    (interactive "sSearch MTS for: ")
+    (browse-url (concat "mts " substring)))
+  (global-set-key (kbd "<f9> m") 'mts-search))
 
 ;; ---------------------------------------------------------------------
 ;; jabber
@@ -167,7 +176,8 @@ jabber.el:
      (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
      (setq jabber-vcard-avatars-retrieve nil
 	   jabber-history-enabled t jabber-use-global-history nil
-	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil)))
+	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil)
+     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)))
 
 ;; ---------------------------------------------------------------------
 ;; Semi-automatic rstripping
