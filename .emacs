@@ -91,7 +91,8 @@ all yubnub commands."
 ;; mail
 
 (global-set-key (kbd "<f12>") 'gnus) ; see also ~/.gnus.el
-(global-set-key (kbd "<f9> b") 'bbdb)
+(global-set-key (kbd "<f9> bb") 'bbdb)
+(global-set-key (kbd "<f9> bc") 'bbdb-create)
 
 ;; Don't pop-up *BBDB* buffer when completing.
 (setq bbdb-completion-display-record nil)
@@ -200,24 +201,9 @@ asking user for confirmation."
 (global-set-key (kbd "<f9> s") 'delete-trailing-whitespace)
 
 (setq default-indicate-empty-lines t require-final-newline t)
+
 ;; ---------------------------------------------------------------------
-
-;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
-(autoload 'inferior-haskell-load-file "haskell-site-file")
-(eval-after-load "inf-haskell"
-  '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
-(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-
-;; dictionary-el
-(global-set-key (kbd "<f9> d") 'dictionary-search)
-(eval-after-load "dictionary"
-  '(progn (setq dictionary-server "localhost")
-	  (define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
-
-;; spell check
-(setq ispell-program-name "aspell")
-(global-set-key (kbd "<f9> ib") 'ispell-buffer)
-(global-set-key (kbd "<f9> ir") 'ispell-region)
+;; color-theme
 
 ;; `color-theme.el' bug workaround [XXX Is it still needed?]
 (eval-after-load "color-theme"
@@ -240,6 +226,27 @@ asking user for confirmation."
     (color-theme-dark-laptop)))
 
 (global-set-key (kbd "<f9> n") 'toggle-night-color-theme)
+;; ---------------------------------------------------------------------
+
+;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
+(autoload 'inferior-haskell-load-file "haskell-site-file")
+(eval-after-load "inf-haskell"
+  '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
+(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+
+;; dictionary-el
+(global-set-key (kbd "<f9> d") 'dictionary-search)
+(eval-after-load "dictionary"
+  '(progn (setq dictionary-server "localhost")
+	  (define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
+
+;; spell check
+(setq ispell-program-name "aspell")
+(global-set-key (kbd "<f9> ib") 'ispell-buffer)
+(global-set-key (kbd "<f9> ir") 'ispell-region)
+
+;; org
+(eval-after-load "org" '(global-set-key (kbd "<f9> o") 'org-store-link))
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
