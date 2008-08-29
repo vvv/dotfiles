@@ -5,7 +5,7 @@ statusbar.sh &
 xterm -e 'reset; screen -DR' &
 xmonad
 
-xmessage -buttons logout,restart,shutdown "What should `hostname` do?"
+gmessage -buttons _logout,_restart,_shutdown "What should `hostname` do?"
 case $? in
   102) sudo shutdown -r now;;
   103) sudo shutdown -h now;;
