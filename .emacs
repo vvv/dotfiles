@@ -50,7 +50,7 @@ all yubnub commands."
     (defun osd (fmt &rest args)
       "Display message on X screen."
       (let ((opts "-p bottom -A center -l 1 \
--f '-*-*-*-r-*-*-32-*-*-*-*-*-iso10646-1'")
+-f '-adobe-helvetica-bold-r-*-*-24-*-*-*-*-*-iso10646-1'")
             (msg (apply 'format (concat fmt "\n") args)))
         (start-process "osd" nil shell-file-name shell-command-switch
                        (format "echo %s | osd_cat %s"

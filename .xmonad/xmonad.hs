@@ -29,7 +29,7 @@ main = xmonad defaultConfig
        , keys               = customKeys delKeys insKeys
        }
     where
-      tiled = Tall 1 (2%100) (748%1440) -- Tall <nmaster> <delta> <ratio>
+      tiled = Tall 1 (2%100) (750%1280) -- Tall <nmaster> <delta> <ratio>
 
 delKeys :: XConfig l -> [(KeyMask, KeySym)]
 delKeys XConfig {modMask = modm} =
