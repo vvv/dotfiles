@@ -246,7 +246,8 @@ asking user for confirmation."
 (global-set-key (kbd "<f9> ir") 'ispell-region)
 
 ;; org
-(eval-after-load "org" '(global-set-key (kbd "<f9> o") 'org-store-link))
+(autoload 'org-store-link "org")
+(global-set-key (kbd "<f9> o") 'org-store-link)
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings

@@ -51,7 +51,7 @@ insKeys conf@(XConfig {modMask = modm}) =
     , ((modm,     xK_v     ), spawn "mpc --no-status stop")   -- mod1-v %! MPD: Stop the currently playing playlists
     , ((modm,     xK_b     ), spawn "mpc --no-status next")   -- mod1-b %! MPD: Play the next song in the current playlist
     , ((modm,     xK_s     ), sendMessage ToggleStruts) -- mod1-s %! Toggle the status bar gap
-    , ((modm .|. controlMask, xK_F1), spawn "xscreensaver-command -lock") -- %! Lock the screen
+    , ((modm .|. controlMask, xK_F1), spawn "mpc --no-status pause; xscreensaver-command -lock") -- %! Lock the screen
     , ((modm .|. controlMask, xK_F3), spawn "lsmod | grep -q psmouse && sudo rmmod psmouse || sudo modprobe psmouse") -- %! Toggle touchpad
     ]
     ++
