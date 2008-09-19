@@ -90,12 +90,16 @@ all yubnub commands."
 ;; ---------------------------------------------------------------------
 ;; mail
 
-(global-set-key (kbd "<f12>") 'gnus) ; see also ~/.gnus.el
+(global-set-key (kbd "<f12> <f12>") 'gnus) ; see also ~/.gnus.el
+(global-set-key (kbd "<f12> m") 'gnus-group-mail)
 (global-set-key (kbd "<f9> bb") 'bbdb)
 (global-set-key (kbd "<f9> bc") 'bbdb-create)
 
 ;; Don't pop-up *BBDB* buffer when completing.
 (setq bbdb-completion-display-record nil)
+
+(setq sendmail-program "/usr/bin/msmtp" message-sendmail-f-is-evil nil
+      user-mail-address (base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
 
 ;; ---------------------------------------------------------------------
 ;; Dayjob-specific stuff
@@ -105,14 +109,13 @@ all yubnub commands."
   (zerop (call-process "/usr/local/bin/work-lan-p.sh")))
 
 (when (work-lan-p)
+  (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE="))
+
   (defun insert-dayjob-tag ()
     "Insert fashioned CVS tag (e.g., \"TESTING_17_JUL_2008\")."
     (interactive)
     (insert (upcase (format-time-string "TESTING_%d_%b_%Y"))))
   (global-set-key (kbd "<f9> r") 'insert-dayjob-tag)
-
-  (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE=")
-	sendmail-program "/usr/bin/msmtp")
 
   (defun mts-search (substring)
     "Search MTS address book for a given substring.
