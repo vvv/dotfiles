@@ -15,23 +15,28 @@ import XMonad.Prompt
 import XMonad.Prompt.Man
 import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
-import XMonad.Util.CustomKeys -- XXX TODO use EZConfig instead
+import XMonad.Util.EZConfig
 
 import Data.Bits ((.|.))
 import qualified Data.Map as M
 import Data.Ratio ((%))
 
 main :: IO ()
-main = xmonad defaultConfig
-       { workspaces         = ["1:emacs", "2:term", "3:web"]
+main = xmonad $ customKeys $ defaultConfig
+       { workspaces = ["1:emacs", "2:ssh", "3:web", "4:qemu"]
        , layoutHook = avoidStruts (tiled ||| Mirror tiled ||| noBorders Full)
-       , modMask            = mod4Mask
-       , keys               = customKeys delKeys insKeys
+       , modMask    = mod4Mask
        }
     where
       tiled = Tall 1 (2%100) (748%1440) -- Tall <nmaster> <delta> <ratio>
+      customKeys = (additionalKeys -< addKeys) . (removeKeys -< delKeys)
 
-delKeys :: XConfig l -> [(KeyMask, KeySym)]
+(-<) :: (a -> b -> c) -> (a -> b) -> a -> c
+(-<) f g conf = f conf (g conf)
+
+type Key = (KeyMask, KeySym)
+
+delKeys :: XConfig l -> [Key]
 delKeys XConfig {modMask = modm} =
     [ (modm .|. shiftMask, xK_Return) -- > terminal
     , (modm,               xK_p)      -- > dmenu
@@ -40,8 +45,8 @@ delKeys XConfig {modMask = modm} =
     , (modm,               xK_b)      -- > toggle status bar gap
     ]
 
-insKeys :: XConfig l -> [((KeyMask, KeySym), X ())]
-insKeys conf@(XConfig {modMask = modm}) =
+addKeys :: XConfig l -> [(Key, X ())]
+addKeys conf@(XConfig {modMask = modm}) =
     [ ((mod1Mask, xK_F2    ), spawn $ terminal conf) -- mod1-f2 %! Run a terminal emulator
     , ((modm,     xK_Delete), kill) -- %! Close the focused window
     , ((mod1Mask, xK_Down  ), spawn "amixer -q set Master 1-")   -- mod1-down %! Decrease audio volume
