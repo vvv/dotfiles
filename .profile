@@ -10,4 +10,9 @@ em () {
 }
 export -f em
 
+dict () {
+  /usr/bin/dict "$@" | less
+}
+export -f dict
+
 [ -f ~/.bash-work ] && . ~/.bash-work
