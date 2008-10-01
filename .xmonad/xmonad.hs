@@ -20,6 +20,7 @@ import XMonad.Util.EZConfig
 import Data.Bits ((.|.))
 import qualified Data.Map as M
 import Data.Ratio ((%))
+import Control.Monad (ap)
 
 main :: IO ()
 main = xmonad $ customKeys $ defaultConfig
@@ -29,10 +30,7 @@ main = xmonad $ customKeys $ defaultConfig
        }
     where
       tiled = Tall 1 (2%100) (748%1440) -- Tall <nmaster> <delta> <ratio>
-      customKeys = (additionalKeys -< addKeys) . (removeKeys -< delKeys)
-
-(-<) :: (a -> b -> c) -> (a -> b) -> a -> c
-(-<) f g conf = f conf (g conf)
+      customKeys = (additionalKeys `ap` addKeys) . (removeKeys `ap` delKeys)
 
 type Key = (KeyMask, KeySym)
 
