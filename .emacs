@@ -265,8 +265,10 @@ asking user for confirmation."
 
 (setq calendar-week-start-day 1 european-calendar-style t)
 
-(setq ps-multibyte-buffer 'bdf-font-except-latin)
-(eval-after-load "ps-print" '(setq ps-print-header nil))
+(eval-after-load "ps-print"
+  '(setq ps-paper-type 'a4
+	 ps-print-header nil
+	 ps-multibyte-buffer 'bdf-font-except-latin))
 
 ;; insert at point regardless of where you click
 (setq mouse-yank-at-point t)
