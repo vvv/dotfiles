@@ -117,13 +117,18 @@ all yubnub commands."
     (insert (upcase (format-time-string "TESTING_%d_%b_%Y"))))
   (global-set-key (kbd "<f9> r") 'insert-dayjob-tag)
 
-  (defun mts-search (substring)
-    "Search MTS address book for a given substring.
+  (defun mts-search (word)
+    "Search MTS address book for a given word.
 
 XXX [FIXME] Depends on custom Opera search `mts' to be available.
 All we need is just to send HTTP POST request."
-    (interactive "sSearch MTS for: ")
-    (browse-url (concat "mts " substring)))
+    (interactive
+     (list (let ((default (current-word t)))
+	     (read-string (concat "Search MTS for"
+				  (when default (format " (%s)" default))
+				  ": ")
+			  nil nil default))))
+    (browse-url (concat "mts " word)))
   (global-set-key (kbd "<f9> m") 'mts-search))
 
 ;; ---------------------------------------------------------------------
@@ -153,7 +158,7 @@ icq.com:
   continue to enjoy talking to everybody, everywhere.
 jabber.el:
   Go subscribe yourself."
-       (unless (string-match "12111@icq\." from) ad-do-it))
+       (unless (string-match "^12111@icq\\." from) ad-do-it))
 
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
@@ -248,9 +253,12 @@ asking user for confirmation."
 (global-set-key (kbd "<f9> ib") 'ispell-buffer)
 (global-set-key (kbd "<f9> ir") 'ispell-region)
 
-;; org
+;; org-mode
 (autoload 'org-store-link "org")
 (global-set-key (kbd "<f9> o") 'org-store-link)
+(eval-after-load "org"
+  '(setq org-log-done t
+	 org-agenda-files '("~/job/TODO")))
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
@@ -294,6 +302,8 @@ The result is equal to evaluating `(other-window -1)'."
   (when (interactive-p)
     (message "Buffer saved")))
 (global-set-key "\M-W" 'kill-ring-save-buffer)
+
+(setq vc-follow-symlinks nil)
 
 ;; enable some properties
 (dolist (s '(downcase-region narrow-to-region scroll-left upcase-region))
