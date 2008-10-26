@@ -148,7 +148,7 @@ All we need is just to send HTTP POST request."
 
      (defadvice jabber-process-subscription-request
        (around jabber-ignore-12111 (jc from presence-status) activate)
-       "Process an incoming subscription request, ignoring the `12111' ICQ user.
+       "Process an incoming subscription request, ignoring some ICQ users.
 
 icq.com:
   As part of the process of upgrading ICQ users to our newest, most
@@ -158,7 +158,7 @@ icq.com:
   continue to enjoy talking to everybody, everywhere.
 jabber.el:
   Go subscribe yourself."
-       (unless (string-match "^12111@icq\\." from) ad-do-it))
+       (unless (string-match "^\\(12111\\|279491906\\)@icq\\." from) ad-do-it))
 
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
