@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case $1 in
+  d) cmd='xterm -e dict';;
+  m) cmd='xterm -e ncmpc';;
+  r|ru) setxkbmap us,ru ,winkeys ctrl:swapcaps grp_led:scroll grp:toggle;
+	exit;;
+  u|ua) setxkbmap us,ua ,winkeys ctrl:swapcaps grp_led:scroll grp:toggle;
+	exit;;
+  *) exit 1;;
+esac
+
+shift
+$cmd "$@"
