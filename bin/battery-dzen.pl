@@ -3,17 +3,22 @@
 use strict;
 use warnings;
 
-open my $state, '<', '/proc/acpi/battery/BAT1/state'
+sub numval ($) {
+    my ($f) = @_;
+    $_ = <$f>; s/\D+//g; return $_;
+}
+
+open my $f, '<', '/proc/acpi/battery/BAT1/state'
     or die "Can't read file: $!";
 
-scalar <$state>; scalar <$state>;
+scalar <$f>; scalar <$f>;
 
-$_ = <$state>; /\S+$/; my $charging_state = $&;
+$_ = <$f>; /\S+$/; my $charging_state = $&;
 exit 0 if $charging_state eq 'charged';
 
-$_ = <$state>; s/\D+//g; my $present_rate = $_; # XXX function
-$_ = <$state>; s/\D+//g; my $remaining_capacity = $_;
-close $state;
+my $present_rate = numval $f;
+my $remaining_capacity = numval $f;
+close $f;
 
 print "|| $charging_state: ";
 
@@ -26,11 +31,11 @@ if ($charging_state eq 'discharging') {
 }
 
 if ($charging_state eq 'charging') {
-    open my $info, '<', '/proc/acpi/battery/BAT1/info'
+    open my $f, '<', '/proc/acpi/battery/BAT1/info'
 	or die "Can't read file: $!";
-    scalar <$info>;
-    $_ = <$info>; s/\D+//g; my $design_capacity = $_;
-    close $info;
+    scalar <$f>;
+    my $design_capacity = numval $f;
+    close $f;
 
     print int(100 * $remaining_capacity / $design_capacity) . '%';
 }
