@@ -158,7 +158,9 @@ icq.com:
   continue to enjoy talking to everybody, everywhere.
 jabber.el:
   Go subscribe yourself."
-       (unless (string-match "^\\(12111\\|279491906\\)@icq\\." from) ad-do-it))
+       (unless
+	   (string-match "^\\(12111\\|279491906\\|869518\\|176258467\\)@icq\\." from)
+	 ad-do-it))
 
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)

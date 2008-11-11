@@ -29,7 +29,7 @@ main = xmonad $ customKeys $ defaultConfig
        , modMask    = mod4Mask
        }
     where
-      tiled = Tall 1 (2%100) (750%1280) -- Tall <nmaster> <delta> <ratio>
+      tiled = Tall 1 (2%100) (752%1440) -- Tall <nmaster> <delta> <ratio>
       customKeys = (additionalKeys `ap` addKeys) . (removeKeys `ap` delKeys)
 
 type Key = (KeyMask, KeySym)
