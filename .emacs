@@ -159,7 +159,8 @@ icq.com:
 jabber.el:
   Go subscribe yourself."
        (unless
-	   (string-match "^\\(12111\\|279491906\\|869518\\|176258467\\)@icq\\." from)
+	   (string-match
+	    "^\\(12111\\|279491906\\|869518\\|176258467\\)@icq\\." from)
 	 ad-do-it))
 
      ;; auto-away
