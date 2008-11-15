@@ -160,8 +160,8 @@ jabber.el:
   Go subscribe yourself."
        (unless
 	   (string-match
-	    "^\\(12111\\|279491906\\|869518\\|176258467\\)@icq\\." from)
-	 ad-do-it))
+"^\\(12111\\|176258467\\|278610504\\|279491906\\|86301548\\|869518\\)@icq\\."
+	    from) ad-do-it))
 
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
