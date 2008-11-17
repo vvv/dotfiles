@@ -319,6 +319,9 @@ The result is equal to evaluating `(other-window -1)'."
 (dolist (s '(downcase-region narrow-to-region scroll-left upcase-region))
   (put s 'disabled nil))
 
+;; I never miss `x-menu-bar-open' but often do F9 key.
+(global-set-key [f10] (key-binding [f9]))
+
 ;; report loading time
 (message "~/.emacs loaded in %d seconds"
 	 (destructuring-bind (hi lo ms) (current-time)
