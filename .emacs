@@ -263,6 +263,10 @@ asking user for confirmation."
   '(setq org-log-done t
 	 org-agenda-files '("~/job/TODO")))
 
+;; Use proper X buffer encoding
+;; (see <http://community.livejournal.com/ru_emacs/47287.html>).
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
+
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
 
