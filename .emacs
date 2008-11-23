@@ -322,6 +322,10 @@ The result is equal to evaluating `(other-window -1)'."
 ;; I never miss `x-menu-bar-open' but often do F9 key.
 (global-set-key [f10] (key-binding [f9]))
 
+;; Set proper encoding for X buffer.
+;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
+
 ;; report loading time
 (message "~/.emacs loaded in %d seconds"
 	 (destructuring-bind (hi lo ms) (current-time)
