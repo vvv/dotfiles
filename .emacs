@@ -304,13 +304,14 @@ The result is equal to evaluating `(other-window -1)'."
   (other-window -1))
 (define-key ctl-x-map "O" 'other-window-back)
 
-(defun kill-ring-save-buffer ()
+(defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
   (interactive)
-  (kill-ring-save (point-min) (point-max))
+  (let ((transient-mark-mode nil)) ; don't deactivate the mark
+    (copy-region-as-kill (point-min) (point-max)))
   (when (interactive-p)
     (message "Buffer saved")))
-(global-set-key "\M-W" 'kill-ring-save-buffer)
+(global-set-key "\M-W" 'copy-buffer-as-kill)
 
 (setq vc-follow-symlinks nil)
 
