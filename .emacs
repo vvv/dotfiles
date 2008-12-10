@@ -184,6 +184,12 @@ jabber.el:
 	 (osd (cdr (jabber-activity-lookup-name jid)))))
      (add-hook 'jabber-alert-message-hooks 'jabber-message-osd)
 
+     ;; groupchat
+     (let ((chat (base64-decode-string
+		  "dGVhcEBjb25mZXJlbmNlLmphYmJlci5raWV2LnVh")))
+       (setq jabber-muc-autojoin `(,chat)
+	     jabber-muc-default-nicknames `((,chat . "vvv"))))
+
      ;; misc.
      (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
      (setq jabber-vcard-avatars-retrieve nil
