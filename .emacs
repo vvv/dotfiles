@@ -146,23 +146,6 @@ All we need is just to send HTTP POST request."
 			'((:network-server . "127.0.0.1") (:port . 12345))
 		      '((:network-server . "talk.google.com"))))))
 
-     (defadvice jabber-process-subscription-request
-       (around jabber-ignore-12111 (jc from presence-status) activate)
-       "Process an incoming subscription request, ignoring some ICQ users.
-
-icq.com:
-  As part of the process of upgrading ICQ users to our newest, most
-  advanced version, ICQ6, we have added a new user name to your
-  contact list ''ICQ System''. The newly added user is intended to
-  improve ICQ's line of communication with our users and assure you
-  continue to enjoy talking to everybody, everywhere.
-jabber.el:
-  Go subscribe yourself."
-       (unless
-	   (string-match
-"^\\(12111\\|176258467\\|278610504\\|279491906\\|86301548\\|869518\\)@icq\\."
-	    from) ad-do-it))
-
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
      (eval-after-load "jabber-autoaway"
@@ -178,21 +161,19 @@ jabber.el:
 	  (osd "gmail: %d" (length threads))))
 
      ;; on-screen notifications
-     (defun jabber-message-osd (from buffer text proposed-alert)
-       (osd (jabber-jid-displayname from)))
-     (add-hook 'jabber-alert-message-hooks 'jabber-message-osd)
-     (defun jabber-muc-osd (nick group buffer text proposed-alert)
-       (osd (jabber-jid-displayname group)))
-     (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
+     (add-hook 'jabber-alert-message-hooks
+	       (defun jabber-message-osd (from buffer text proposed-alert)
+		 (osd (jabber-activity-make-string-default from))))
+     (add-hook 'jabber-alert-muc-hooks
+	       (defun jabber-muc-osd (nick group buffer text proposed-alert)
+		 (osd (jabber-activity-make-string-default group))))
 
      ;; <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=508539>
      (eval-after-load "jabber-bookmarks"
        '(defun jabber-get-bookmarks-1 (jc result cont)
 	  (let ((my-jid (jabber-connection-bare-jid jc))
-		(value
-		 (if (eq (jabber-xml-node-name result) 'storage)
-		     (or (jabber-xml-node-children result) t)
-		   t)))
+		(value (when (eq (jabber-xml-node-name result) 'storage)
+			 (jabber-xml-node-children result))))
 	    (when (and value (listp value))
 	      (puthash my-jid value jabber-bookmarks))
 	    (funcall cont jc (when (listp value) value)))))
@@ -208,7 +189,26 @@ jabber.el:
      (setq jabber-vcard-avatars-retrieve nil
 	   jabber-history-enabled t jabber-use-global-history nil
 	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil)
-     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)))
+     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)
+
+     (defadvice jabber-process-subscription-request
+       (around jabber-ignore-12111 (jc from presence-status) activate)
+       "Process an incoming subscription request, ignoring some ICQ users.
+
+icq.com:
+  As part of the process of upgrading ICQ users to our newest, most
+  advanced version, ICQ6, we have added a new user name to your
+  contact list ''ICQ System''. The newly added user is intended to
+  improve ICQ's line of communication with our users and assure you
+  continue to enjoy talking to everybody, everywhere.
+jabber.el:
+  Go subscribe yourself."
+       (unless (string-match
+		(format "^%s@icq\\."
+			(regexp-opt '("12111" "176258467" "278610504"
+				      "279491906" "86301548" "869518") t))
+		from)
+	 ad-do-it))))
 
 ;; ---------------------------------------------------------------------
 ;; Semi-automatic rstripping
