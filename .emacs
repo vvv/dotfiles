@@ -179,14 +179,27 @@ jabber.el:
 
      ;; on-screen notifications
      (defun jabber-message-osd (from buffer text proposed-alert)
-       "Display a message using the osd_cat program."
-       (let ((jid (if (jabber-muc-sender-p from) from (jabber-jid-user from))))
-	 (osd (cdr (jabber-activity-lookup-name jid)))))
+       (osd (jabber-jid-displayname from)))
      (add-hook 'jabber-alert-message-hooks 'jabber-message-osd)
+     (defun jabber-muc-osd (nick group buffer text proposed-alert)
+       (osd (jabber-jid-displayname group)))
+     (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
+
+     ;; <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=508539>
+     (eval-after-load "jabber-bookmarks"
+       '(defun jabber-get-bookmarks-1 (jc result cont)
+	  (let ((my-jid (jabber-connection-bare-jid jc))
+		(value
+		 (if (eq (jabber-xml-node-name result) 'storage)
+		     (or (jabber-xml-node-children result) t)
+		   t)))
+	    (when (and value (listp value))
+	      (puthash my-jid value jabber-bookmarks))
+	    (funcall cont jc (when (listp value) value)))))
 
      ;; groupchat
      (let ((chat (base64-decode-string
-		  "dGVhcEBjb25mZXJlbmNlLmphYmJlci5raWV2LnVh")))
+		  "dGVhcEBjb25mZXJlbmNlLmphYmJlci5vcmcuYnk=")))
        (setq jabber-muc-autojoin `(,chat)
 	     jabber-muc-default-nicknames `((,chat . "vvv"))))
 
