@@ -164,9 +164,12 @@ All we need is just to send HTTP POST request."
      (add-hook 'jabber-alert-message-hooks
 	       (defun jabber-message-osd (from buffer text proposed-alert)
 		 (osd (jabber-activity-make-string-default from))))
-     (add-hook 'jabber-alert-muc-hooks
-	       (defun jabber-muc-osd (nick group buffer text proposed-alert)
-		 (osd (jabber-activity-make-string-default group))))
+     (defun jabber-muc-osd (nick group buffer text proposed-alert)
+       (when (or jabber-muc-alert-self
+		 (not (string= nick
+			       (cdr (assoc group *jabber-active-groupchats*)))))
+	 (osd (jabber-activity-make-string-default group))))
+     (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
 
      ;; <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=508539>
      (eval-after-load "jabber-bookmarks"
