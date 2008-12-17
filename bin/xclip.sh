@@ -11,7 +11,7 @@ set -e
 # which xclip >/dev/null && { xclip -in "$1"; exit 0; }
 
 gnuclient -q -batch -eval "
-  (view-file \"$1\")
-  (let ((transient-mark-mode nil))
-    (copy-region-as-kill (point-min) (point-max)))
-  (View-quit)"
+  (let ((default-directory \"`pwd`\"))
+      (view-file \"$1\")
+      (copy-region-as-kill (point-min) (point-max))
+      (View-quit))"
