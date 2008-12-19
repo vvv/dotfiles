@@ -36,6 +36,16 @@ iface lo inet loopback
   down iptables -X
 
 iface eth0 inet dhcp
+  up   iptables -I INPUT -i eth0 -m addrtype --dst-type BROADCAST \
+    -p udp -m multiport --dport netbios-ns,netbios-dgm,bootps -j DROP
+  down iptables -D INPUT -i eth0 -m addrtype --dst-type BROADCAST \
+    -p udp -m multiport --dport netbios-ns,netbios-dgm,bootps -j DROP || true
+
+# NOTE: `work-printer' should be specified in `/etc/hosts'
+  up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
+  down iptables -t nat -A POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046 || true
 
 iface wlan0 inet dhcp
   wireless-channel 11
