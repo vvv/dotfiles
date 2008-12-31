@@ -115,12 +115,19 @@ all yubnub commands."
     "Insert fashioned CVS tag (e.g., \"TESTING_17_JUL_2008\")."
     (interactive)
     (insert (upcase (format-time-string "TESTING_%d_%b_%Y"))))
-  (global-set-key (kbd "<f9> r") 'insert-dayjob-tag)
+  (global-set-key (kbd "<f9> wt") 'insert-dayjob-tag)
+
+  (defun insert-dayjob-signature ()
+    "Insert NEWS files' signature."
+    (interactive)
+    (insert
+     (format-time-string "Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
+  (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature)
 
   (defun mts-search (word)
     "Search MTS address book for a given word.
 
-XXX [FIXME] Depends on custom Opera search `mts' to be available.
+XXX [FIXME] Depends on custom Opera search: `mts' should be available.
 All we need is just to send HTTP POST request."
     (interactive
      (list (let ((default (current-word t)))
@@ -182,10 +189,9 @@ All we need is just to send HTTP POST request."
 	    (funcall cont jc (when (listp value) value)))))
 
      ;; groupchat
-     (let ((chat (base64-decode-string
-		  "dGVhcEBjb25mZXJlbmNlLmphYmJlci5vcmcuYnk=")))
-       (setq jabber-muc-autojoin `(,chat)
-	     jabber-muc-default-nicknames `((,chat . "vvv"))))
+     (setq jabber-muc-default-nicknames
+	   `((,(base64-decode-string "dGVhcEBjb25mZXJlbmNlLmphYmJlci5vcmcuYnk=")
+	      . "vvv")))
 
      ;; misc.
      (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
@@ -285,6 +291,12 @@ asking user for confirmation."
 (eval-after-load "org"
   '(setq org-log-done t
 	 org-agenda-files '("~/job/TODO")))
+
+;; [m4-mode] make `#' an ordinary character, not a comment starter
+(eval-after-load "m4-mode"
+  '(progn
+     (modify-syntax-entry ?# "." m4-mode-syntax-table)
+     (modify-syntax-entry ?\n " " m4-mode-syntax-table)))
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
