@@ -40,6 +40,7 @@ my $report = int(100 * $rem_cap / $des_cap) . '% (';
 
 if ($ch_state eq 'charging') {
     $minutes = 60 * ($des_cap - $rem_cap) / $rate;
+    $ch_state = '+';
 } else { # discharging
     $minutes = 60 * $rem_cap / $rate;
     $report .= '~';
@@ -54,4 +55,4 @@ if ($minutes < 60) {
 }
 if ($color) { $report = "^fg($color)" . $report . "^fg()"; }
 
-print "|| $ch_state: $report \n";
+print "|| $ch_state $report \n";

@@ -3,6 +3,10 @@
 ;;;   Choose `nnfolder' backend, leaving address empty.
 ;;;   Subscribe to group (`mail.misc') with `u' key.
 
+;; (setq mail-sources
+;;       '((file)
+;; 	(imap :server "hostname" :password "secret")))
+
 (setq gnus-select-method '(nnfolder ""))
 
 (gnus-demon-add-handler 'gnus-demon-scan-mail 2 nil) ; scan every 2 minutes
