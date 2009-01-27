@@ -7,9 +7,9 @@ eval "spawn -noecho $argv"
 expect password: {
     sleep 0.1; # `ioctl' may need some time to clear input buffer
 
-    stty -echo
-    expect_user -re "(.*)\n"
-    stty echo
+    catch {stty -echo}
+    expect_user -re {(.*)\n}
+    catch {stty echo}
 
     send "$expect_out(1,string)\r"
 }
