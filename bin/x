@@ -1,7 +1,9 @@
 #!/bin/sh
 
 kbmap () {
-    setxkbmap us,$1 ,winkeys ctrl:swapcaps grp_led:scroll grp:toggle
+    LED=scroll
+    [ `hostname` = 'takeshi' ] && LED=caps # there is no Scroll LED
+    setxkbmap us,$1 ,winkeys ctrl:swapcaps grp_led:$LED grp:toggle
     exit
 }
 
