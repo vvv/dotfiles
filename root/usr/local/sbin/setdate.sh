@@ -4,6 +4,7 @@ set -e
 
 [ $UID -eq 0 ] || exit 1
 
-d="$(HEAD kernel.org | grep '^Date: ' | cut -b 7-)" || exit 2
+d="$(HEAD -t30 kernel.org | grep '^Date: ' | cut -b 7-)" || exit 2
+[ -z "$d" ] && exit 3
 
 date --utc --set="$d"
