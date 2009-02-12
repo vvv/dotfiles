@@ -63,6 +63,7 @@ addKeys conf@(XConfig {modMask = modm}) =
     , ((mod1Mask, xK_F4), sshPrompt   defaultXPConfig) -- mod1-f4 %! Query for host to connect to with SSH
 
     , ((modm, xK_0    ), toggleWS) -- mod-0 %! Toggle to the workspace displayed previously
+    , ((modm, xK_quoteleft), toggleWS) -- mod-` %! Same as mod-0.
     , ((modm, xK_minus), prevWS  ) -- mod-- %! Switch to the previous workspace
     , ((modm, xK_equal), nextWS  ) -- mod-= %! Switch to the next workspace
 
