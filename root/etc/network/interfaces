@@ -40,9 +40,26 @@ iface lo inet loopback
 
 iface eth0 inet dhcp
 
-iface eth0-umc inet dhcp
-  hwaddress ether 00:15:b7:f2:51:f4
-# NOTE: `work-printer' should be specified in `/etc/hosts'
+iface umc-static inet static
+  #hwaddress ether 00:15:b7:f2:51:f4
+  address 172.20.185.212
+  netmask 255.255.255.0
+  gateway 172.20.185.1
+  dns-nameservers 172.20.1.23 172.20.1.24
+  dns-search umc.com.ua mts.com.ua umc.ua
+  pre-up   pkill dhclient || true
+  up       pkill dhclient || true
+  post-up  pkill dhclient || true
+  # NOTE: `work-printer' should be specified in `/etc/hosts'
+  up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
+  down iptables -t nat -D POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046 || true
+
+iface umc-dynamic inet dhcp
+  ##XXX code duplication!
+  #hwaddress ether 00:15:b7:f2:51:f4
+  # NOTE: `work-printer' should be specified in `/etc/hosts'
   up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
     --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
   down iptables -t nat -D POSTROUTING -d work-printer -p tcp \
@@ -57,15 +74,13 @@ iface tap0 inet static
   address 192.168.2.1
   netmask 255.255.255.0
   tunctl_user win
-  up iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j MASQUERADE
-#  up echo 1 >/proc/sys/net/ipv4/ip_forward
-  up sysctl -q net.ipv4.conf.tap0.forwarding=1
+  up   iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j MASQUERADE
+  up   echo 1 >/proc/sys/net/ipv4/ip_forward
   post-up  /etc/init.d/dhcp3-server restart
   post-up  /etc/init.d/samba restart
   pre-down /etc/init.d/samba stop || true
   pre-down /etc/init.d/dhcp3-server stop || true
-#  down echo 0 >/proc/sys/net/ipv4/ip_forward || true
-  down sysctl -q net.ipv4.conf.tap0.forwarding=0 || true
+  down echo 0 >/proc/sys/net/ipv4/ip_forward || true
   down iptables -t nat -D POSTROUTING -s 192.168.2.0/24 -j MASQUERADE || true
 
 iface tun0 inet manual
