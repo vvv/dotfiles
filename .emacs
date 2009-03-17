@@ -120,8 +120,8 @@ all yubnub commands."
   (defun insert-dayjob-signature ()
     "Insert NEWS files' signature."
     (interactive)
-    (insert
-     (format-time-string "Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
+    (insert (format-time-string
+	     "-- Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
   (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature)
 
   (defun mts-search (word)
@@ -295,7 +295,7 @@ asking user for confirmation."
 ;; [m4-mode] make `#' an ordinary character, not a comment starter
 (eval-after-load "m4-mode"
   '(progn
-     (modify-syntax-entry ?# "." m4-mode-syntax-table)
+     (modify-syntax-entry ?#  "." m4-mode-syntax-table)
      (modify-syntax-entry ?\n " " m4-mode-syntax-table)))
 
 ;; ---------------------------------------------------------------------
@@ -319,6 +319,8 @@ asking user for confirmation."
   '(setq ps-paper-type 'a4
 	 ps-print-header nil
 	 ps-multibyte-buffer 'bdf-font-except-latin))
+
+(eval-after-load "htmlize" '(setq htmlize-output-type 'inline-css))
 
 ;; insert at point regardless of where you click
 (setq mouse-yank-at-point t)
@@ -352,6 +354,7 @@ The result is equal to evaluating `(other-window -1)'."
 
 ;; I never miss `x-menu-bar-open' but often do F9 key.
 (global-set-key [f10] (key-binding [f9]))
+(global-set-key [f11] (key-binding [f9]))
 
 ;; Set proper encoding for X buffer.
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
