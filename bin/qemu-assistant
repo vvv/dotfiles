@@ -25,7 +25,7 @@ start () {
 	until _rdp; do echo "$(_time) $start $stop"; done | dzen2-dbar | dzen2
  	echo $(( $(_time) - $start )) >>~/.qemu-nic-timings
     fi
-    rdesktop -p - -g 95% $qemu_host <~/.winpass &
+    rdesktop -p - -g 97% $qemu_host <~/.winpass &
 }
 
 stop () {

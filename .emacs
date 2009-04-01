@@ -296,7 +296,9 @@ asking user for confirmation."
 (eval-after-load "m4-mode"
   '(progn
      (modify-syntax-entry ?#  "." m4-mode-syntax-table)
-     (modify-syntax-entry ?\n " " m4-mode-syntax-table)))
+     (modify-syntax-entry ?\n " " m4-mode-syntax-table)
+     (add-hook 'm4-mode-hook
+	       (lambda () (kill-local-variable 'comment-start)))))
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
