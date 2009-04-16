@@ -40,6 +40,14 @@ iface lo inet loopback
 
 iface eth0 inet dhcp
 
+iface umc-dynamic inet dhcp
+  #hwaddress ether 00:15:b7:f2:51:f4
+  ## NOTE: `work-printer' should be specified in `/etc/hosts'
+  up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
+  down iptables -t nat -D POSTROUTING -d work-printer -p tcp \
+    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046 || true
+
 iface umc-static inet static
   #hwaddress ether 00:15:b7:f2:51:f4
   address 172.20.185.212
@@ -50,16 +58,8 @@ iface umc-static inet static
   pre-up   pkill dhclient || true
   up       pkill dhclient || true
   post-up  pkill dhclient || true
-  # NOTE: `work-printer' should be specified in `/etc/hosts'
-  up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
-    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
-  down iptables -t nat -D POSTROUTING -d work-printer -p tcp \
-    --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046 || true
-
-iface umc-dynamic inet dhcp
-  ##XXX code duplication!
-  #hwaddress ether 00:15:b7:f2:51:f4
-  # NOTE: `work-printer' should be specified in `/etc/hosts'
+  # XXX code duplication!
+  ## NOTE: `work-printer' should be specified in `/etc/hosts'
   up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
     --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
   down iptables -t nat -D POSTROUTING -d work-printer -p tcp \
@@ -74,6 +74,7 @@ iface tap0 inet static
   address 192.168.2.1
   netmask 255.255.255.0
   tunctl_user win
+  pre-up modprobe tun
   up   iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j MASQUERADE
   up   echo 1 >/proc/sys/net/ipv4/ip_forward
   post-up  /etc/init.d/dhcp3-server restart
