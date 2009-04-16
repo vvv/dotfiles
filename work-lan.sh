@@ -1,7 +1,10 @@
+_interface() { sudo if${1} eth0=umc-static; }
+
+[ "$1" = '-d' ] && { _interface down; return $?; } # disconnect
+
 /usr/local/bin/work-lan-p.sh && return
 
-#sudo ifup eth0=umc-dynamic || return
-sudo ifup eth0=umc-static || return
+_interface up || return
 
 . /usr/local/bin/work-proxy-vars.sh
 sudo -E /etc/init.d/lastfmsubmitd restart
