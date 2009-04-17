@@ -285,13 +285,6 @@ asking user for confirmation."
 (global-set-key (kbd "<f9> ib") 'ispell-buffer)
 (global-set-key (kbd "<f9> ir") 'ispell-region)
 
-;; org-mode
-(autoload 'org-store-link "org")
-(global-set-key (kbd "<f9> o") 'org-store-link)
-(eval-after-load "org"
-  '(setq org-log-done t
-	 org-agenda-files '("~/job/TODO")))
-
 ;; [m4-mode] make `#' an ordinary character, not a comment starter
 (eval-after-load "m4-mode"
   '(progn
@@ -299,6 +292,13 @@ asking user for confirmation."
      (modify-syntax-entry ?\n " " m4-mode-syntax-table)
      (add-hook 'm4-mode-hook
 	       (lambda () (kill-local-variable 'comment-start)))))
+
+;; org-mode
+(autoload 'org-store-link "org")
+(global-set-key (kbd "<f9> o") 'org-store-link)
+(eval-after-load "org" '(setq org-log-done t org-agenda-files '("~/job/TODO")))
+
+(autoload 'work-log-mode "~/src/work-log/work-log.el" nil t)
 
 ;; ---------------------------------------------------------------------
 ;; miscellaneous settings
