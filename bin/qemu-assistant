@@ -9,7 +9,7 @@ set -e
 
 qemu_prog=kvm; qemu_user=win; qemu_host=qemu-win
 
-help () { echo "Usage: $0 {start|stop|help}"; exit $1; }
+help () { echo "Usage: $0 {[start]|stop|help}"; exit $1; }
 
 _rdp () { nc -w2 -z $qemu_host 3389; }
 _time () { perl -wse print\ time; }
@@ -32,6 +32,7 @@ stop () {
     pass.exp net -U vvv -S $qemu_host rpc shutdown -C. -t1 <~/.winpass
 }
 
+[ $# -eq 0 ] && { start; exit; }
 [ $# -eq 1 ] || help 1
 case $1 in
     start|up|u) start;;
