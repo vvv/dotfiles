@@ -11,7 +11,7 @@ import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.Submap
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.NoBorders
-import XMonad.Prompt
+import XMonad.Prompt hiding (font)
 import XMonad.Prompt.Man
 import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
@@ -23,14 +23,24 @@ import Data.Ratio ((%))
 import Control.Monad (ap)
 
 main :: IO ()
-main = xmonad $ customKeys $ defaultConfig
+main = do
+  (mst, scr) <- measure "-misc-fixed-medium-r-*-*-18-*-*-*-*-*-*-*"
+  let tiled      = Tall 1 (2%100) (mst % scr) -- Tall <nmaster> <delta> <ratio>
+      customKeys = (additionalKeys `ap` addKeys) . (removeKeys `ap` delKeys)
+  xmonad $ customKeys $ defaultConfig
        { workspaces = ["1:emacs", "2:ssh", "3:web", "4:qemu"]
        , layoutHook = avoidStruts (tiled ||| Mirror tiled ||| noBorders Full)
        , modMask    = mod4Mask
        }
-    where
-      tiled = Tall 1 (2%100) (750%1280) -- Tall <nmaster> <delta> <ratio>
-      customKeys = (additionalKeys `ap` addKeys) . (removeKeys `ap` delKeys)
+
+measure :: String -> IO (Integer, Integer)
+measure font = do
+  dpy <- openDisplay ""
+  fs  <- loadQueryFont dpy font
+  let m = textWidth fs (take 83 $ repeat 'X')
+  let n = displayWidth dpy (defaultScreen dpy)
+  m `seq` n `seq` closeDisplay dpy
+  return (toInteger m, toInteger n)
 
 type Key = (KeyMask, KeySym)
 
