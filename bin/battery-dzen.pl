@@ -11,7 +11,7 @@ sub openR ($) { ### open file for reading
 
 sub line2num ($) { ### read line, get a number from it
     my ($f) = @_;
-    $_ = <$f>; s/\D+//g; return $_;
+    $_ = <$f>; /\d+/; return $&;
 }
 
 sub battery_params() { ### read battery parameters
@@ -38,6 +38,12 @@ my ($ch_state, $rate, $rem_cap, $des_cap) = &battery_params;
 my ($minutes, $color) = (0.0, '');
 my $report = int(100 * $rem_cap / $des_cap) . '% (';
 
+if (not $rate) {
+    $report .= '???)';
+    print "|| $ch_state $report \n";
+    exit 0;
+}
+
 if ($ch_state eq 'charging') {
     $minutes = 60 * ($des_cap - $rem_cap) / $rate;
     $ch_state = '+';
@@ -53,6 +59,7 @@ if ($minutes < 60) {
 } else {
     $report .= sprintf '%d:%02d)', (int($minutes / 60), int($minutes % 60));
 }
+
 if ($color) { $report = "^fg($color)" . $report . "^fg()"; }
 
 print "|| $ch_state $report \n";
