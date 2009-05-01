@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -11,14 +11,16 @@ sub openR ($) { ### open file for reading
 
 sub line2num ($) { ### read line, get a number from it
     my ($f) = @_;
-    $_ = <$f>; /\d+/; return $&;
+    $_ = <$f>;
+    return (/\d+/ and $& or '');
 }
 
 sub battery_params() { ### read battery parameters
     my $f = openR '/proc/acpi/battery/BAT1/state';
-    scalar <$f>; scalar <$f>;
+    scalar <$f>; scalar <$f>; # skip 2 lines
 
-    $_ = <$f>; /\S+$/; my $ch_state = $&; # `charging state'
+    $_ = <$f>;
+    my $ch_state = (/\S+$/ and $& or ''); # `charging state'
     exit 0 if $ch_state eq 'charged';
 
     my $rate = line2num $f;    # `present rate'
@@ -35,14 +37,17 @@ sub battery_params() { ### read battery parameters
 
 my ($ch_state, $rate, $rem_cap, $des_cap) = &battery_params;
 
-my ($minutes, $color) = (0.0, '');
-my $report = int(100 * $rem_cap / $des_cap) . '% (';
+my $report = '?';
+if ($des_cap) { $report = int(100 * $rem_cap / $des_cap); }
+$report .= '% (';
 
-if (not $rate) {
+unless ($rate) {
     $report .= '???)';
     print "|| $ch_state $report \n";
     exit 0;
 }
+
+my ($minutes, $color) = (0.0, '');
 
 if ($ch_state eq 'charging') {
     $minutes = 60 * ($des_cap - $rem_cap) / $rate;
