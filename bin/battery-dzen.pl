@@ -38,7 +38,7 @@ sub battery_params() { ### read battery parameters
 my ($ch_state, $rate, $rem_cap, $des_cap) = &battery_params;
 
 my $report = '?';
-if ($des_cap) { $report = int(100 * $rem_cap / $des_cap); }
+if ($des_cap && $rem_cap) { $report = int(100 * $rem_cap / $des_cap); }
 $report .= '% (';
 
 unless ($rate) {
