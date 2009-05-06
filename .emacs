@@ -15,8 +15,8 @@
 (gnuserv-start)
 (setq gnuserv-frame t)
 
-;; ---------------------------------------------------------------------
-;; internet
+;;; --------------------------------------------------------------------
+;;; internet
 
 ;; Opera browser
 (setq browse-url-browser-function 'browse-url-generic
@@ -43,8 +43,8 @@ all yubnub commands."
    (concat "http://yubnub.org/parser/parse?command=" command)))
 (global-set-key (kbd "<f9> y") 'yubnub)
 
-;; ---------------------------------------------------------------------
-;; On-Screen Display alerts
+;;; --------------------------------------------------------------------
+;;; On-Screen Display alerts
 
 (if (and (display-graphic-p) (file-executable-p "/usr/bin/osd_cat"))
     (defun osd (fmt &rest args)
@@ -57,8 +57,8 @@ all yubnub commands."
                                (shell-quote-argument msg) opts))))
   (defalias 'osd 'message))
 
-;; ---------------------------------------------------------------------
-;; Cyrillic key bindings
+;;; --------------------------------------------------------------------
+;;; Cyrillic key bindings
 
 (let ((convert (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
 			      (make-char 'cyrillic-iso8859-5)))))
@@ -87,8 +87,8 @@ all yubnub commands."
 ;;   * `ps-mule-encode-ucs2' function definition.
 ;;   * (info "(elisp)Translation Keymaps")
 
-;; ---------------------------------------------------------------------
-;; mail
+;;; --------------------------------------------------------------------
+;;; mail
 
 (global-set-key (kbd "<f12> <f12>") 'gnus) ; see also ~/.gnus.el
 (global-set-key (kbd "<f12> m") 'gnus-group-mail)
@@ -101,8 +101,8 @@ all yubnub commands."
 (setq sendmail-program "/usr/bin/msmtp" message-sendmail-f-is-evil nil
       user-mail-address (base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
 
-;; ---------------------------------------------------------------------
-;; Dayjob-specific stuff
+;;; --------------------------------------------------------------------
+;;; Dayjob-specific stuff
 
 (defun work-lan-p ()
   ; netstat -rn | grep -qE '^(0\.){3}0 +192\.168\.1\.1 '
@@ -138,8 +138,8 @@ All we need is just to send HTTP POST request."
     (browse-url (concat "mts " word)))
   (global-set-key (kbd "<f9> m") 'mts-search))
 
-;; ---------------------------------------------------------------------
-;; jabber
+;;; --------------------------------------------------------------------
+;;; jabber
 
 (eval-after-load "jabber"
   '(progn
@@ -219,8 +219,8 @@ jabber.el:
 		from)
 	 ad-do-it))))
 
-;; ---------------------------------------------------------------------
-;; Semi-automatic rstripping
+;;; --------------------------------------------------------------------
+;;; Semi-automatic rstripping
 
 (defvar trailing-whitespace-allowed nil
   "If file name matches this regexp,
@@ -241,8 +241,8 @@ asking user for confirmation."
 
 (setq default-indicate-empty-lines t require-final-newline t)
 
-;; ---------------------------------------------------------------------
-;; color-theme
+;;; --------------------------------------------------------------------
+;;; color-theme
 
 ;; `color-theme.el' bug workaround [XXX Is it still needed?]
 (eval-after-load "color-theme"
@@ -265,7 +265,7 @@ asking user for confirmation."
     (color-theme-dark-laptop)))
 
 (global-set-key (kbd "<f9> n") 'toggle-night-color-theme)
-;; ---------------------------------------------------------------------
+;;; --------------------------------------------------------------------
 
 ;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
 (autoload 'inferior-haskell-load-file "haskell-site-file")
@@ -300,8 +300,8 @@ asking user for confirmation."
 
 (autoload 'work-log-mode "~/src/work-log/work-log.el" nil t)
 
-;; ---------------------------------------------------------------------
-;; miscellaneous settings
+;;; --------------------------------------------------------------------
+;;; miscellaneous settings
 
 (setq backup-directory-alist '((".*" . "~/.backups"))) ; backups location
 
@@ -361,6 +361,21 @@ The result is equal to evaluating `(other-window -1)'."
 ;; Set proper encoding for X buffer.
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
+
+;;; --------------------------------------------------------------------
+;;; workaround(s)
+
+;; See http://article.gmane.org/gmane.emacs.jabber.general/862
+(eval-after-load "jabber-presence" (quote
+(defun jabber-send-default-presence (&optional ignore)
+  "Send default presence.
+Default presence is specified by `jabber-default-show',
+`jabber-default-status', and `jabber-default-priority'."
+  (interactive)
+  (jabber-send-presence
+   jabber-default-show jabber-default-status jabber-default-priority))
+))
+;;; --------------------------------------------------------------------
 
 ;; report loading time
 (message "~/.emacs loaded in %d seconds"
