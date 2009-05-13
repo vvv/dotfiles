@@ -17,10 +17,12 @@ iface lo inet loopback
   up iptables -N QNIC -m comment --comment "from [q]emulated NIC"
   up iptables -A QNIC -j INI
   up iptables -A QNIC -p udp --dport domain -j ACCEPT
+  up iptables -A QNIC -p udp --dport bootps -j REJECT
   up iptables -A QNIC -p udp -m multiport --dport netbios-ns,netbios-dgm \
     -j ACCEPT
   up iptables -A QNIC -p tcp -m multiport --dport netbios-ssn,microsoft-ds \
     -j ACCEPT
+  up iptables -A QNIC -p tcp --dport http -j ACCEPT
   up iptables -A QNIC -j FIN
 
   up iptables -A INPUT -i lo -j ACCEPT -m comment --comment "main dispatch"
