@@ -197,7 +197,8 @@ All we need is just to send HTTP POST request."
      (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
      (setq jabber-vcard-avatars-retrieve nil
 	   jabber-history-enabled t jabber-use-global-history nil
-	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil)
+	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil
+	   jabber-roster-line-format " %a %c %-25n %u %-8s")
      (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)
 
      (defadvice jabber-process-subscription-request
@@ -342,8 +343,7 @@ The result is equal to evaluating `(other-window -1)'."
 (defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
   (interactive)
-  (let ((transient-mark-mode nil)) ; don't deactivate the mark
-    (copy-region-as-kill (point-min) (point-max)))
+  (kill-new (filter-buffer-substring (point-min) (point-max)))
   (when (interactive-p)
     (message "Buffer saved")))
 (global-set-key "\M-W" 'copy-buffer-as-kill)
