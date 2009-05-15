@@ -13,5 +13,5 @@ set -e
 gnuclient -q -batch -eval "
   (let ((default-directory \"`pwd`\"))
       (view-file \"$1\")
-      (copy-region-as-kill (point-min) (point-max))
+      (kill-new (filter-buffer-substring (point-min) (point-max)))
       (View-quit))"
