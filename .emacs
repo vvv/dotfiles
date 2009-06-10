@@ -105,8 +105,10 @@ all yubnub commands."
 ;;; Dayjob-specific stuff
 
 (defun work-lan-p ()
-  ; netstat -rn | grep -qE '^(0\.){3}0 +192\.168\.1\.1 '
-  (zerop (call-process "/usr/local/bin/work-lan-p.sh")))
+  (let ((fn "/usr/local/bin/work-lan-p.sh"))
+    (when (file-exists-p fn)
+      ;; netstat -rn | grep -qE '^(0\.){3}0 +192\.168\.1\.1 '
+      (zerop (call-process fn)))))
 
 (when (work-lan-p)
   (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE="))
