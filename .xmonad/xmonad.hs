@@ -38,7 +38,7 @@ measure font = do
   dpy <- openDisplay ""
   fs  <- loadQueryFont dpy font
   let m = textWidth fs (take 83 $ repeat 'X')
-  let n = displayWidth dpy (defaultScreen dpy)
+      n = displayWidth dpy (defaultScreen dpy)
   m `seq` n `seq` closeDisplay dpy
   return (toInteger m, toInteger n)
 
