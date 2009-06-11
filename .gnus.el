@@ -27,4 +27,6 @@
       gnus-auto-expirable-newsgroups ".*")
 
 (setq gnus-treat-display-smileys nil) ; don't display smileys
-(setq trailing-whitespace-allowed (concat "^" (expand-file-name "~/Mail")))
+
+(setq trailing-whitespace-allowed
+      (concat "^" (expand-file-name "~/") "\\(Mail\\|News/drafts\\)"))
