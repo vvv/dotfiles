@@ -30,11 +30,13 @@ iface lo inet loopback
   up iptables -A INPUT -i tap+ -j QNIC
   up iptables -A INPUT -i eth+  -j INET
   up iptables -A INPUT -i wlan+ -j INET
+  up iptables -A INPUT -i ppp+  -j INET
   up iptables -P INPUT DROP
   up iptables -A FORWARD -i tap+ -j ACCEPT
   up iptables -A FORWARD -i tun+ -j ACCEPT
   up iptables -A FORWARD -i eth+  -j INET
   up iptables -A FORWARD -i wlan+ -j INET
+  up iptables -A FORWARD -i ppp+  -j INET
   up iptables -P FORWARD DROP
 
   down iptables -F -m comment --comment "cleanup"
