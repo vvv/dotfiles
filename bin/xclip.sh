@@ -2,12 +2,9 @@
 
 set -e
 
-[ $# -eq 1 ] || {
-    echo "usage: ${0##*/} FILE" >&2
-    exit 1
-}
+[ $# -eq 1 ] || { echo "usage: ${0##*/} FILE" >&2; exit 1; }
 
-## `xclip' mangles Cyrillic alphabet.
+## `xclip' utility (http://xclip.sf.net/) mangles Cyrillic alphabet.
 # which xclip >/dev/null && { xclip -in "$1"; exit 0; }
 
 gnuclient -q -batch -eval "
