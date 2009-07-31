@@ -1,0 +1,12 @@
+# ATZW2 as a default init string
+# - On all hayes compatible modems, W2 will correctly report the connect
+#   speed.
+#
+ABORT        BUSY
+ABORT        "NO CARRIER"
+ABORT        VOICE
+ABORT	     "NO DIALTONE"
+""           ATZW2
+OK           AT+CGDCONT=1,"IP","hyper.net"
+OK           ATD*99#
+#CONNECT      \d\c

@@ -1,0 +1,19 @@
+connect "/usr/sbin/chat -v -f /etc/chatscripts/umc"
+/dev/ttyACM0
+230400
+updetach
+
+# Assumes that your IP address is allocated dynamically by the ISP.
+noipdefault
+
+# Try to get the name server addresses from the ISP.
+usepeerdns
+
+# Use this connection as the default route.
+defaultroute
+
+# Makes pppd "dial again" when the connection is lost.
+persist
+
+# Do not ask the remote to authenticate.
+noauth
