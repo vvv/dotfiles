@@ -1,0 +1,42 @@
+#!/usr/bin/env perl
+## ---------------------------------------------------------------------
+## Usage:  poct [EXPR]...
+##
+## Print octet in hex, decimal, and binary bases, tab-separated.
+##
+## If EXPR starts with "0x" or "x" it is interpreted as a hex number.
+## If EXPR starts with "0b" or "b" it is interpreted as a binary number.
+## If EXPR starts with "0" it is interpreted as an octal number.
+## Otherwise EXPR is interpreted as a decimal number.
+##
+## The value of EXPR should belong 0..255 range (hence `octet').
+##
+## Example:
+##
+##     $ poct 010 x2a b1001 77
+##     8       0x08    b00001000
+##     42      0x2a    b00101010
+##     9       0x09    b00001001
+##     77      0x4d    b01001101
+## ---------------------------------------------------------------------
+
+use strict;
+use warnings;
+
+sub up($$) {
+    my ($fmt, $num) = @_;
+    return unpack($fmt, pack('C', $num));
+}
+
+if (!@ARGV || $ARGV[0] =~ /^-(h|-help|\?)$/) {
+    print "Usage: $0 [EXPR]...\n";
+    exit 0;
+}
+
+foreach my $s (@ARGV) {
+    my $n = ($s =~ /^[0xb]/) ? oct($s) : int($s);
+    print join("\t", $n,
+	       '0x' . up('H2', $n),
+	       'b' . up('B8', $n))
+	. "\n";
+}
