@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if lsof `which emacs` | grep -q $USER; then
+  gnuclient -q "$@"
+else
+  emacs "$@" &
+fi
