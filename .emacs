@@ -63,8 +63,10 @@ all yubnub commands."
 ;;; --------------------------------------------------------------------
 ;;; Cyrillic key bindings
 
-(let ((convert (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
-			      (make-char 'cyrillic-iso8859-5)))))
+(let ((convert (if (>= emacs-major-version 23)
+		   (lambda (c) c)
+		 (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
+				(make-char 'cyrillic-iso8859-5))))))
   (mapc
    (lambda (pair)
      (global-set-key
