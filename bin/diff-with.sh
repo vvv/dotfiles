@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## Command to compare CSV (comma separated values) files:
 ##
@@ -20,10 +20,10 @@ set -e
     exit 1
 }
 
-old=$1; shift
-new=$1; shift
+old="$1"; shift
+new="$1"; shift
 
-which tempfile >&/dev/null && tmp=`tempfile` || tmp="/tmp/_XXX-$$"
+which tempfile &>/dev/null && tmp="`tempfile`" || tmp="/tmp/_XXX-$$"
 trap "rm $tmp" 0
 
 "$@" $old >$tmp
