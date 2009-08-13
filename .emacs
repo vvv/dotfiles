@@ -12,8 +12,11 @@
 (dolist (f '(menu-bar-mode scroll-bar-mode tool-bar-mode)) (funcall f -1))
 
 ;; Allow this Emacs process to be a server for client processes
+(autoload 'gnuserv-start "gnuserv-compat"
+  "Allow this Emacs process to be a server for client processes." t)
 (gnuserv-start)
 (setq gnuserv-frame t)
+; XXX TODO switch to emacsclient
 
 ;;; --------------------------------------------------------------------
 ;;; internet
