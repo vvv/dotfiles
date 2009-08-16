@@ -3,7 +3,7 @@
 ## Getting songs from http://gh.ffshrine.org/soundtracks/3574:
 ##
 ## for n in `seq 19`; do \
-##   wget -O - http://gh.ffshrine.org/song/3574/$n | ./gh.pl; \
+##   wget -O - http://gh.ffshrine.org/song/3574/$n | gh.pl; \
 ## done | wget -i -
 
 use strict;
@@ -13,7 +13,7 @@ use URI::Escape qw(uri_unescape);
 my (@sloc, $addr, @decodings);
 
 while (<>) {
-    next unless $_ =~ q/^\s*var data = "(.*)";$/;
+    next unless $_ =~ q/^\s*(?:<script>)?var data = "([^"]+)";.*$/;
     @sloc = split("\n", uri_unescape $1);
     last;
 }
