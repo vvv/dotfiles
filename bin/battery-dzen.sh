@@ -13,6 +13,8 @@ REMAINING=$(cat energy_now)
 
 REPORT="$(($REMAINING * 100 / $CAPACITY))% ("
 
+[ "$STATUS" = 'Full' ] && exit 0
+
 if [ "$STATUS" = 'Discharging' ]; then
     MINS=$((60 * $REMAINING / $CURRENT))
     REPORT="${REPORT}~"
@@ -21,7 +23,7 @@ if [ "$STATUS" = 'Discharging' ]; then
     elif [ $MINS -lt 40 ]; then
 	COLOR='green'
     fi
-else
+else # "$STATUS" = 'Charging'
     MINS=$((60 * ($CAPACITY - $REMAINING) / $CURRENT))
     STATUS='+'
 fi

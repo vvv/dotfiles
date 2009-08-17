@@ -1,10 +1,5 @@
 ;;; -*- coding: utf-8-unix -*-
 
-;; See http://a-nickels-worth.blogspot.com/2007/11/effective-emacs.html
-(defvar *emacs-load-start* (current-time))
-
-(require 'cl)
-
 (setq inhibit-startup-message t) ; don't show startup screen
 
 ;; Remove toolbar, scrollbar, and menu bar
@@ -383,12 +378,5 @@ Default presence is specified by `jabber-default-show',
    jabber-default-show jabber-default-status jabber-default-priority))
 ))
 ;;; --------------------------------------------------------------------
-
-;; report loading time
-(message "~/.emacs loaded in %d seconds"
-	 (destructuring-bind (hi lo ms) (current-time)
-	   (- (+ hi lo)
-	      (+ (car *emacs-load-start*) (cadr *emacs-load-start*)))))
-(unintern '*emacs-load-start*)
 
 (ignore-errors (jabber-connect-all))
