@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+[ "$1" = '-v' ] && verb='-c' || verb=''
+
+cd ~/music
+find -type f -print0 | xargs -0 chmod $verb 0644
+chmod $verb -R u+w .
+
+[ -d _new ] && retouch _new

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+find "$@" -type d | while read d; do
+    (cd "$d" && for f in *; do [ -f "$f" ] && touch "$f"; done)
+done
