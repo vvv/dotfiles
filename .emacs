@@ -248,13 +248,14 @@ asking user for confirmation."
 ;;; color-theme
 
 ;; `color-theme.el' bug workaround [XXX Is it still needed?]
-(eval-after-load "color-theme"
-  '(defun color-theme-face-attr-construct (face frame)
-     (if (atom face)
-	 (custom-face-attributes-get face frame)
-       (if (and (consp face) (eq (car face) 'quote))
-	   (custom-face-attributes-get (cadr face) frame)
-	 (custom-face-attributes-get (car face) frame)))))
+(eval-after-load "color-theme" (quote
+(defun color-theme-face-attr-construct (face frame)
+  (if (atom face)
+      (custom-face-attributes-get face frame)
+    (if (and (consp face) (eq (car face) 'quote))
+	(custom-face-attributes-get (cadr face) frame)
+      (custom-face-attributes-get (car face) frame))))
+))
 
 (defun toggle-night-color-theme ()
   "Switch to/from night color scheme."
@@ -273,7 +274,7 @@ asking user for confirmation."
 ;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
 (autoload 'inferior-haskell-load-file "haskell-site-file")
 (eval-after-load "haskell-mode"
-  '(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode))
+  '(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)) ; XXX
 (eval-after-load "inf-haskell"
   '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
 
@@ -365,7 +366,7 @@ The result is equal to evaluating `(other-window -1)'."
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
 
 ;;; --------------------------------------------------------------------
-;;; workaround(s)
+;;; workarounds
 
 ;; See http://article.gmane.org/gmane.emacs.jabber.general/862
 (eval-after-load "jabber-presence" (quote
@@ -376,6 +377,19 @@ Default presence is specified by `jabber-default-show',
   (interactive)
   (jabber-send-presence
    jabber-default-show jabber-default-status jabber-default-priority))
+))
+
+;; XXX
+(eval-after-load "inf-haskell" (quote
+(defun inferior-haskell-cabal-of-buf (buf)
+  (require 'haskell-cabal)
+  (with-current-buffer buf
+    (if (and inferior-haskell-cabal-buffer                ; not `nil'
+	     (buffer-name inferior-haskell-cabal-buffer)) ; not killed
+	inferior-haskell-cabal-buffer
+      (unless (local-variable-p 'inferior-haskell-cabal-buffer)
+	(make-local-variable 'inferior-haskell-cabal-buffer))
+      (set 'inferior-haskell-cabal-buffer (haskell-cabal-find-file)))))
 ))
 ;;; --------------------------------------------------------------------
 
