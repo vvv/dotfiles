@@ -98,7 +98,8 @@ all yubnub commands."
 ;; Don't pop-up *BBDB* buffer when completing.
 (setq bbdb-completion-display-record nil)
 
-(setq sendmail-program "/usr/bin/msmtp" mail-specify-envelope-from t
+(setq sendmail-program "/usr/bin/msmtp"
+      message-sendmail-f-is-evil nil mail-specify-envelope-from t
       user-mail-address (base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
 
 ;;; --------------------------------------------------------------------
