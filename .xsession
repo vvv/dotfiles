@@ -1,5 +1,5 @@
 #!/bin/sh
-setxkbmap us,ru ,winkeys ctrl:swapcaps grp_led:scroll grp:toggle
+setxkbmap -rules evdev us,ru ,winkeys ctrl:swapcaps grp_led:scroll grp:toggle
 xscreensaver -no-splash &
 [ -f ~/.profile ] && . ~/.profile
 statusbar.sh &
