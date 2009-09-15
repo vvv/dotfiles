@@ -7,26 +7,31 @@ cd $BAT 2>/dev/null || {
 }
 
 STATUS=$(cat status)
+[ "$STATUS" = 'Full' ] && exit 0
+
 CURRENT=$(cat current_now)
 CAPACITY=$(cat energy_full_design)
 REMAINING=$(cat energy_now)
 
 REPORT="$(($REMAINING * 100 / $CAPACITY))% ("
 
-[ "$STATUS" = 'Full' ] && exit 0
-
-if [ "$STATUS" = 'Discharging' ]; then
-    MINS=$((60 * $REMAINING / $CURRENT))
-    REPORT="${REPORT}~"
-    if [ $MINS -lt 20 ]; then
-	COLOR='red'
-    elif [ $MINS -lt 40 ]; then
-	COLOR='green'
-    fi
-else # "$STATUS" = 'Charging'
-    MINS=$((60 * ($CAPACITY - $REMAINING) / $CURRENT))
-    STATUS='+'
-fi
+case "$STATUS" in
+    'Discharging')
+	MINS=$((60 * $REMAINING / $CURRENT))
+	REPORT="${REPORT}~"
+	if [ $MINS -lt 20 ]; then
+	    COLOR='red'
+	elif [ $MINS -lt 40 ]; then
+	    COLOR='green'
+	fi
+	;;
+    'Charging')
+	MINS=$((60 * ($CAPACITY - $REMAINING) / $CURRENT))
+	STATUS='+'
+	;;
+    *) #echo "|| XXX $STATUS "
+	exit 0;;
+esac
 
 if [ $MINS -lt 60 ]; then
     REPORT="${REPORT}$MINS')"
