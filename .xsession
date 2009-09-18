@@ -7,7 +7,7 @@ xterm -e 'reset; screen -DR' &
 xmonad
 
 [ "`hostname`" = 'hobbiton' ] || {
-    gmessage -nearmouse -buttons _logout,_restart,_shutdown \
+    gxmessage -nearmouse -buttons _logout,_restart,_shutdown \
 	"What should `hostname` do?"
     case $? in
 	102) sudo shutdown -r now;;
