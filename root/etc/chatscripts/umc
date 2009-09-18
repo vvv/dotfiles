@@ -1,3 +1,5 @@
+## http://www.mts.com.ua/ukr/hyper_settings.php
+
 # ATZW2 as a default init string
 # - On all hayes compatible modems, W2 will correctly report the connect
 #   speed.
@@ -8,5 +10,5 @@ ABORT        VOICE
 ABORT	     "NO DIALTONE"
 ""           ATZW2
 OK           AT+CGDCONT=1,"IP","hyper.net"
-OK           ATD*99#
+OK           ATDT*99#
 #CONNECT      \d\c

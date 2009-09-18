@@ -1,3 +1,5 @@
+## http://www.mts.com.ua/ukr/hyper_settings.php
+
 connect "/usr/sbin/chat -v -f /etc/chatscripts/umc"
 /dev/ttyACM0
 230400

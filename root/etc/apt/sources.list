@@ -1,0 +1,8 @@
+deb http://security.debian.org/ testing/updates main contrib non-free
+
+deb http://ftp.de.debian.org/debian/ testing main contrib non-free
+deb-src http://ftp.de.debian.org/debian/ testing main contrib
+
+deb http://www.debian-multimedia.org testing main
+
+deb http://ftp.de.debian.org/debian/ unstable main
