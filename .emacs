@@ -181,16 +181,6 @@ All we need is just to send HTTP POST request."
 	 (osd (jabber-activity-make-string-default group))))
      (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
 
-     ;; <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=508539>
-     (eval-after-load "jabber-bookmarks"
-       '(defun jabber-get-bookmarks-1 (jc result cont)
-	  (let ((my-jid (jabber-connection-bare-jid jc))
-		(value (when (eq (jabber-xml-node-name result) 'storage)
-			 (jabber-xml-node-children result))))
-	    (when (and value (listp value))
-	      (puthash my-jid value jabber-bookmarks))
-	    (funcall cont jc (when (listp value) value)))))
-
      ;; groupchat
      (setq jabber-muc-default-nicknames
 	   `((,(base64-decode-string "dGVhcEBjb25mZXJlbmNlLmphYmJlci5vcmcuYnk=")
