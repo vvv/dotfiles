@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+DIR=/tmp/h
+HOST=${1:-devil}
+
+[ "$1" = '-u' ] && {
+    gnuclient -q -batch -eval '(ignore-errors (kill-process "ispell"))' \
+	2>/dev/null || true
+    fusermount -u $DIR
+    rmdir $DIR
+    exit 0
+}
+
+[ -d $DIR ] || mkdir $DIR
+sshfs $HOST:src $DIR
