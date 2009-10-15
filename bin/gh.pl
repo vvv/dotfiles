@@ -1,11 +1,18 @@
 #!/usr/bin/env perl
-
-## Getting songs from http://gh.ffshrine.org/soundtracks/3574:
+## ---------------------------------------------------------------------
+## Get a link to audio file from Galbadia Hotel page.
 ##
-## for n in `seq 19`; do \
-##   wget -O - http://gh.ffshrine.org/song/3574/$n | gh.pl; \
-## done | wget -i -
-
+## Galbadia Hotel <http://gh.ffshrine.org/> obfuscates its HTML
+## sources for some reason, and mouse-clicking is not fun.
+##
+## Example:
+##   $ wget -qO - http://gh.ffshrine.org/song/3574/9 | gh.pl | wget -i -
+##
+## Homepage: http://http://github.com/vvv/dotfiles/blob/master/bin/
+##
+## See also:
+##   gh  -  download the whole album from Galbadia Hotel
+## ---------------------------------------------------------------------
 use strict;
 use warnings;
 use URI::Escape qw(uri_unescape);

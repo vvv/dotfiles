@@ -1,0 +1,37 @@
+#!/bin/sh
+## ---------------------------------------------------------------------
+## Download music album from Galbadia Hotel <http://gh.ffshrine.org/>.
+##
+## Homepage: http://http://github.com/vvv/dotfiles/blob/master/bin/
+##
+## Example: gh http://gh.ffshrine.org/soundtracks/3574
+## ---------------------------------------------------------------------
+
+usage() {
+    cat <<EOF
+Usage: gh [OPTION]... [URL]...
+Download soundtrack from Galbadia Hotel <http://gh.ffshrine.org/>.
+
+  -h, --help, -?   display this help and exit
+
+Example: gh http://gh.ffshrine.org/soundtracks/4098
+EOF
+}
+
+[ $# -eq 0 ] && {
+    usage 1>&2
+    exit 1
+}
+case "$1" in '--help'|'-h'|'-?') usage; exit 0;; esac
+
+which gh.pl >/dev/null || {
+    echo 'gh.pl: no such executable' 1>&2
+    echo '  Download it from' \
+	'<http://github.com/vvv/dotfiles/blob/master/bin/gh.pl>.' 1>&2
+    exit 1
+}
+
+for p in $(wget -qO - "$1" | grep -Eo 'href="/song/[0-9]+/[^"]+' | cut -d/ -f3-)
+do
+    wget -qO - http://gh.ffshrine.org/song/$p | gh.pl
+done | wget -i -
