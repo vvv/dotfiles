@@ -27,7 +27,7 @@ case "$1" in '--help'|'-h'|'-?') usage; exit 0;; esac
 which gh.pl >/dev/null || {
     echo 'gh.pl: no such executable' 1>&2
     echo '  Download it from' \
-	'<http://github.com/vvv/dotfiles/blob/master/bin/gh.pl>.' 1>&2
+	'<http://github.com/vvv/dotfiles/raw/master/bin/gh.pl>.' 1>&2
     exit 1
 }
 
