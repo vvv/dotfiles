@@ -315,7 +315,16 @@ asking user for confirmation."
 (eval-after-load "ps-print"
   '(setq ps-paper-type 'a4
 	 ps-print-header nil
-	 ps-multibyte-buffer 'bdf-font-except-latin))
+	 ps-multibyte-buffer 'bdf-font-except-latin
+
+	 ;; Postscript pages have pale colors when printed from
+	 ;; "night" color theme (see `toggle-night-color-theme').
+	 ;;
+	 ;; Setting `ps-always-build-face-reference' to non-nil makes
+	 ;; it possible to restore "day" color theme and print
+	 ;; Postscript nice and visible colors.  (Otherwise the pale
+	 ;; colors remain "cached".)
+	 ps-always-build-face-reference t))
 
 (eval-after-load "htmlize" '(setq htmlize-output-type 'inline-css))
 
