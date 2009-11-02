@@ -262,12 +262,14 @@ asking user for confirmation."
 (global-set-key (kbd "<f9> n") 'toggle-night-color-theme)
 ;;; --------------------------------------------------------------------
 
-;; Haskell mode (see http://haskell.org/haskellwiki/Haskell_mode_for_Emacs)
-(autoload 'inferior-haskell-load-file "haskell-site-file")
-(eval-after-load "haskell-site-file"
-  '(remove-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode))
-(eval-after-load "inf-haskell"
-  '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
+;; Haskell mode [http://haskell.org/haskellwiki/Haskell_mode_for_Emacs]
+(let ((dir "~/lib/emacs/haskell-mode"))
+  (if (not (file-accessible-directory-p dir))
+      (display-warning 'haskell-mode (concat dir ": no such directory"))
+    (load (concat dir "/haskell-site-file"))
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+    (eval-after-load "haskell-mode"
+      '(global-set-key (kbd "<f9> h") 'haskell-hoogle))))
 
 ;; dictionary-el
 (global-set-key (kbd "<f9> d") 'dictionary-search)
@@ -288,12 +290,7 @@ asking user for confirmation."
      (add-hook 'm4-mode-hook
 	       (lambda () (kill-local-variable 'comment-start)))))
 
-;; org-mode
-(autoload 'org-store-link "org")
-(global-set-key (kbd "<f9> o") 'org-store-link)
-(eval-after-load "org" '(setq org-log-done t org-agenda-files '("~/job/TODO")))
-
-(autoload 'work-log-mode "~/src/work-log/work-log.el" nil t)
+(autoload 'work-log-mode "~/lib/emacs/work-log/work-log.el" nil t)
 
 ;;; --------------------------------------------------------------------
 ;;; miscellaneous settings
@@ -364,33 +361,5 @@ The result is equal to evaluating `(other-window -1)'."
 ;; Set proper encoding for X buffer.
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
-
-;;; --------------------------------------------------------------------
-;;; workarounds
-
-;; See http://article.gmane.org/gmane.emacs.jabber.general/862
-(eval-after-load "jabber-presence" (quote
-(defun jabber-send-default-presence (&optional ignore)
-  "Send default presence.
-Default presence is specified by `jabber-default-show',
-`jabber-default-status', and `jabber-default-priority'."
-  (interactive)
-  (jabber-send-presence
-   jabber-default-show jabber-default-status jabber-default-priority))
-))
-
-;; XXX
-(eval-after-load "inf-haskell" (quote
-(defun inferior-haskell-cabal-of-buf (buf)
-  (require 'haskell-cabal)
-  (with-current-buffer buf
-    (if (and inferior-haskell-cabal-buffer                ; not `nil'
-	     (buffer-name inferior-haskell-cabal-buffer)) ; not killed
-	inferior-haskell-cabal-buffer
-      (unless (local-variable-p 'inferior-haskell-cabal-buffer)
-	(make-local-variable 'inferior-haskell-cabal-buffer))
-      (set 'inferior-haskell-cabal-buffer (haskell-cabal-find-file)))))
-))
-;;; --------------------------------------------------------------------
 
 (ignore-errors (jabber-connect-all))
