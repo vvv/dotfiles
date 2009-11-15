@@ -192,26 +192,7 @@ All we need is just to send HTTP POST request."
 	   jabber-history-enabled t jabber-use-global-history nil
 	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil
 	   jabber-roster-line-format " %a %c %-25n %u %-8s")
-     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)
-
-     (defadvice jabber-process-subscription-request
-       (around jabber-ignore-12111 (jc from presence-status) activate)
-       "Process an incoming subscription request, ignoring some ICQ users.
-
-icq.com:
-  As part of the process of upgrading ICQ users to our newest, most
-  advanced version, ICQ6, we have added a new user name to your
-  contact list ''ICQ System''. The newly added user is intended to
-  improve ICQ's line of communication with our users and assure you
-  continue to enjoy talking to everybody, everywhere.
-jabber.el:
-  Go subscribe yourself."
-       (unless (string-match
-		(format "^%s@icq\\."
-			(regexp-opt '("12111" "176258467" "278610504"
-				      "279491906" "86301548" "869518") t))
-		from)
-	 ad-do-it))))
+     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)))
 
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
@@ -264,8 +245,7 @@ asking user for confirmation."
 
 ;; Haskell mode [http://haskell.org/haskellwiki/Haskell_mode_for_Emacs]
 (let ((dir "~/lib/emacs/haskell-mode"))
-  (if (not (file-accessible-directory-p dir))
-      (display-warning 'haskell-mode (concat dir ": no such directory"))
+  (when (file-accessible-directory-p dir)
     (load (concat dir "/haskell-site-file"))
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
     (eval-after-load "haskell-mode"
