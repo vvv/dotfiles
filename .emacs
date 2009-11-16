@@ -18,7 +18,7 @@
 
 ;; Opera browser
 (setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "opera" browse-url-generic-args '("-newpage"))
+      browse-url-generic-program "opera")
 (global-set-key (kbd "<f9> ww") 'browse-url)
 
 ;; w3m browser
@@ -81,7 +81,8 @@ all yubnub commands."
      (?\C-п . keyboard-quit)   (?\C-д . recenter)))
   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?л])) 'kill-buffer)
   (global-set-key (apply 'vector (mapcar convert [?\C-\M-з])) 'backward-list)
-  (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list))
+  (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list)
+  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer))
 ;; ^ http://community.livejournal.com/ru_emacs/20743.html#3
 ;; XXX See also:
 ;;   * `ps-mule-encode-ucs2' function definition.
@@ -286,6 +287,7 @@ asking user for confirmation."
 (mouse-wheel-mode t)
 (auto-compression-mode 1) ; automatically uncompress files when visiting
 (setq sort-fold-case t)   ; sorting functions should ignore case
+(progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
 (setq calendar-week-start-day 1 european-calendar-style t)
 
