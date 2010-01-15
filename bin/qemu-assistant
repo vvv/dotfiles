@@ -30,6 +30,7 @@ start () {
 
 stop () {
     pass.exp net -U vvv -S $qemu_host rpc shutdown -C. -t1 <~/.winpass
+    sudo ifdown tap0
 }
 
 [ $# -eq 0 ] && { start; exit; }

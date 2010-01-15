@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+error() { echo "$@" >&2; exit 1; }
+
+case $# in
+    '0') DIR="$(basename $PWD)"; cd ..;;
+    '1') DIR="${1%/}";;
+    *) error "Usage: $(basename $0) [DIR]";;
+esac
+
+[ -d "$DIR" ] || error "no such directory: \`$DIR'"
+
+fakeroot tar -czf "/mnt/stick/d/$DIR.tar.gz" "$DIR"

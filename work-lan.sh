@@ -11,7 +11,7 @@ esac
 _interface up || return
 
 . /usr/local/bin/work-proxy-vars.sh
-sudo -E /etc/init.d/lastfmsubmitd restart
 sudo -E /usr/local/sbin/setdate.sh
 
+sudo -E /etc/init.d/lastfmsubmitd restart
 fetchmail
