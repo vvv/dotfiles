@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = 'ip' ]; then
+    ip="$(GET http://checkip.dyndns.com:8245/ | sed -e 's/^.*: //' -e 's/<.*$//')" || exit 1
+    [ -z "$ip" ] && exit 2
+    msg="$ip online"
+fi
+
+echo "${msg:-offline}" | sendxmpp --ssl -f /etc/sendxmpp.conf \
+    "$(echo 'dmFsZXJ5LnZ2QGdtYWlsLmNvbQo=' | base64 -d)"
