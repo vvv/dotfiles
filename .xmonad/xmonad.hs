@@ -1,9 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 import XMonad
-import XMonad.Layout
-import XMonad.Operations
 import qualified XMonad.StackSet as W
-import Graphics.X11.Xlib
 
 -- XMonadContrib
 import XMonad.Actions.CycleWS
@@ -17,7 +14,6 @@ import XMonad.Prompt.Shell
 import XMonad.Prompt.Ssh
 import XMonad.Util.EZConfig
 
-import Data.Bits ((.|.))
 import qualified Data.Map as M
 import Data.Ratio ((%))
 import Control.Monad (ap)
