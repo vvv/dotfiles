@@ -1,6 +1,4 @@
-logical_interface=umc-static
-
-_interface() { sudo if${1} eth0=${logical_interface:-umc-dynamic}; }
+_interface() { sudo if${1} eth0=umc; }
 
 case "$1" in
     '-d'|'-u') # disconnect
