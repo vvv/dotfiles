@@ -2,7 +2,7 @@
 set -e
 
 if [ "$1" = 'ip' ]; then
-    ip="$(GET http://checkip.dyndns.com:8245/ | sed -e 's/^.*: //' -e 's/<.*$//')" || exit 1
+    ip="$(GET -t30 http://checkip.dyndns.com:8245/ | sed -e 's/^.*: //' -e 's/<.*$//')" || exit 1
     [ -z "$ip" ] && exit 2
     msg="$ip online"
 fi

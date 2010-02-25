@@ -56,9 +56,6 @@ iface umc inet static
     gateway 172.20.185.1
     dns-nameservers 172.20.1.23 172.20.1.24
     dns-search umc.com.ua mts.com.ua umc.ua
-#    pre-up  pkill dhclient || true
-#    up      pkill dhclient || true
-#    post-up pkill dhclient || true
     ## NOTE: `work-printer' should be specified in `/etc/hosts'
     up   iptables -t nat -A POSTROUTING -d work-printer -p tcp \
       --sport 1:1023 --dport 515 -j MASQUERADE --to-ports 1024-2046
