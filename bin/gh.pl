@@ -6,7 +6,7 @@
 ## sources for some reason, and mouse-clicking is not fun.
 ##
 ## Example:
-##   $ wget -qO - http://gh.ffshrine.org/song/3574/9 | gh.pl | wget -i -
+##   $ wget "$(wget -qO - http://gh.ffshrine.org/song/3574/9 | gh.pl)"
 ##
 ## Homepage: http://http://github.com/vvv/dotfiles/blob/master/bin/
 ##

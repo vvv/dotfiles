@@ -33,5 +33,5 @@ which gh.pl >/dev/null || {
 
 for p in $(wget -qO - "$1" | grep -Eo 'href="/song/[0-9]+/[^"]+' | cut -d/ -f3-)
 do
-    wget -qO - http://gh.ffshrine.org/song/$p | gh.pl
-done | wget -i -
+    wget "$(wget -qO - http://gh.ffshrine.org/song/$p | gh.pl)"
+done
