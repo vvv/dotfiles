@@ -54,7 +54,7 @@ iface eth0 inet static
     gateway 192.168.1.1
     dns-nameservers 82.144.192.130 82.144.192.131 82.144.192.21
     post-up /usr/local/sbin/setdate.sh &
-    post-up /usr/local/sbin/xmpp-notify ip 2>>/var/log/sendxmpp-errors.log &
+    post-up /usr/local/sbin/xmpp-notify ip &
     pre-down /usr/local/sbin/xmpp-notify || true
 
 iface tap0 inet static
