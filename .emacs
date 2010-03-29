@@ -306,6 +306,7 @@ asking user for confirmation."
 	 ps-always-build-face-reference t))
 
 (eval-after-load "htmlize" '(setq htmlize-output-type 'inline-css))
+(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 
 ;; insert at point regardless of where you click
 (setq mouse-yank-at-point t)
@@ -339,6 +340,10 @@ The result is equal to evaluating `(other-window -1)'."
 ;; I never miss `x-menu-bar-open' but often do F9 key.
 (global-set-key [f10] (key-binding [f9]))
 (global-set-key [f11] (key-binding [f9]))
+
+;; Remove `suspend-frame' bindings (sometimes I hit `C-z' by mistake)
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-z"))
 
 ;; Set proper encoding for X buffer.
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
