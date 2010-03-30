@@ -11,4 +11,7 @@ esac
 
 [ -d "$DIR" ] || error "no such directory: \`$DIR'"
 
-fakeroot tar -czf "/mnt/stick/d/$DIR.tar.gz" "$DIR"
+ARC="/tmp/$DIR.tar.gz"
+$(which fakeroot 2>/dev/null || true) tar -czf "$ARC" "$DIR"
+
+[ -d /mnt/stick/d ] && cp "$ARC" /mnt/stick/d/ || true

@@ -7,8 +7,7 @@
 (dolist (f '(menu-bar-mode scroll-bar-mode tool-bar-mode)) (funcall f -1))
 
 ;; Allow this Emacs process to be a server for client processes
-(autoload 'gnuserv-start "gnuserv-compat"
-  "Allow this Emacs process to be a server for client processes." t)
+(autoload 'gnuserv-start "gnuserv-compat" nil t)
 (gnuserv-start)
 (setq gnuserv-frame t)
 ; XXX TODO switch to emacsclient
@@ -288,6 +287,7 @@ asking user for confirmation."
 (auto-compression-mode 1) ; automatically uncompress files when visiting
 (setq sort-fold-case t)   ; sorting functions should ignore case
 (progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
+(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 
 (setq calendar-week-start-day 1 european-calendar-style t)
 
@@ -306,10 +306,11 @@ asking user for confirmation."
 	 ps-always-build-face-reference t))
 
 (eval-after-load "htmlize" '(setq htmlize-output-type 'inline-css))
-(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 
 ;; insert at point regardless of where you click
 (setq mouse-yank-at-point t)
+
+(global-set-key [?\C-l] 'recenter) ; `recenter-top-bottom' is annoying
 
 (global-set-key (kbd "<f9> t") 'toggle-truncate-lines)
 (global-set-key (kbd "<f9> v") 'view-file)

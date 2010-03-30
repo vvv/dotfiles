@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 grep -q '^tap0=' /etc/network/run/ifstate || sudo ifup tap0
