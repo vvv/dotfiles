@@ -74,14 +74,15 @@ iface wlan0 inet static
 iface tap0 inet static
     address 192.168.2.1
     netmask 255.255.255.0
+#    netmask 255.255.255.252
     tunctl_user win
     pre-up modprobe tun
     up iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j MASQUERADE
     up echo 1 >/proc/sys/net/ipv4/ip_forward
-    post-up /etc/init.d/dhcp3-server restart
+#    post-up /etc/init.d/dhcp3-server restart
     post-up /etc/init.d/samba restart
     pre-down /etc/init.d/samba stop || true
-    pre-down /etc/init.d/dhcp3-server stop || true
+#    pre-down /etc/init.d/dhcp3-server stop || true
     down echo 0 >/proc/sys/net/ipv4/ip_forward || true
     down iptables -t nat -D POSTROUTING -s 192.168.2.0/24 -j MASQUERADE || true
 
