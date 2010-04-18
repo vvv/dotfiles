@@ -4,6 +4,7 @@ xscreensaver -no-splash &
 [ -f ~/.profile ] && . ~/.profile
 statusbar.sh &
 xterm -e 'reset; screen -DR' &
+DISPLAY=:0 synclient TapButton1=1
 xmonad
 
 [ "`hostname`" = 'hobbiton' ] || {

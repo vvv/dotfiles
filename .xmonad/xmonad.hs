@@ -21,7 +21,7 @@ import Control.Monad (ap)
 main :: IO ()
 main = do
   (mst, scr) <- measure "-misc-fixed-medium-r-*-*-18-*-*-*-*-*-*-*"
-  let tiled      = Tall 1 (2%100) (mst % scr) -- Tall <nmaster> <delta> <ratio>
+  let tiled = Tall 1 (2%100) (mst % scr) -- Tall <nmaster> <delta> <ratio>
       customKeys = (additionalKeys `ap` addKeys) . (removeKeys `ap` delKeys)
   xmonad $ customKeys $ defaultConfig
        { workspaces = ["1:emacs", "2:ssh", "3:web", "4:qemu"]
@@ -62,11 +62,14 @@ addKeys conf@(XConfig {modMask = modm}) =
     , ((modm,     xK_s     ), sendMessage ToggleStruts) -- mod1-s %! Toggle the status bar gap
     , ((modm .|. controlMask, xK_F1), spawn "mpc --no-status pause; xscreensaver-command -lock") -- %! Lock the screen
     , ((modm .|. controlMask, xK_F3), spawn "lsmod | grep -q psmouse && sudo rmmod psmouse || sudo modprobe psmouse") -- %! Toggle touchpad
+      -- http://wiki.debian.org/SynapticsTouchpad
     ]
     ++
-    [ ((mod1Mask, xK_F1), manPrompt   defaultXPConfig) -- mod1-f1 %! Query for manual page to be displayed
-    , ((mod1Mask, xK_F3), shellPrompt defaultXPConfig) -- mod1-f3 %! Query for command line to execute
-    , ((mod1Mask, xK_F4), sshPrompt   defaultXPConfig) -- mod1-f4 %! Query for host to connect to with SSH
+    [ ((mod1Mask, xK_F1), manPrompt   customXPConfig) -- mod1-f1 %! Query for manual page to be displayed
+    , ((mod1Mask, xK_F3), shellPrompt customXPConfig) -- mod1-f3 %! Query for command line to execute
+    , ((mod1Mask, xK_F4), prompt "xterm -e dict" customXPConfig) -- XXX
+    -- , ((mod1Mask, xK_F4), dictPrompt  customXPConfig) -- mod1-f4 %! Dictionary search (DICT)
+    , ((mod1Mask, xK_F5), sshPrompt   customXPConfig) -- mod1-f5 %! Query for host to connect to with SSH
 
     , ((modm, xK_0    ), toggleWS) -- mod-0 %! Toggle to the workspace displayed previously
     , ((modm, xK_quoteleft), toggleWS) -- mod-` %! Same as mod-0.
@@ -84,8 +87,8 @@ addKeys conf@(XConfig {modMask = modm}) =
                      ]
        ]
        ++
-       [ ((0,         xK_apostrophe), selectWorkspace defaultXPConfig) -- mod-a ' %! Prompt for a workspace number/name to switch to
-       , ((shiftMask, xK_a         ), renameWorkspace defaultXPConfig) -- mod-a A %! Allow the user to enter a name for the current workspace
+       [ ((0,         xK_apostrophe), selectWorkspace customXPConfig) -- mod-a ' %! Prompt for a workspace number/name to switch to
+       , ((shiftMask, xK_a         ), renameWorkspace customXPConfig) -- mod-a A %! Allow the user to enter a name for the current workspace
        , ((0,         xK_BackSpace ), removeWorkspace) -- mod-a backspace %! Destroy current workspace
        ]
        ++
@@ -98,3 +101,9 @@ addKeys conf@(XConfig {modMask = modm}) =
        ]
       )
     ]
+
+customXPConfig :: XPConfig
+customXPConfig = defaultXPConfig { historyFilter = ignoredups }
+  where
+    ignoredups (x':x:xs) | x' == x = ignoredups (x:xs)
+    ignoredups xs = xs

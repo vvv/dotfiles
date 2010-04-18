@@ -90,8 +90,8 @@ all yubnub commands."
 ;;; --------------------------------------------------------------------
 ;;; mail
 
-(global-set-key (kbd "<f12> <f12>") 'gnus) ; see also ~/.gnus.el
-(global-set-key (kbd "<f12> m") 'gnus-group-mail)
+(global-set-key (kbd "<f11> <f11>") 'gnus) ; see also ~/.gnus.el
+(global-set-key (kbd "<f11> m") 'gnus-group-mail)
 (global-set-key (kbd "<f9> bb") 'bbdb)
 (global-set-key (kbd "<f9> bc") 'bbdb-create)
 
@@ -240,7 +240,7 @@ asking user for confirmation."
       (fset 'color-theme-snapshot (color-theme-make-snapshot)))
     (color-theme-dark-laptop)))
 
-(global-set-key (kbd "<f9> n") 'toggle-night-color-theme)
+(global-set-key (kbd "<f12>") 'toggle-night-color-theme)
 ;;; --------------------------------------------------------------------
 
 ;; Haskell mode [http://haskell.org/haskellwiki/Haskell_mode_for_Emacs]
@@ -340,7 +340,6 @@ The result is equal to evaluating `(other-window -1)'."
 
 ;; I never miss `x-menu-bar-open' but often do F9 key.
 (global-set-key [f10] (key-binding [f9]))
-(global-set-key [f11] (key-binding [f9]))
 
 ;; Remove `suspend-frame' bindings (sometimes I hit `C-z' by mistake)
 (global-unset-key (kbd "C-z"))
