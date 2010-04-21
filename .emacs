@@ -90,8 +90,7 @@ all yubnub commands."
 ;;; --------------------------------------------------------------------
 ;;; mail
 
-(global-set-key (kbd "<f11> <f11>") 'gnus) ; see also ~/.gnus.el
-(global-set-key (kbd "<f11> m") 'gnus-group-mail)
+(global-set-key (kbd "<f8>") 'gnus) ; see also ~/.gnus.el
 (global-set-key (kbd "<f9> bb") 'bbdb)
 (global-set-key (kbd "<f9> bc") 'bbdb-create)
 
@@ -219,23 +218,19 @@ asking user for confirmation."
 ;;; --------------------------------------------------------------------
 ;;; color-theme
 
-;; `color-theme.el' bug workaround [XXX Is it still needed?]
-(eval-after-load "color-theme" (quote
-(defun color-theme-face-attr-construct (face frame)
-  (if (atom face)
-      (custom-face-attributes-get face frame)
-    (if (and (consp face) (eq (car face) 'quote))
-	(custom-face-attributes-get (cadr face) frame)
-      (custom-face-attributes-get (car face) frame))))
-))
+(defvar color-theme-library-was-loaded nil)
 
 (defun toggle-night-color-theme ()
   "Switch to/from night color scheme."
   (interactive)
-  (require 'color-theme)
+
+  (unless color-theme-library-was-loaded
+    (color-theme-initialize)
+    (setq color-theme-library-was-loaded t))
+
   (if (eq (frame-parameter (next-frame) 'background-mode) 'dark)
-      (color-theme-snapshot) ; restore default (light) colors
-    ;; create snapshot if necessary
+      (color-theme-snapshot) ; restore original color theme
+
     (when (not (commandp 'color-theme-snapshot))
       (fset 'color-theme-snapshot (color-theme-make-snapshot)))
     (color-theme-dark-laptop)))
@@ -349,4 +344,5 @@ The result is equal to evaluating `(other-window -1)'."
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
 
+(when (work-lan-p) (gnus))
 (ignore-errors (jabber-connect-all))
