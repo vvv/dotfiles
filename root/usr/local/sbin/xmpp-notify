@@ -2,7 +2,7 @@
 set -e
 
 # Time intervals for reporting: Monday to Friday, 9 AM to 8 PM.
-date +%u%t%k | grep -v '^[67]' | grep -qE '(0[7-9]|1.)$' || exit
+date +%u%t%H | grep -v '^[67]' | grep -qE '(0[7-9]|1.)$' || exit
 
 if [ "$1" = 'ip' ]; then
     ip="$(GET -t30 http://checkip.dyndns.com:8245/ | sed -e 's/^.*: //' -e 's/<.*$//')" || exit 1

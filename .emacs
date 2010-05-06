@@ -81,7 +81,8 @@ all yubnub commands."
   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?л])) 'kill-buffer)
   (global-set-key (apply 'vector (mapcar convert [?\C-\M-з])) 'backward-list)
   (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list)
-  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer))
+  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer)
+  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?щ])) 'other-window))
 ;; ^ http://community.livejournal.com/ru_emacs/20743.html#3
 ;; XXX See also:
 ;;   * `ps-mule-encode-ucs2' function definition.

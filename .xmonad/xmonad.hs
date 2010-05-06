@@ -67,9 +67,9 @@ addKeys conf@(XConfig {modMask = modm}) =
     ++
     [ ((mod1Mask, xK_F1), manPrompt   customXPConfig) -- mod1-f1 %! Query for manual page to be displayed
     , ((mod1Mask, xK_F3), shellPrompt customXPConfig) -- mod1-f3 %! Query for command line to execute
-    , ((mod1Mask, xK_F4), prompt "xterm -e dict" customXPConfig) -- XXX
-    -- , ((mod1Mask, xK_F4), dictPrompt  customXPConfig) -- mod1-f4 %! Dictionary search (DICT)
-    , ((mod1Mask, xK_F5), sshPrompt   customXPConfig) -- mod1-f5 %! Query for host to connect to with SSH
+    , ((mod1Mask, xK_F4), sshPrompt   customXPConfig) -- mod1-f4 %! Query for host to connect to with SSH
+    , ((mod1Mask, xK_F5), prompt "xterm -e dict" customXPConfig) -- XXX
+    -- , ((mod1Mask, xK_F5), dictPrompt  customXPConfig) -- mod1-f5 %! Dictionary search (DICT)
 
     , ((modm, xK_0    ), toggleWS) -- mod-0 %! Toggle to the workspace displayed previously
     , ((modm, xK_quoteleft), toggleWS) -- mod-` %! Same as mod-0.
