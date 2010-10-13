@@ -15,9 +15,8 @@
 ;;; --------------------------------------------------------------------
 ;;; internet
 
-;; Opera browser
 (setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "opera")
+      browse-url-generic-program "iceweasel")
 (global-set-key (kbd "<f9> ww") 'browse-url)
 
 ;; w3m browser
@@ -127,26 +126,27 @@ all yubnub commands."
 	     "-- Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
   (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature)
 
-  (defun mts-search (word)
-    "Search MTS address book for a given word.
+;;   (defun mts-search (word)
+;;     "Search MTS address book for a given word.
 
-XXX [FIXME] Depends on custom Opera search: `mts' should be available.
-All we need is just to send HTTP POST request."
-    (interactive
-     (list (let ((default (current-word t)))
-	     (read-string (concat "Search MTS for"
-				  (when default (format " (%s)" default))
-				  ": ")
-			  nil nil default))))
-    (browse-url (concat "mts " word)))
-  (global-set-key (kbd "<f9> m") 'mts-search))
+;; XXX [FIXME] Depends on custom Opera search: `mts' should be available.
+;; All we need is just to send HTTP POST request."
+;;     (interactive
+;;      (list (let ((default (current-word t)))
+;; 	     (read-string (concat "Search MTS for"
+;; 				  (when default (format " (%s)" default))
+;; 				  ": ")
+;; 			  nil nil default))))
+;;     (browse-url (concat "mts " word)))
+;;   (global-set-key (kbd "<f9> m") 'mts-search)
+  )
 
 ;;; --------------------------------------------------------------------
 ;;; jabber
 
 (eval-after-load "jabber"
   '(progn
-     (setq tls-program '("openssl s_client -connect %h:%p -no_ssl2 -no_ticket"))
+     (setq tls-program '("openssl s_client -connect %h:%p -no_ssl2 -ign_eof"))
 
      (setq jabber-account-list
 	   (list
@@ -245,7 +245,9 @@ asking user for confirmation."
     (load (concat dir "/haskell-site-file"))
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
     (eval-after-load "haskell-mode"
-      '(global-set-key (kbd "<f9> h") 'haskell-hoogle))))
+      '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
+    (eval-after-load "haskell-indentation"
+      '(setq haskell-indentation-left-offset 4))))
 
 ;; dictionary-el
 (global-set-key (kbd "<f9> d") 'dictionary-search)
@@ -345,5 +347,4 @@ The result is equal to evaluating `(other-window -1)'."
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
 
-(when (work-lan-p) (gnus))
 (ignore-errors (jabber-connect-all))

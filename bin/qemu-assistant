@@ -21,7 +21,7 @@ start () {
 		&>~/.qemu-errors &
 	}
 
-	start=$(_time); stop=$(( $start + 105 )) # see `~/.qemu-nic-timings'
+	start=$(_time); stop=$(( $start + 100 )) # see `~/.qemu-nic-timings'
 	until _rdp; do echo "$(_time) $start $stop"; done | dzen2-dbar | dzen2
  	echo $(( $(_time) - $start )) >>~/.qemu-nic-timings
     fi

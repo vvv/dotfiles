@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+[ $# -eq 0 -o $# -gt 2 ] && {
+    echo "Usage: ${0##*/} SRC [DEST]" >&2
+    echo "Example: ${0##*/} ~/music/Joy\ Division/Still joydiv-still" >&2
+    exit 1
+}
+
+SRC="${1%%/}"
+DEST="${2%%/}"
+[ -z "$DEST" ] && DEST="$SRC"
+DEST="${DEST##*/}"
+MNT='/mnt/winstick'
+
+rsync -avx "$SRC"/*.mp3 "${MNT}/d/$DEST"
+fat16dir.py /dev/sdb1 "d/$DEST" | cut -d' ' -f2 | topla.py \
+    >"${MNT}/mobile/audio/playlists/${DEST}.pla"

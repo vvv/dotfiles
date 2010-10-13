@@ -1,0 +1,10 @@
+#!/bin/sh
+
+CMD='openssl asn1parse -inform DER -i'
+
+if [ "$1" = '-x' ]; then
+    shift
+    $CMD "$@" | awk -F: -vOFS=: '$1 = sprintf("x%02x", $1)'
+else
+    $CMD "$@"
+fi

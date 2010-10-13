@@ -36,7 +36,7 @@ iface lo inet loopback
     up iptables -A INPUT -i tap+ -j QNIC
     up iptables -A INPUT -i eth+ -s 192.168.1.0/24 -j LAN
     up iptables -t nat -A PREROUTING -i eth+ -p tcp --dport https \
-      -j REDIRECT --to-ports ssh
+      -j REDIRECT --to-ports 22
     up iptables -A INPUT -i eth+ -j INET
     up iptables -P INPUT DROP
     up iptables -A FORWARD -i tap+ -j ACCEPT

@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 [ $# -eq 1 ] || { echo "usage: ${0##*/} FILE" >&2; exit 1; }
