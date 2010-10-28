@@ -98,8 +98,7 @@ all yubnub commands."
 (setq bbdb-completion-display-record nil)
 
 (setq sendmail-program "/usr/bin/msmtp"
-      message-sendmail-f-is-evil nil mail-specify-envelope-from t
-      user-mail-address (base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
+      message-sendmail-f-is-evil nil mail-specify-envelope-from t)
 
 ;;; --------------------------------------------------------------------
 ;;; Dayjob-specific stuff
@@ -111,8 +110,6 @@ all yubnub commands."
       (zerop (call-process fn)))))
 
 (when (work-lan-p)
-  (setq user-mail-address (base64-decode-string "dnZ2QG10cy5jb20udWE="))
-
   (defun insert-dayjob-tag ()
     "Insert fashioned CVS tag (e.g., \"TESTING_17_JUL_2008\")."
     (interactive)
@@ -124,22 +121,7 @@ all yubnub commands."
     (interactive)
     (insert (format-time-string
 	     "-- Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
-  (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature)
-
-;;   (defun mts-search (word)
-;;     "Search MTS address book for a given word.
-
-;; XXX [FIXME] Depends on custom Opera search: `mts' should be available.
-;; All we need is just to send HTTP POST request."
-;;     (interactive
-;;      (list (let ((default (current-word t)))
-;; 	     (read-string (concat "Search MTS for"
-;; 				  (when default (format " (%s)" default))
-;; 				  ": ")
-;; 			  nil nil default))))
-;;     (browse-url (concat "mts " word)))
-;;   (global-set-key (kbd "<f9> m") 'mts-search)
-  )
+  (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature))
 
 ;;; --------------------------------------------------------------------
 ;;; jabber
@@ -148,14 +130,6 @@ all yubnub commands."
   '(progn
      (setq tls-program '("openssl s_client -connect %h:%p -no_ssl2 -ign_eof"))
 
-     (setq jabber-account-list
-	   (list
-	    (append `(,(base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ==")
-		      (:connection-type . ssl))
-		    (if (work-lan-p)
-			'((:network-server . "127.0.0.1") (:port . 12345))
-		      '((:network-server . "talk.google.com"))))))
-
      ;; auto-away
      (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
      (eval-after-load "jabber-autoaway"
@@ -163,14 +137,7 @@ all yubnub commands."
 	      (cond ((getenv "DISPLAY") 'jabber-xprintidle-get-idle-time)
 		    ((null window-system) 'jabber-termatime-get-idle-time))))
 
-     ;; Gmail
-     (add-hook 'jabber-post-connect-hooks 'jabber-gmail-subscribe)
-     (global-set-key (kbd "<f9> g") 'jabber-gmail-query)
-     (eval-after-load "jabber-gmail"
-       '(defun jabber-gmail-dothreads (threads)
-	  (osd "gmail: %d" (length threads))))
-
-     ;; on-screen notifications
+     ;; on-screen alerts
      (add-hook 'jabber-alert-message-hooks
 	       (defun jabber-message-osd (from buffer text proposed-alert)
 		 (osd (jabber-activity-make-string-default from))))
@@ -181,10 +148,12 @@ all yubnub commands."
 	 (osd (jabber-activity-make-string-default group))))
      (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
 
-     ;; groupchat
-     (setq jabber-muc-default-nicknames
-	   `((,(base64-decode-string "dGVhcEBjb25mZXJlbmNlLmphYmJlci5vcmcuYnk=")
-	      . "vvv")))
+     ;; Gmail notifications
+     (add-hook 'jabber-post-connect-hooks 'jabber-gmail-subscribe)
+     (eval-after-load "jabber-gmail"
+       '(defun jabber-gmail-dothreads (threads)
+	  (osd "gmail: %d" (length threads))))
+     (global-set-key (kbd "<f9> g") 'jabber-gmail-query)
 
      ;; misc.
      (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
@@ -338,6 +307,7 @@ The result is equal to evaluating `(other-window -1)'."
 
 ;; I never miss `x-menu-bar-open' but often do F9 key.
 (global-set-key [f10] (key-binding [f9]))
+(global-set-key [f11] (key-binding [f9]))
 
 ;; Remove `suspend-frame' bindings (sometimes I hit `C-z' by mistake)
 (global-unset-key (kbd "C-z"))
@@ -347,4 +317,18 @@ The result is equal to evaluating `(other-window -1)'."
 ;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
 
+;;; Reset email address and jabber server name. Useful when changing LANs.
+(defadvice jabber-connect-all (before reset-addresses first
+				      (&optional arg) activate)
+  (let ((p (work-lan-p)))
+    (setq user-mail-address
+	  (base64-decode-string (if p "dnZ2QG10cy5jb20udWE="
+				  "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
+	  jabber-account-list
+	  (list
+	   (append `(,(base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ==")
+		     (:connection-type . ssl))
+		   (if p
+		       '((:network-server . "127.0.0.1") (:port . 12345))
+		     '((:network-server . "talk.google.com"))))))))
 (ignore-errors (jabber-connect-all))
