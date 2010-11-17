@@ -152,7 +152,7 @@ all yubnub commands."
      (add-hook 'jabber-post-connect-hooks 'jabber-gmail-subscribe)
      (eval-after-load "jabber-gmail"
        '(defun jabber-gmail-dothreads (threads)
-	  (osd "gmail: %d" (length threads))))
+	  (osd (message "gmail: %d" (length threads)))))
      (global-set-key (kbd "<f9> g") 'jabber-gmail-query)
 
      ;; misc.
