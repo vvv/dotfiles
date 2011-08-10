@@ -32,7 +32,7 @@ while (<>) {
     $prev_time = $t;
 }
 
-die "LogT must not end with \"stop\" (.)" if ($stopped);
+die "LogT must not end with \"stop\" (.)\n" if ($stopped);
 
 sub show_time($$) {
     my $s = shift;
