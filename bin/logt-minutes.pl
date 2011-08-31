@@ -20,7 +20,7 @@ while (<>) {
 	#           1       2      3      4      5      6       7     8
 	(/^(?:\w+ )?(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)> ([io])( .*)?$/);
 
-    my $t = timelocal($6, $5, $4, $3, $2, $1);
+    my $t = timelocal($6, $5, $4, $3, int($2) - 1, $1);
     die "Line $.: Timestamp is out of order\n"
 	if $prev_time != 0 && $t >= $prev_time;
     die "Impossible happened" if $t == 0;
