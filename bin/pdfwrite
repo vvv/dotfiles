@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+for f in "$@"; do
+	# check the file extension
+	[ "${f%.ps}" = "$f" ] && {
+		echo "\`.ps' file extension expected: $f" >&2
+		exit 1
+	}
+
+	g="${f%s}df"
+	[ -f "$g" ] && {
+		read -p "overwrite $g? "
+		case $REPLY in
+			[yt1]|yes) ;;
+			*) continue;;
+		esac
+	}
+
+	gs -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile="$g" -q -dBATCH "$f"
+done
