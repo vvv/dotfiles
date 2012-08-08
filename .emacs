@@ -105,6 +105,10 @@ asking user for confirmation."
   (insert (format-time-string "%a %Y-%m-%d %T> ")))
 (global-set-key (kbd "C-c l") 'insert-logt-entry)
 
+(define-key help-map "A" 'apropos-variable)
+
+(setq vc-follow-symlinks t)
+
 ;XXX; ;;; --------------------------------------------------------------------
 ;XXX; ;;; Aquamacs settings
 ;XXX;
@@ -161,8 +165,6 @@ asking user for confirmation."
 ;XXX; ;;   * (info "(elisp)Translation Keymaps")
 
 ;XXX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;XXX; (define-key help-map "A" 'apropos-variable)
-;XXX; (setq vc-follow-symlinks t)
 ;XXX; (global-set-key (kbd "<f9> t") 'toggle-truncate-lines)
 ;XXX; (global-set-key (kbd "<f9> v") 'view-file)
 ;XXX; (setq sort-fold-case t)   ; sorting functions should ignore case
