@@ -1,167 +1,46 @@
 ;;; -*- coding: utf-8-unix -*-
 
+(server-start)
+
 (setq inhibit-startup-message t) ; don't show startup screen
 
-;; Remove toolbar, scrollbar, and menu bar
-;; (see http://www.cabochon.com/~stevey/blog-rants/effective-emacs.html)
+;;; Remove toolbar, scrollbar, and menu bar
+;;; (see http://www.cabochon.com/~stevey/blog-rants/effective-emacs.html)
 (dolist (f '(menu-bar-mode scroll-bar-mode tool-bar-mode)) (funcall f -1))
 
-;; Allow this Emacs process to be a server for client processes
-(autoload 'gnuserv-start "gnuserv-compat" nil t)
-(gnuserv-start)
-(setq gnuserv-frame t)
-; XXX TODO switch to emacsclient
+;; (setq visible-bell t) ; flash a frame instead of beeping
 
-;;; --------------------------------------------------------------------
-;;; internet
+(transient-mark-mode t) ; highlight marked region
+(progn
+  (iswitchb-mode t) ; enable switching between buffers using substrings
+  (setq iswitchb-prompt-newbuffer nil)) ; create a buffer silently
+(icomplete-mode t) ; enable incremental minibuffer completion
+(progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "iceweasel")
-(global-set-key (kbd "<f9> ww") 'browse-url)
+(setq backup-directory-alist '((".*" . "~/.backups"))) ; backups location
+(setq require-final-newline t default-indicate-empty-lines t)
+(put 'narrow-to-region 'disabled nil)
 
-;; w3m browser
-(setq w3m-use-cookies t)
-(global-set-key (kbd "<f9> w3") 'w3m-browse-url)
-(global-set-key (kbd "<f9> wf") 'w3m-find-file)
-(global-set-key (kbd "<f9> wi") 'w3m-view-image)
+(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
+(setq enable-local-variables :safe)
 
-;; IRC server to use (see http://www.haskell.org/haskellwiki/IRC_channel)
-(setq erc-server "chat.freenode.net")
+(when (file-readable-p "/opt/local/share/gtags/gtags.el")
+  (autoload 'gtags-mode "/opt/local/share/gtags/gtags.el" nil t)
+  (setq gtags-suggested-key-mapping t gtags-pop-delete t)
+  (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
+  ;; Don't let gtags overwrite some key sequences.
+  (eval-after-load "gtags"
+    '(progn
+       (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
+       (define-key gtags-mode-map "\C-t" nil)))) ; `transpose-chars'
 
-(defun yubnub (command)
-  "Uses `browse-url' to submit a command to yubnub and opens result
-in an external browser defined in `browse-url-browser-function'.
-
-To get started  `M-x yubnub <RET> ls <RET>' will return a list of
-all yubnub commands."
-  (interactive "syubnub command: ")
-  (browse-url
-   (concat "http://yubnub.org/parser/parse?command=" command)))
-(global-set-key (kbd "<f9> y") 'yubnub)
-
-;;; --------------------------------------------------------------------
-;;; On-Screen Display alerts
-
-(if (and (display-graphic-p) (file-executable-p "/usr/bin/osd_cat"))
-    (defun osd (fmt &rest args)
-      "Display message on X screen."
-      (let ((opts "-p bottom -A center -l 1 \
--f '-adobe-helvetica-bold-r-*-*-24-*-*-*-*-*-iso10646-1'")
-            (msg (apply 'format (concat fmt "\n") args)))
-        (start-process "osd" nil shell-file-name shell-command-switch
-                       (format "echo %s | osd_cat %s"
-                               (shell-quote-argument msg) opts))))
-  (defalias 'osd 'message))
-
-;;; --------------------------------------------------------------------
-;;; Cyrillic key bindings
-
-(let ((convert (if (>= emacs-major-version 23)
-		   (lambda (c) c)  ; no conversion
-		 (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
-				(make-char 'cyrillic-iso8859-5))))))
-  (mapc
-   (lambda (pair)
-     (global-set-key
-      (vector (funcall convert (car pair))) (cdr pair)))
-   '((?\C-а . forward-char)  (?\M-а . forward-word)
-     (?\C-и . backward-char) (?\M-и . backward-word)
-     (?\C-т . next-line)     (?\C-з . previous-line)
-     (?\C-в . delete-char)   (?\M-в . kill-word)
-     (?\C-ф . move-beginning-of-line) (?\C-у . move-end-of-line)
-     (?\C-о . newline-and-indent)     (?\C-щ . open-line)
-     (?\C-ц . kill-region)     (?\M-ц . kill-ring-save) (?\C-н . yank)
-     (?\M-с . capitalize-word) (?\M-г . upcase-word) (?\M-д . downcase-word)
-     (?\M-Б . beginning-of-buffer) (?\M-Ю . end-of-buffer)
-     (?\C-ы . isearch-forward) (?\C-к . isearch-backward)
-     (?\M-й . fill-paragraph)  (?\C-л . kill-line) (?\M-я . zap-to-char)
-     (?\C-е . transpose-chars) (?\M-е . transpose-words)
-     (?\C-п . keyboard-quit)   (?\C-д . recenter)))
-  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?л])) 'kill-buffer)
-  (global-set-key (apply 'vector (mapcar convert [?\C-\M-з])) 'backward-list)
-  (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list)
-  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer)
-  (global-set-key (apply 'vector (mapcar convert [?\C-ч ?щ])) 'other-window))
-;; ^ http://community.livejournal.com/ru_emacs/20743.html#3
-;; XXX See also:
-;;   * `ps-mule-encode-ucs2' function definition.
-;;   * (info "(elisp)Translation Keymaps")
-
-;;; --------------------------------------------------------------------
-;;; mail
-
-(global-set-key (kbd "<f8>") 'gnus) ; see also ~/.gnus.el
-(global-set-key (kbd "<f9> bb") 'bbdb)
-(global-set-key (kbd "<f9> bc") 'bbdb-create)
-
-;; Don't pop-up *BBDB* buffer when completing.
-(setq bbdb-completion-display-record nil)
-
-(setq sendmail-program "/usr/bin/msmtp"
-      message-sendmail-f-is-evil nil mail-specify-envelope-from t)
-
-;;; --------------------------------------------------------------------
-;;; Dayjob-specific stuff
-
-(defun work-lan-p ()
-  (let ((fn "/usr/local/bin/work-lan-p.sh"))
-    (when (file-exists-p fn)
-      ;; netstat -rn | grep -qE '^(0\.){3}0 +192\.168\.1\.1 '
-      (zerop (call-process fn)))))
-
-(when (work-lan-p)
-  (defun insert-dayjob-tag ()
-    "Insert fashioned CVS tag (e.g., \"TESTING_17_JUL_2008\")."
-    (interactive)
-    (insert (upcase (format-time-string "TESTING_%d_%b_%Y"))))
-  (global-set-key (kbd "<f9> wt") 'insert-dayjob-tag)
-
-  (defun insert-dayjob-signature ()
-    "Insert NEWS files' signature."
-    (interactive)
-    (insert (format-time-string
-	     "-- Valery V. Vorotyntsev <vvv>  %a, %d %b %Y %T %z\n")))
-  (global-set-key (kbd "<f9> ws") 'insert-dayjob-signature))
-
-;;; --------------------------------------------------------------------
-;;; jabber
-
-(eval-after-load "jabber"
-  '(progn
-     (setq tls-program '("openssl s_client -connect %h:%p -no_ssl2 -ign_eof"))
-
-     ;; auto-away
-     (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start)
-     (eval-after-load "jabber-autoaway"
-       '(setq jabber-autoaway-method
-	      (cond ((getenv "DISPLAY") 'jabber-xprintidle-get-idle-time)
-		    ((null window-system) 'jabber-termatime-get-idle-time))))
-
-     ;; on-screen alerts
-     (add-hook 'jabber-alert-message-hooks
-	       (defun jabber-message-osd (from buffer text proposed-alert)
-		 (osd (jabber-activity-make-string-default from))))
-     (defun jabber-muc-osd (nick group buffer text proposed-alert)
-       (when (or jabber-muc-alert-self
-		 (not (string= nick
-			       (cdr (assoc group *jabber-active-groupchats*)))))
-	 (osd (jabber-activity-make-string-default group))))
-     (add-hook 'jabber-alert-muc-hooks 'jabber-muc-osd)
-
-     ;; Gmail notifications
-     (add-hook 'jabber-post-connect-hooks 'jabber-gmail-subscribe)
-     (eval-after-load "jabber-gmail"
-       '(defun jabber-gmail-dothreads (threads)
-	  (osd (message "gmail: %d" (length threads)))))
-     (global-set-key (kbd "<f9> g") 'jabber-gmail-query)
-
-     ;; misc.
-     (remove-hook 'jabber-alert-presence-hooks 'jabber-presence-echo) ; quiet!
-     (setq jabber-vcard-avatars-retrieve nil
-	   jabber-history-enabled t jabber-use-global-history nil
-	   jabber-roster-show-bindings nil jabber-show-offline-contacts nil
-	   jabber-roster-line-format " %a %c %-25n %u %-8s")
-     (add-hook 'jabber-post-connect-hooks 'jabber-keepalive-start)))
+(defun copy-buffer-as-kill ()
+  "Save the buffer as if killed, but don't kill it."
+  (interactive)
+  (kill-new (filter-buffer-substring (point-min) (point-max)))
+  (when (interactive-p)
+    (message "Buffer saved")))
+(global-set-key "\M-W" 'copy-buffer-as-kill)
 
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
@@ -181,154 +60,123 @@ asking user for confirmation."
 				 (buffer-name))))
       (delete-trailing-whitespace))))
 (add-hook 'before-save-hook 'delete-trailing-whitespace-if-confirmed)
-(global-set-key (kbd "<f9> s") 'delete-trailing-whitespace)
 
-(setq default-indicate-empty-lines t require-final-newline t)
+(global-set-key (kbd "C-c t") 'toggle-truncate-lines)
+(global-set-key (kbd "C-c w") 'whitespace-mode)
 
-;;; --------------------------------------------------------------------
-;;; color-theme
-
-(defvar color-theme-library-was-loaded nil)
-
-(defun toggle-night-color-theme ()
-  "Switch to/from night color scheme."
-  (interactive)
-
-  (unless color-theme-library-was-loaded
-    (color-theme-initialize)
-    (setq color-theme-library-was-loaded t))
-
-  (if (eq (frame-parameter (next-frame) 'background-mode) 'dark)
-      (color-theme-snapshot) ; restore original color theme
-
-    (when (not (commandp 'color-theme-snapshot))
-      (fset 'color-theme-snapshot (color-theme-make-snapshot)))
-    (color-theme-dark-laptop)))
-
-(global-set-key (kbd "<f12>") 'toggle-night-color-theme)
-;;; --------------------------------------------------------------------
-
-;; Haskell mode [http://haskell.org/haskellwiki/Haskell_mode_for_Emacs]
-(let ((dir "~/lib/emacs/haskell-mode"))
-  (when (file-accessible-directory-p dir)
-    (load (concat dir "/haskell-site-file"))
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-    (eval-after-load "haskell-mode"
-      '(global-set-key (kbd "<f9> h") 'haskell-hoogle))
-    (eval-after-load "haskell-indentation"
-      '(setq haskell-indentation-left-offset 4))))
-
-;; dictionary-el
-(global-set-key (kbd "<f9> d") 'dictionary-search)
-(eval-after-load "dictionary"
-  '(progn (setq dictionary-server "localhost")
-	  (define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
-
-;; spell check
-(setq ispell-program-name "aspell")
-(global-set-key (kbd "<f9> ib") 'ispell-buffer)
-(global-set-key (kbd "<f9> ir") 'ispell-region)
-
-;; [m4-mode] make `#' an ordinary character, not a comment starter
-(eval-after-load "m4-mode"
-  '(progn
-     (modify-syntax-entry ?#  "." m4-mode-syntax-table)
-     (modify-syntax-entry ?\n " " m4-mode-syntax-table)
-     (add-hook 'm4-mode-hook
-	       (lambda () (kill-local-variable 'comment-start)))))
+(global-set-key (kbd "C-c v f") 'view-file)
+(global-set-key (kbd "C-c v m") 'view-mode)
+;; don't let gtags overwrite `C-c v'
+(eval-after-load "gtags" '(define-key gtags-mode-map "\C-cv" nil))
 
 (autoload 'work-log-mode "~/lib/emacs/work-log/work-log.el" nil t)
 
-;;; --------------------------------------------------------------------
-;;; miscellaneous settings
+;;; Org Mode
+(eval-after-load "org"
+  '(setq org-hide-leading-stars t
+	 ;; SEE ALSO http://doc.norang.ca/org-mode.html#sec-16-7
+	 org-odd-levels-only t))
 
-(setq backup-directory-alist '((".*" . "~/.backups"))) ; backups location
+;;; Spell check
+(global-set-key (kbd "C-c ib") 'ispell-buffer)
+(global-set-key (kbd "C-c ir") 'ispell-region)
+;XXX; (add-hook 'c-mode-hook 'flyspell-prog-mode)
 
-(iswitchb-mode)  ; enable switching between buffers using substrings
-(setq iswitchb-prompt-newbuffer nil) ; be quiet
-(icomplete-mode) ; enable incremental minibuffer completion
-
-(global-font-lock-mode t) ; enable syntax highlighting
-(transient-mark-mode t)   ; highlight marked region
-(mouse-wheel-mode t)
-(auto-compression-mode 1) ; automatically uncompress files when visiting
-(setq sort-fold-case t)   ; sorting functions should ignore case
-(progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
-(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
-
-(setq calendar-week-start-day 1 european-calendar-style t)
+;;; Dictionary
+;; (try `M-x dictionary-match-words')
+(when (file-accessible-directory-p "~/lib/emacs/dictionary/")
+  (setq load-path (cons "~/lib/emacs/dictionary" load-path))
+  (autoload 'dictionary-search "dictionary" nil t)
+  (global-set-key (kbd "C-c d") 'dictionary-search)
+  (eval-after-load "dictionary"
+    '(define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
 
 (eval-after-load "ps-print"
   '(setq ps-paper-type 'a4
 	 ps-print-header nil
-	 ps-multibyte-buffer 'bdf-font-except-latin
+	 ps-multibyte-buffer 'bdf-font-except-latin))
 
-	 ;; Postscript pages have pale colors when printed from
-	 ;; "night" color theme (see `toggle-night-color-theme').
-	 ;;
-	 ;; Setting `ps-always-build-face-reference' to non-nil makes
-	 ;; it possible to restore "day" color theme and print
-	 ;; Postscript nice and visible colors.  (Otherwise the pale
-	 ;; colors remain "cached".)
-	 ps-always-build-face-reference t))
-
-(eval-after-load "htmlize" '(setq htmlize-output-type 'inline-css))
-
-;; insert at point regardless of where you click
-(setq mouse-yank-at-point t)
-
-(global-set-key [?\C-l] 'recenter) ; `recenter-top-bottom' is annoying
-
-(global-set-key (kbd "<f9> t") 'toggle-truncate-lines)
-(global-set-key (kbd "<f9> v") 'view-file)
-
-(define-key help-map "A" 'apropos-variable)
-
-(defun other-window-back ()
-  "Select previous window on this frame.
-The result is equal to evaluating `(other-window -1)'."
+(defun insert-logt-entry ()
+  "Append new entry to ~/.logt file."
   (interactive)
-  (other-window -1))
-(define-key ctl-x-map "O" 'other-window-back)
+  (find-file "~/.logt")
+  (goto-char (point-min))
+  (open-line 1)
+  (insert (format-time-string "%a %Y-%m-%d %T> ")))
+(global-set-key (kbd "C-c l") 'insert-logt-entry)
 
-(defun copy-buffer-as-kill ()
-  "Save the buffer as if killed, but don't kill it."
-  (interactive)
-  (kill-new (filter-buffer-substring (point-min) (point-max)))
-  (when (interactive-p)
-    (message "Buffer saved")))
-(global-set-key "\M-W" 'copy-buffer-as-kill)
+;XXX; ;;; --------------------------------------------------------------------
+;XXX; ;;; Aquamacs settings
+;XXX;
+;XXX; (eval-after-load "aquamacs"
+;XXX;   '(progn (setq aquamacs-scratch-file nil)   ; don't restore *scratch*
+;XXX; 	  (setq special-display-regexps nil) ; don't "pop-up" buffers
+;XXX; 	  (aquamacs-autoface-mode -1)        ; no mode-specific faces
+;XXX; 	  (setq inhibit-startup-echo-area-message t)
+;XXX; 	  ;; don't highlight matching parentheses
+;XXX; 	  (show-paren-mode -1)
+;XXX; 	  ;; show modeline in Monaco
+;XXX; 	  (set-face-attribute 'mode-line nil :inherit 'unspecified)
+;XXX; 	  ;; show echo area in Monaco
+;XXX; 	  (set-face-attribute 'echo-area nil :family 'unspecified)))
+;XXX;
+;XXX; ;; Disable saving file places
+;XXX; (eval-after-load "saveplace"
+;XXX;   '(progn (remove-hook 'find-file-hook 'save-place-find-file-hook)
+;XXX; 	  (remove-hook 'kill-emacs-hook 'save-place-kill-emacs-hook)
+;XXX; 	  (remove-hook 'kill-buffer-hook 'save-place-to-alist)))
+;XXX;
+;XXX; ;;; --------------------------------------------------------------------
+;XXX; ;;; Cyrillic key bindings
+;XXX;
+;XXX; (let ((convert (if (>= emacs-major-version 23)
+;XXX; 		   (lambda (c) c)  ; no conversion
+;XXX; 		 (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
+;XXX; 				(make-char 'cyrillic-iso8859-5))))))
+;XXX;   (mapc
+;XXX;    (lambda (pair)
+;XXX;      (global-set-key
+;XXX;       (vector (funcall convert (car pair))) (cdr pair)))
+;XXX;    '((?\C-а . forward-char)  (?\M-а . forward-word)
+;XXX;      (?\C-и . backward-char) (?\M-и . backward-word)
+;XXX;      (?\C-т . next-line)     (?\C-з . previous-line)
+;XXX;      (?\C-в . delete-char)   (?\M-в . kill-word)
+;XXX;      (?\C-ф . move-beginning-of-line) (?\C-у . move-end-of-line)
+;XXX;      (?\C-о . newline-and-indent)     (?\C-щ . open-line)
+;XXX;      (?\C-ц . kill-region)     (?\M-ц . kill-ring-save) (?\C-н . yank)
+;XXX;      (?\M-с . capitalize-word) (?\M-г . upcase-word) (?\M-д . downcase-word)
+;XXX;      (?\M-Б . beginning-of-buffer) (?\M-Ю . end-of-buffer)
+;XXX;      (?\C-ы . isearch-forward) (?\C-к . isearch-backward)
+;XXX;      (?\M-й . fill-paragraph)  (?\C-л . kill-line) (?\M-я . zap-to-char)
+;XXX;      (?\C-е . transpose-chars) (?\M-е . transpose-words)
+;XXX;      (?\C-п . keyboard-quit)   (?\C-д . recenter)))
+;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?л])) 'kill-buffer)
+;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-\M-з])) 'backward-list)
+;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list)
+;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer)
+;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?щ])) 'other-window))
+;XXX; ;; ^ http://community.livejournal.com/ru_emacs/20743.html#3
+;XXX; ;; XXX See also:
+;XXX; ;;   * `ps-mule-encode-ucs2' function definition.
+;XXX; ;;   * (info "(elisp)Translation Keymaps")
 
-(setq vc-follow-symlinks nil)
+;XXX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;XXX; (define-key help-map "A" 'apropos-variable)
+;XXX; (setq vc-follow-symlinks t)
+;XXX; (global-set-key (kbd "<f9> t") 'toggle-truncate-lines)
+;XXX; (global-set-key (kbd "<f9> v") 'view-file)
+;XXX; (setq sort-fold-case t)   ; sorting functions should ignore case
 
-;; enable some properties
-(dolist (s '(downcase-region narrow-to-region scroll-left upcase-region))
-  (put s 'disabled nil))
-
-;; I never miss `x-menu-bar-open' but often do F9 key.
-(global-set-key [f10] (key-binding [f9]))
-(global-set-key [f11] (key-binding [f9]))
-
-;; Remove `suspend-frame' bindings (sometimes I hit `C-z' by mistake)
-(global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-x C-z"))
-
-;; Set proper encoding for X buffer.
-;; (See <http://community.livejournal.com/ru_emacs/47287.html>.)
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT STRING TEXT))
-
-;;; Reset email address and jabber server name. Useful when changing LANs.
-(defadvice jabber-connect-all (before reset-addresses first
-				      (&optional arg) activate)
-  (let ((p (work-lan-p)))
-    (setq user-mail-address
-	  (base64-decode-string (if p "dnZ2QG10cy5jb20udWE="
-				  "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ=="))
-	  jabber-account-list
-	  (list
-	   (append `(,(base64-decode-string "dmFsZXJ5LnZ2QGdtYWlsLmNvbQ==")
-		     (:connection-type . ssl))
-		   (if p
-		       '((:network-server . "127.0.0.1") (:port . 12345))
-		     '((:network-server . "talk.google.com"))))))))
-(ignore-errors (jabber-connect-all))
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
+ '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control))))))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :foundry "apple" :family "Menlo")))))
