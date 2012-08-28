@@ -16,13 +16,13 @@ my $mnemonics = '';
 
 open(my $words, '<', '/usr/share/dict/words') or die;
 foreach (shuffle <$words>) {
-    next unless $_ =~ /^[a-fols]+$/i;
+    next unless $_ =~ /^[a-foils]+$/i;
     chomp;
     tr/A-Z/a-z/;  # convert to lower case
 
     unless ($auto_p) {
 	$mnemonics = $_;
-	tr/ols/015/;
+	tr/oils/0115/;
 	print length($_) . " $mnemonics $_\n";
 	next;
     }
@@ -30,7 +30,7 @@ foreach (shuffle <$words>) {
     $value .= $_;
     $mnemonics .= " $_";
     if (length $value >= 16) {
-	$value =~ tr/ols/015/;
+	$value =~ tr/oils/0115/;
 	print substr($value, 0, 16)
 	    . substr($mnemonics, 0, length($mnemonics) + 16 - length($value))
 	    . "\n";
