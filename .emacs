@@ -8,22 +8,26 @@
 ;;; (see http://www.cabochon.com/~stevey/blog-rants/effective-emacs.html)
 (dolist (f '(menu-bar-mode scroll-bar-mode tool-bar-mode)) (funcall f -1))
 
-;; (setq visible-bell t) ; flash a frame instead of beeping
-
 (transient-mark-mode t) ; highlight marked region
+
 (progn
   (iswitchb-mode t) ; enable switching between buffers using substrings
   (setq iswitchb-prompt-newbuffer nil)) ; create a buffer silently
-(icomplete-mode t) ; enable incremental minibuffer completion
+(icomplete-mode t)  ; enable incremental minibuffer completion
+
 (progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
 (setq backup-directory-alist '((".*" . "~/.backups"))) ; backups location
+
 (setq require-final-newline t default-indicate-empty-lines t)
+
 (put 'narrow-to-region 'disabled nil)
 
-(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 (setq enable-local-variables :safe)
 
+(setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
+
+;;; GNU global
 (when (file-readable-p "/opt/local/share/gtags/gtags.el")
   (autoload 'gtags-mode "/opt/local/share/gtags/gtags.el" nil t)
   (setq gtags-suggested-key-mapping t gtags-pop-delete t)
@@ -60,54 +64,54 @@ asking user for confirmation."
 				 (buffer-name))))
       (delete-trailing-whitespace))))
 (add-hook 'before-save-hook 'delete-trailing-whitespace-if-confirmed)
+;;; --------------------------------------------------------------------
 
 (global-set-key (kbd "C-c t") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c w") 'whitespace-mode)
 
 (global-set-key (kbd "C-c v f") 'view-file)
 (global-set-key (kbd "C-c v m") 'view-mode)
-;; don't let gtags overwrite `C-c v'
+;; Don't let gtags overwrite `C-c v'
 (eval-after-load "gtags" '(define-key gtags-mode-map "\C-cv" nil))
-
-(autoload 'work-log-mode "~/lib/emacs/work-log/work-log.el" nil t)
 
 ;;; Org Mode
 (eval-after-load "org"
-  '(setq org-hide-leading-stars t
-	 ;; SEE ALSO http://doc.norang.ca/org-mode.html#sec-16-7
-	 org-odd-levels-only t))
+  '(progn
+    (setq org-hide-leading-stars t
+	  ;; see http://doc.norang.ca/org-mode.html#HeadingLevelsOddEven
+	  org-odd-levels-only nil
+	  org-directory "~/.org"
+	  org-default-notes-file (concat org-directory "/refile.org")
+	  org-agenda-files '("~/life.org" "~/work.org" "~/work-overhead.org"))
+    (global-set-key "\C-cl" 'org-store-link)
+    (global-set-key "\C-cb" 'org-iswitchb)
+    (global-set-key "\C-ca" 'org-agenda)))
+(eval-after-load "org-clock"
+  '(progn
+     (setq org-clock-out-remove-zero-time-clocks t
+	   org-clock-into-drawer 2
+	   org-clock-persist 'history
+	   org-clock-idle-time 10)
+     (org-clock-persistence-insinuate)
+     (global-set-key "\C-cc" 'org-clock-goto)))
+(eval-after-load "org-archive"
+  '(org-defkey org-mode-map "\C-c\C-x\C-a"
+	       'org-archive-subtree-default-with-confirmation))
+(global-set-key (kbd "C-M-r") 'org-capture)
 
 ;;; Spell check
 (global-set-key (kbd "C-c ib") 'ispell-buffer)
 (global-set-key (kbd "C-c ir") 'ispell-region)
 ;XXX; (add-hook 'c-mode-hook 'flyspell-prog-mode)
 
-;;; Dictionary
-;; (try `M-x dictionary-match-words')
-(when (file-accessible-directory-p "~/lib/emacs/dictionary/")
-  (setq load-path (cons "~/lib/emacs/dictionary" load-path))
-  (autoload 'dictionary-search "dictionary" nil t)
-  (global-set-key (kbd "C-c d") 'dictionary-search)
-  (eval-after-load "dictionary"
-    '(define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
-
 (eval-after-load "ps-print"
   '(setq ps-paper-type 'a4
 	 ps-print-header nil
 	 ps-multibyte-buffer 'bdf-font-except-latin))
 
-(defun insert-logt-entry ()
-  "Append new entry to ~/.logt file."
-  (interactive)
-  (find-file "~/.logt")
-  (goto-char (point-min))
-  (open-line 1)
-  (insert (format-time-string "%a %Y-%m-%d %T> ")))
-(global-set-key (kbd "C-c l") 'insert-logt-entry)
+(setq vc-follow-symlinks t)
 
 (define-key help-map "A" 'apropos-variable)
-
-(setq vc-follow-symlinks t)
 
 ;XXX; ;;; --------------------------------------------------------------------
 ;XXX; ;;; Aquamacs settings
@@ -163,11 +167,30 @@ asking user for confirmation."
 ;XXX; ;; XXX See also:
 ;XXX; ;;   * `ps-mule-encode-ucs2' function definition.
 ;XXX; ;;   * (info "(elisp)Translation Keymaps")
-
-;XXX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;XXX; (global-set-key (kbd "<f9> t") 'toggle-truncate-lines)
-;XXX; (global-set-key (kbd "<f9> v") 'view-file)
+;XXX;
+;XXX; (defun insert-logt-entry ()
+;XXX;   "Append new entry to ~/.logt file."
+;XXX;   (interactive)
+;XXX;   (find-file "~/.logt")
+;XXX;   (goto-char (point-min))
+;XXX;   (open-line 1)
+;XXX;   (insert (format-time-string "%a %Y-%m-%d %T> ")))
+;XXX; (global-set-key (kbd "C-c l") 'insert-logt-entry)
+;XXX;
+;XXX; ;;; Dictionary
+;XXX; ;; (try `M-x dictionary-match-words')
+;XXX; (when (file-accessible-directory-p "~/lib/emacs/dictionary/")
+;XXX;   (setq load-path (cons "~/lib/emacs/dictionary" load-path))
+;XXX;   (autoload 'dictionary-search "dictionary" nil t)
+;XXX;   (global-set-key (kbd "C-c d") 'dictionary-search)
+;XXX;   (eval-after-load "dictionary"
+;XXX;     '(define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
+;XXX;
+;XXX; (autoload 'work-log-mode "~/lib/emacs/work-log/work-log.el" nil t)
+;XXX;
+;XXX; (setq visible-bell t) ; flash a frame instead of beeping
 ;XXX; (setq sort-fold-case t)   ; sorting functions should ignore case
+;XXX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -182,3 +205,4 @@ asking user for confirmation."
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :foundry "apple" :family "Menlo")))))
+(put 'scroll-left 'disabled nil)
