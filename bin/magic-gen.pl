@@ -13,6 +13,6 @@ foreach (shuffle <$words>) {
 
     my $mnemonics = $_;
     tr/oilsz/0115z/;
-    print length . " $mnemonics $_\n";
+    print length($_) . " $mnemonics $_\n";
 }
 close $words;
