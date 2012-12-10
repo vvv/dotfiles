@@ -113,6 +113,13 @@ asking user for confirmation."
 
 (define-key help-map "A" 'apropos-variable)
 
+;; I tend to `suspend-frame' accidentally.
+(global-unset-key "\C-z")
+
+;; `Cmd-q' (bound to `save-buffers-kill-emacs') is even more dangerous,
+;; as it is located near harmless `M-q' (`fill-paragraph').
+(global-unset-key (kbd "s-q"))
+
 ;XXX; ;;; --------------------------------------------------------------------
 ;XXX; ;;; Aquamacs settings
 ;XXX;
