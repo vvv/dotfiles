@@ -22,6 +22,7 @@
 (setq require-final-newline t default-indicate-empty-lines t)
 
 (put 'narrow-to-region 'disabled nil)
+(put 'scroll-left 'disabled nil)
 
 (setq enable-local-variables :safe)
 
@@ -70,9 +71,11 @@ asking user for confirmation."
 (global-set-key (kbd "C-c w") 'whitespace-mode)
 
 (global-set-key (kbd "C-c v f") 'view-file)
-(global-set-key (kbd "C-c v m") 'view-mode)
+(global-set-key (kbd "C-c v v") 'view-mode)
 ;; Don't let gtags overwrite `C-c v'
 (eval-after-load "gtags" '(define-key gtags-mode-map "\C-cv" nil))
+
+(setq calendar-week-start-day 1) ; weeks should begin on Monday
 
 ;;; Org Mode
 (eval-after-load "org"
@@ -82,7 +85,7 @@ asking user for confirmation."
 	  org-odd-levels-only nil
 	  org-directory "~/.org"
 	  org-default-notes-file (concat org-directory "/refile.org")
-	  org-agenda-files '("~/life.org" "~/work.org" "~/work-overhead.org"))
+	  org-agenda-files '("~/life.org" "~/work.org" "~/overhead.org"))
     (global-set-key "\C-cl" 'org-store-link)
     (global-set-key "\C-cb" 'org-iswitchb)
     (global-set-key "\C-ca" 'org-agenda)))
@@ -113,91 +116,15 @@ asking user for confirmation."
 
 (define-key help-map "A" 'apropos-variable)
 
-;; I tend to `suspend-frame' accidentally.
-(global-unset-key "\C-z")
+(progn ;; Unset unwelcome key bindings.
+  (global-unset-key (kbd "s-q"))  ; `save-buffers-kill-emacs'
+  (global-unset-key (kbd "s-w"))  ; `delete-frame'
+  (global-unset-key "\C-z")       ; `suspend-frame'
+  (global-unset-key (kbd "s-:"))  ; `ispell'
+  (global-unset-key (kbd "s-g"))  ; `isearch-repeat-forward'
+  (global-unset-key (kbd "s-z"))) ; `undo'
 
-;; `Cmd-q' (bound to `save-buffers-kill-emacs') is even more dangerous,
-;; as it is located near harmless `M-q' (`fill-paragraph').
-(global-unset-key (kbd "s-q"))
-
-;XXX; ;;; --------------------------------------------------------------------
-;XXX; ;;; Aquamacs settings
-;XXX;
-;XXX; (eval-after-load "aquamacs"
-;XXX;   '(progn (setq aquamacs-scratch-file nil)   ; don't restore *scratch*
-;XXX; 	  (setq special-display-regexps nil) ; don't "pop-up" buffers
-;XXX; 	  (aquamacs-autoface-mode -1)        ; no mode-specific faces
-;XXX; 	  (setq inhibit-startup-echo-area-message t)
-;XXX; 	  ;; don't highlight matching parentheses
-;XXX; 	  (show-paren-mode -1)
-;XXX; 	  ;; show modeline in Monaco
-;XXX; 	  (set-face-attribute 'mode-line nil :inherit 'unspecified)
-;XXX; 	  ;; show echo area in Monaco
-;XXX; 	  (set-face-attribute 'echo-area nil :family 'unspecified)))
-;XXX;
-;XXX; ;; Disable saving file places
-;XXX; (eval-after-load "saveplace"
-;XXX;   '(progn (remove-hook 'find-file-hook 'save-place-find-file-hook)
-;XXX; 	  (remove-hook 'kill-emacs-hook 'save-place-kill-emacs-hook)
-;XXX; 	  (remove-hook 'kill-buffer-hook 'save-place-to-alist)))
-;XXX;
-;XXX; ;;; --------------------------------------------------------------------
-;XXX; ;;; Cyrillic key bindings
-;XXX;
-;XXX; (let ((convert (if (>= emacs-major-version 23)
-;XXX; 		   (lambda (c) c)  ; no conversion
-;XXX; 		 (lambda (c) (+ (- c (make-char 'mule-unicode-0100-24ff 40))
-;XXX; 				(make-char 'cyrillic-iso8859-5))))))
-;XXX;   (mapc
-;XXX;    (lambda (pair)
-;XXX;      (global-set-key
-;XXX;       (vector (funcall convert (car pair))) (cdr pair)))
-;XXX;    '((?\C-а . forward-char)  (?\M-а . forward-word)
-;XXX;      (?\C-и . backward-char) (?\M-и . backward-word)
-;XXX;      (?\C-т . next-line)     (?\C-з . previous-line)
-;XXX;      (?\C-в . delete-char)   (?\M-в . kill-word)
-;XXX;      (?\C-ф . move-beginning-of-line) (?\C-у . move-end-of-line)
-;XXX;      (?\C-о . newline-and-indent)     (?\C-щ . open-line)
-;XXX;      (?\C-ц . kill-region)     (?\M-ц . kill-ring-save) (?\C-н . yank)
-;XXX;      (?\M-с . capitalize-word) (?\M-г . upcase-word) (?\M-д . downcase-word)
-;XXX;      (?\M-Б . beginning-of-buffer) (?\M-Ю . end-of-buffer)
-;XXX;      (?\C-ы . isearch-forward) (?\C-к . isearch-backward)
-;XXX;      (?\M-й . fill-paragraph)  (?\C-л . kill-line) (?\M-я . zap-to-char)
-;XXX;      (?\C-е . transpose-chars) (?\M-е . transpose-words)
-;XXX;      (?\C-п . keyboard-quit)   (?\C-д . recenter)))
-;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?л])) 'kill-buffer)
-;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-\M-з])) 'backward-list)
-;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-\M-т])) 'forward-list)
-;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?\C-ы])) 'save-buffer)
-;XXX;   (global-set-key (apply 'vector (mapcar convert [?\C-ч ?щ])) 'other-window))
-;XXX; ;; ^ http://community.livejournal.com/ru_emacs/20743.html#3
-;XXX; ;; XXX See also:
-;XXX; ;;   * `ps-mule-encode-ucs2' function definition.
-;XXX; ;;   * (info "(elisp)Translation Keymaps")
-;XXX;
-;XXX; (defun insert-logt-entry ()
-;XXX;   "Append new entry to ~/.logt file."
-;XXX;   (interactive)
-;XXX;   (find-file "~/.logt")
-;XXX;   (goto-char (point-min))
-;XXX;   (open-line 1)
-;XXX;   (insert (format-time-string "%a %Y-%m-%d %T> ")))
-;XXX; (global-set-key (kbd "C-c l") 'insert-logt-entry)
-;XXX;
-;XXX; ;;; Dictionary
-;XXX; ;; (try `M-x dictionary-match-words')
-;XXX; (when (file-accessible-directory-p "~/lib/emacs/dictionary/")
-;XXX;   (setq load-path (cons "~/lib/emacs/dictionary" load-path))
-;XXX;   (autoload 'dictionary-search "dictionary" nil t)
-;XXX;   (global-set-key (kbd "C-c d") 'dictionary-search)
-;XXX;   (eval-after-load "dictionary"
-;XXX;     '(define-key dictionary-mode-map (kbd "DEL") 'scroll-down)))
-;XXX;
-;XXX; (autoload 'work-log-mode "~/lib/emacs/work-log/work-log.el" nil t)
-;XXX;
-;XXX; (setq visible-bell t) ; flash a frame instead of beeping
-;XXX; (setq sort-fold-case t)   ; sorting functions should ignore case
-;XXX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -212,4 +139,3 @@ asking user for confirmation."
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :foundry "apple" :family "Menlo")))))
-(put 'scroll-left 'disabled nil)
