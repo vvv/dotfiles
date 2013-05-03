@@ -27,6 +27,7 @@
 (setq enable-local-variables :safe)
 
 (setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
+(global-set-key (kbd "M-g f") 'ff-find-other-file)
 
 ;;; GNU global
 (when (file-readable-p "/opt/local/share/gtags/gtags.el")
@@ -93,9 +94,7 @@ asking user for confirmation."
   '(progn
      (setq org-clock-out-remove-zero-time-clocks t
 	   org-clock-into-drawer 2
-	   org-clock-persist 'history
 	   org-clock-idle-time 10)
-     (org-clock-persistence-insinuate)
      (global-set-key "\C-cc" 'org-clock-goto)))
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
@@ -112,7 +111,26 @@ asking user for confirmation."
 	 ps-print-header nil
 	 ps-multibyte-buffer 'bdf-font-except-latin))
 
+;;; https://github.com/winterTTr/ace-jump-mode
+(let ((fn "~/lib/emacs/ace-jump-mode/ace-jump-mode.el"))
+  (when (file-readable-p fn)
+    (autoload 'ace-jump-mode fn nil t)
+    (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+    (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+    (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
+    ;; Don't let org-mode grab the binding.
+    (add-hook 'org-mode-hook
+	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))))
+
 (setq vc-follow-symlinks t)
+
+;; Audio bells annoy me.  Setting `visible-bell' to `t' brings no
+;; relief: it results in an ugly white rectangle appearing in the
+;; middle of the screen (Emacs version 24.3.1).  That's why I redefine
+;; `ring-bell-function':
+(setq ring-bell-function 'ignore)
+
+(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 
 (define-key help-map "A" 'apropos-variable)
 
@@ -122,6 +140,7 @@ asking user for confirmation."
   (global-unset-key "\C-z")       ; `suspend-frame'
   (global-unset-key (kbd "s-:"))  ; `ispell'
   (global-unset-key (kbd "s-g"))  ; `isearch-repeat-forward'
+  (global-unset-key (kbd "s-n"))  ; `ns-new-frame'
   (global-unset-key (kbd "s-z"))) ; `undo'
 
 (setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
