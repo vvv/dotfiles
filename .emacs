@@ -135,13 +135,15 @@ asking user for confirmation."
 (define-key help-map "A" 'apropos-variable)
 
 (progn ;; Unset unwelcome key bindings.
-  (global-unset-key (kbd "s-q"))  ; `save-buffers-kill-emacs'
-  (global-unset-key (kbd "s-w"))  ; `delete-frame'
-  (global-unset-key "\C-z")       ; `suspend-frame'
-  (global-unset-key (kbd "s-:"))  ; `ispell'
-  (global-unset-key (kbd "s-g"))  ; `isearch-repeat-forward'
-  (global-unset-key (kbd "s-n"))  ; `ns-new-frame'
-  (global-unset-key (kbd "s-z"))) ; `undo'
+  (global-unset-key (kbd "s-q"))      ; `save-buffers-kill-emacs'
+  (global-unset-key (kbd "s-w"))      ; `delete-frame'
+  (global-unset-key "\C-z")           ; `suspend-frame'
+  (global-unset-key (kbd "C-x C-z"))  ; `suspend-frame'
+  (global-unset-key (kbd "s-:"))      ; `ispell'
+  (global-unset-key (kbd "s-g"))      ; `isearch-repeat-forward'
+  (global-unset-key (kbd "s-n"))      ; `ns-new-frame'
+  (global-unset-key (kbd "s-z"))      ; `undo'
+  (global-unset-key "\C-z"))          ; `undo'
 
 (setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
 
