@@ -99,7 +99,7 @@ asking user for confirmation."
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
 	       'org-archive-subtree-default-with-confirmation))
-(global-set-key (kbd "C-M-r") 'org-capture)
+;; (global-set-key (kbd "C-M-r") 'org-capture)
 
 ;;; Spell check
 (global-set-key (kbd "C-c ib") 'ispell-buffer)
