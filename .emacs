@@ -181,7 +181,9 @@ asking user for confirmation."
    ("L" ?Д) (":" ?Ж) ("\"" ?Э) ("|" ?Ё)
    ; Shift row 4
    ("~" ?\[) ("Z" ?Я) ("X" ?Ч) ("C" ?С) ("V" ?М) ("B" ?И) ("N" ?Т) ("M" ?Ь)
-   ("<" ?Б) (">" ?Ю)))
+   ("<" ?Б) (">" ?Ю))
+
+  (setq default-input-method "russian-mac"))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
