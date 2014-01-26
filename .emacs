@@ -183,7 +183,11 @@ asking user for confirmation."
    ("~" ?\[) ("Z" ?Я) ("X" ?Ч) ("C" ?С) ("V" ?М) ("B" ?И) ("N" ?Т) ("M" ?Ь)
    ("<" ?Б) (">" ?Ю))
 
-  (setq default-input-method "russian-mac"))
+  (setq default-input-method "russian-mac")
+
+  ;; Stop falling back to rasterized Unicode characters.
+  ;; Source: http://j.mp/1jxmsM8 (stackoverflow.com)
+  (set-fontset-font "fontset-default" 'unicode '("Menlo" . "iso10646-1")))
 
 (setq default-directory "~/")
 
