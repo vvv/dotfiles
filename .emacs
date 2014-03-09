@@ -70,6 +70,8 @@ asking user for confirmation."
 
 (global-set-key (kbd "C-c t") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c w") 'whitespace-mode)
+(global-set-key (kbd "C-c u") 'untabify)
+(global-set-key (kbd "C-c T") 'tabify)
 
 (global-set-key (kbd "C-c v f") 'view-file)
 (global-set-key (kbd "C-c v v") 'view-mode)
@@ -188,8 +190,6 @@ asking user for confirmation."
   ;; Stop falling back to rasterized Unicode characters.
   ;; Source: http://j.mp/1jxmsM8 (stackoverflow.com)
   (set-fontset-font "fontset-default" 'unicode '("Menlo" . "iso10646-1")))
-
-(setq default-directory "~/")
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
