@@ -36,9 +36,10 @@
   (autoload 'gtags-mode "/opt/local/share/gtags/gtags.el" nil t)
   (setq gtags-suggested-key-mapping t gtags-pop-delete t)
   (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
-  ;; Don't let gtags overwrite some key sequences.
   (eval-after-load "gtags"
     '(progn
+       (setq gtags-ignore-case nil)
+       ;; Don't let gtags overwrite some key sequences.
        (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
        (define-key gtags-mode-map "\C-t" nil)))) ; `transpose-chars'
 
@@ -53,7 +54,7 @@
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
 
-(defvar trailing-whitespace-allowed nil
+(defvar trailing-whitespace-allowed "\.diff$"
   "If file name matches this regexp,
 `delete-trailing-whitespace-if-confirmed' will skip it.")
 
@@ -82,28 +83,76 @@ asking user for confirmation."
 
 (setq calendar-week-start-day 1) ; weeks should begin on Monday
 
+;;; --------------------------------------------------------------------
 ;;; Org Mode
+
+; http://orgmode.org/worg/org-faq.html#keeping-current-with-Org-mode-development
+(let ((d "~/lib/emacs/org-mode/lisp"))
+  (when (file-exists-p d) (push d load-path)))
+
 (eval-after-load "org"
   '(progn
-    (setq org-hide-leading-stars t
-	  ;; see http://doc.norang.ca/org-mode.html#HeadingLevelsOddEven
-	  org-odd-levels-only nil
+    (setq org-startup-indented t
 	  org-directory "~/.org"
-	  org-default-notes-file (concat org-directory "/refile.org")
-	  org-agenda-files '("~/life.org" "~/work.org" "~/overhead.org"))
+	  org-default-notes-file "~/.org/refile.org"
+	  org-agenda-files '("~/.org/todo.org" "~/.org/XRTX.org"
+			     "~/.org/Infopulse.org" "~/.org/kolbas.org"))
+
+    ;; http://doc.norang.ca/org-mode.html#TodoKeywords
+    (setq org-todo-keywords
+	  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+	    (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+	  org-treat-S-cursor-todo-selection-as-state-change nil
+	  org-enforce-todo-dependencies t)
+    (setq org-todo-keyword-faces
+	  '(("TODO" :foreground "red" :weight bold)
+	    ("NEXT" :foreground "blue" :weight bold)
+	    ("DONE" :foreground "forest green" :weight bold)
+	    ("WAITING" :foreground "orange" :weight bold)
+	    ("HOLD" :foreground "magenta" :weight bold)
+	    ("CANCELLED" :foreground "forest green" :weight bold)))
+    (setq org-todo-state-tags-triggers
+	  '(("CANCELLED" ("CANCELLED" . t))
+	    ("WAITING" ("WAITING" . t))
+	    ("HOLD" ("HOLD" . t) ("WAITING")) ; set :HOLD:, unset :WAITING:
+	    ("TODO" ("WAITING") ("HOLD") ("CANCELLED"))
+	    ("NEXT" ("WAITING") ("HOLD") ("CANCELLED"))
+	    ("DONE" ("WAITING") ("HOLD") ("CANCELLED"))
+	    (done ("WAITING") ("HOLD"))))
+
+    ;; http://doc.norang.ca/org-mode.html#NextTasks
+    (defun bh/mark-next-parent-tasks-todo ()
+      "Visit each parent task and change NEXT states to TODO"
+      (when (nth 2 (org-heading-components))
+	(save-excursion
+	  (while (org-up-heading-safe)
+	    (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+	      (org-todo "TODO"))))))
+    (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo
+	      'append)
+    (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
+
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (shell . t)))
+
     (global-set-key "\C-cl" 'org-store-link)
     (global-set-key "\C-cb" 'org-iswitchb)
     (global-set-key "\C-ca" 'org-agenda)))
+
 (eval-after-load "org-clock"
   '(progn
      (setq org-clock-out-remove-zero-time-clocks t
 	   org-clock-into-drawer 2
 	   org-clock-idle-time 10)
      (global-set-key "\C-cc" 'org-clock-goto)))
+
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
 	       'org-archive-subtree-default-with-confirmation))
 ;; (global-set-key (kbd "C-M-r") 'org-capture)
+;;; --------------------------------------------------------------------
 
 ;;; Spell check
 (global-set-key (kbd "C-c ib") 'ispell-buffer)
