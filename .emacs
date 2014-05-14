@@ -6,7 +6,9 @@
 
 ;;; Remove toolbar, scrollbar, and menu bar
 ;;; (see http://www.cabochon.com/~stevey/blog-rants/effective-emacs.html)
-(dolist (f '(menu-bar-mode scroll-bar-mode tool-bar-mode)) (funcall f -1))
+(menu-bar-mode -1)
+(when window-system
+  (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
 (transient-mark-mode t) ; highlight marked region
 
@@ -187,9 +189,10 @@ asking user for confirmation."
 
   (setq default-input-method "russian-mac")
 
-  ;; Stop falling back to rasterized Unicode characters.
-  ;; Source: http://j.mp/1jxmsM8 (stackoverflow.com)
-  (set-fontset-font "fontset-default" 'unicode '("Menlo" . "iso10646-1")))
+  (when window-system
+    ;; Stop falling back to rasterized Unicode characters.
+    ;; Source: http://j.mp/1jxmsM8 (stackoverflow.com)
+    (set-fontset-font "fontset-default" 'unicode '("Menlo" . "iso10646-1"))))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
