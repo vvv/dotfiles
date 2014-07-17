@@ -43,6 +43,9 @@
        (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
        (define-key gtags-mode-map "\C-t" nil)))) ; `transpose-chars'
 
+(add-hook 'sh-mode-hook
+	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
+
 (defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
   (interactive)
