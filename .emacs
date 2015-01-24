@@ -1,6 +1,6 @@
 ;;; -*- coding: utf-8-unix -*-
 
-(server-start)
+;; (server-start)
 
 (setq inhibit-startup-message t) ; don't show startup screen
 
@@ -102,11 +102,8 @@ asking user for confirmation."
 
 (eval-after-load "org"
   '(progn
-    (setq org-startup-indented t
-	  org-directory "~/.org"
-	  org-default-notes-file "~/.org/refile.org"
-	  org-agenda-files '("~/.org/todo.org" "~/.org/XRTX.org"
-			     "~/.org/Infopulse.org" "~/.org/kolbas.org"))
+    (setq org-startup-indented t)
+    (setq org-directory "~/.org")
 
     ;; http://doc.norang.ca/org-mode.html#TodoKeywords
     (setq org-todo-keywords
@@ -148,8 +145,7 @@ asking user for confirmation."
        (shell . t)))
 
     (global-set-key "\C-cl" 'org-store-link)
-    (global-set-key "\C-cb" 'org-iswitchb)
-    (global-set-key "\C-ca" 'org-agenda)))
+    (global-set-key "\C-cb" 'org-iswitchb)))
 
 (eval-after-load "org-clock"
   '(progn
@@ -161,13 +157,11 @@ asking user for confirmation."
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
 	       'org-archive-subtree-default-with-confirmation))
-;; (global-set-key (kbd "C-M-r") 'org-capture)
 ;;; --------------------------------------------------------------------
 
 ;;; Spell check
 (global-set-key (kbd "C-c ib") 'ispell-buffer)
 (global-set-key (kbd "C-c ir") 'ispell-region)
-;XXX; (add-hook 'c-mode-hook 'flyspell-prog-mode)
 
 (eval-after-load "ps-print"
   '(setq ps-paper-type 'a4
@@ -314,15 +308,16 @@ asking user for confirmation."
   (autoload 'htmlize-buffer "~/lib/emacs/htmlize.el" nil t))
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(initial-frame-alist (quote ((height . 44) (width . 80) (top . 0))))
- '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control))))))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(initial-frame-alist (quote ((height . 47) (width . 80) (top . 0))))
+ '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
+ '(org-modules nil))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo")))))
