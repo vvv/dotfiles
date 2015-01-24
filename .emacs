@@ -12,10 +12,13 @@
 
 (transient-mark-mode t) ; highlight marked region
 
-(progn
-  (iswitchb-mode t) ; enable switching between buffers using substrings
-  (setq iswitchb-prompt-newbuffer nil)) ; create a buffer silently
-(icomplete-mode t)  ; enable incremental minibuffer completion
+(icomplete-mode t) ; enable incremental minibuffer completion
+(if (string< emacs-version "24.4")
+    (progn
+      (iswitchb-mode t) ; enable switching between buffers using substrings
+      (setq iswitchb-prompt-newbuffer nil)) ; create a buffer silently
+  (electric-indent-mode -1) ; let `C-j' indent the line
+  (ido-mode t))
 
 (progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
@@ -177,6 +180,17 @@ asking user for confirmation."
     ;; Don't let org-mode grab the binding.
     (add-hook 'org-mode-hook
 	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))))
+
+;;; http://www.emacswiki.org/emacs/FullScreen
+(if (string< emacs-version "24.4")
+    (progn
+      (defun toggle-fullscreen ()
+	(interactive)
+	(set-frame-parameter
+	 nil 'fullscreen
+	 (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+      (global-set-key (kbd "C-c f") 'toggle-fullscreen))
+(global-set-key (kbd "C-c f") 'toggle-frame-fullscreen))
 
 (setq vc-follow-symlinks t)
 
