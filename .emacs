@@ -35,16 +35,20 @@
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
 ;;; GNU global
-(when (file-readable-p "/opt/local/share/gtags/gtags.el")
-  (autoload 'gtags-mode "/opt/local/share/gtags/gtags.el" nil t)
-  (setq gtags-suggested-key-mapping t gtags-pop-delete t)
-  (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
-  (eval-after-load "gtags"
-    '(progn
-       (setq gtags-ignore-case nil)
-       ;; Don't let gtags overwrite some key sequences.
-       (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
-       (define-key gtags-mode-map "\C-t" nil)))) ; `transpose-chars'
+(let ((fn (locate-file "gtags/gtags.el"
+		       '("/opt/local/share" "/usr/local/share"))))
+  (when (file-readable-p fn)
+    (autoload 'gtags-mode fn nil t)
+    (setq gtags-suggested-key-mapping t gtags-pop-delete t)
+    (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))))
+(eval-after-load "gtags"
+  '(progn
+     (setq gtags-ignore-case nil)
+     ;; Don't let gtags overwrite some key sequences.
+     (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
+     (define-key gtags-mode-map "\C-t" nil)    ; `transpose-chars'
+     (define-key gtags-mode-map "\C-ch" nil)   ; `hide-region-hide'
+     (define-key gtags-mode-map "\C-cf" nil))) ; `toggle-frame-fullscreen'
 
 (add-hook 'sh-mode-hook
 	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
