@@ -185,6 +185,14 @@ asking user for confirmation."
     (add-hook 'org-mode-hook
 	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))))
 
+;;; http://www.emacswiki.org/emacs/HideRegion
+(let ((fn "~/lib/emacs/hide-region/hide-region.el"))
+  (when (file-readable-p fn)
+    (autoload 'hide-region-hide   fn nil t)
+    (autoload 'hide-region-unhide fn nil t)
+    (global-set-key (kbd "C-c h r") 'hide-region-hide)
+    (global-set-key (kbd "C-c h u") 'hide-region-unhide)))
+
 ;;; http://www.emacswiki.org/emacs/FullScreen
 (if (string< emacs-version "24.4")
     (progn
@@ -263,6 +271,47 @@ asking user for confirmation."
     ;; Stop falling back to rasterized Unicode characters.
     ;; Source: http://j.mp/1jxmsM8 (stackoverflow.com)
     (set-fontset-font "fontset-default" 'unicode '("Menlo" . "iso10646-1"))))
+
+;;; ----------------------------------------------------------------------
+;;; Make `M-s o' (`M-x occur') use the word at point as the default value.
+;;; (The elements of `regexp-history' are also accessible using `M-n'.)
+;;;
+;;; See also
+;;; http://lists.gnu.org/archive/html/emacs-devel/2005-08/msg01087.html
+
+(defun current-word-and-regexp-history ()
+  (let ((nearest (current-word t)))
+    (if nearest
+	(cons nearest regexp-history)
+      regexp-history)))
+
+;; Overwrite the original `occur-read-primary-args', defined in `replace.el'.
+(defun occur-read-primary-args ()
+  (let* ((perform-collect (consp current-prefix-arg))
+	 (w (current-word t))
+	 (defaults (if w (cons w regexp-history) regexp-history))
+         (regexp (read-regexp (if perform-collect
+                                  "Collect strings matching regexp"
+                                "List lines matching regexp")
+                              'current-word-and-regexp-history)))
+    (list regexp
+	  (if perform-collect
+	      ;; Perform collect operation
+	      (if (zerop (regexp-opt-depth regexp))
+		  ;; No subexpression so collect the entire match.
+		  "\\&"
+		;; Get the regexp for collection pattern.
+		(let ((default (car occur-collect-regexp-history)))
+		  (read-regexp
+		   (format "Regexp to collect (default %s): " default)
+		   default 'occur-collect-regexp-history)))
+	    ;; Otherwise normal occur takes numerical prefix argument.
+	    (when current-prefix-arg
+	      (prefix-numeric-value current-prefix-arg))))))
+;;; ----------------------------------------------------------------------
+
+(when (file-readable-p "~/lib/emacs/htmlize.el")
+  (autoload 'htmlize-buffer "~/lib/emacs/htmlize.el" nil t))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
