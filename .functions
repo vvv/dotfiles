@@ -1,0 +1,53 @@
+# -*- sh -*-
+
+mkcd() {
+	[ $# -eq 1 ] || { echo 'Usage: mkcd <dir>' >&2; return 1; }
+	mkdir "$1" && cd "$1"
+}
+export -f mkcd
+
+b() { git branch "$@"; }
+cl() { local OPT='-n'; [ "$*" = '-f' ] && OPT=''; git clean -fdx $OPT; }
+di() { git diff "$@"; }
+fe() { git fetch -p "$@"; }
+lo() { git log "$@"; }
+me() { git merge --ff-only origin/$(git symbolic-ref HEAD | cut -d/ -f3-); }
+rp() { git rev-parse --short "$@"; }
+st() { git status "$@"; }
+export -f b cl di fe lo me rp st
+
+which gtags &>/dev/null && {
+    gt() {
+	(
+	    set -e
+	    [ -d .git ] || cd ~/src/mero
+	    if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
+	    	global -u 2>/dev/null
+	    else
+	    	gtags 2>/dev/null
+	    fi
+	)
+    }
+    export -f gt
+}
+
+### Alternative (and better) approach is to use `errno' (Debian) or
+### `perror' (from `mysql-server' yum package).
+[ -d /usr/include/asm-generic ] && {
+    errgrep() { grep -nH "$@" /usr/include/asm-generic/errno*; }
+    export -f errgrep
+}
+
+[ "`hostname`" = 'batmobile' ] && {
+    fili() { ssh -t fili screen -DR; }
+    export -f fili
+}
+
+devhist() {
+    [ $# -eq 1 ] || { echo "Usage: devhist BRANCH" >&2; return 1; }
+    local BRANCH="$1"
+    echo -n 'Development history: '
+    echo -n "$(git rev-parse --short $(git merge-base origin/master $BRANCH))"
+    echo "..$(git rev-parse --short $BRANCH)"
+}
+export -f devhist
