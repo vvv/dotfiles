@@ -37,7 +37,7 @@
 ;;; GNU global
 (let ((fn (locate-file "gtags/gtags.el"
 		       '("/opt/local/share" "/usr/local/share"))))
-  (when (file-readable-p fn)
+  (when (and fn (file-readable-p fn))
     (autoload 'gtags-mode fn nil t)
     (setq gtags-suggested-key-mapping t gtags-pop-delete t)
     (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))))
