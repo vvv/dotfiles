@@ -6,6 +6,12 @@ mkcd() {
 }
 export -f mkcd
 
+which hd &>/dev/null || {
+	hd() { hexdump -C "$@"; }
+	export -f hd
+}
+
+### git helpers
 b() { git branch "$@"; }
 cl() { local OPT='-n'; [ "$*" = '-f' ] && OPT=''; git clean -fdx $OPT; }
 di() { git diff "$@"; }
@@ -38,16 +44,16 @@ which gtags &>/dev/null && {
     export -f errgrep
 }
 
-[ "`hostname`" = 'batmobile' ] && {
-    fili() { ssh -t fili screen -DR; }
-    export -f fili
-}
+if hostname | grep -qE '^masala\.?'; then
+    dwalin() { ssh -t dwalin screen -DR; }
+    export -f dwalin
+fi
 
-devhist() {
-    [ $# -eq 1 ] || { echo "Usage: devhist BRANCH" >&2; return 1; }
-    local BRANCH="$1"
-    echo -n 'Development history: '
-    echo -n "$(git rev-parse --short $(git merge-base origin/master $BRANCH))"
-    echo "..$(git rev-parse --short $BRANCH)"
-}
-export -f devhist
+## devhist() {
+##     [ $# -eq 1 ] || { echo "Usage: devhist BRANCH" >&2; return 1; }
+##     local BRANCH="$1"
+##     echo -n 'Development history: '
+##     echo -n "$(git rev-parse --short $(git merge-base origin/master $BRANCH))"
+##     echo "..$(git rev-parse --short $BRANCH)"
+## }
+## export -f devhist
