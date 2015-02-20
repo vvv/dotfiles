@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+which defaults &>/dev/null || exit 1
+
+if [ "${1:-}" = '-v' ]; then
+	_say() { echo "$@" >&2; }
+else
+	alias _say=true
+fi
+
+val=$(defaults read com.apple.finder AppleShowAllFiles 2>/dev/null)
+if [ "$val" = YES ]; then
+	defaults write com.apple.finder AppleShowAllFiles NO
+	_say .dotfiles will be hidden
+else
+	defaults write com.apple.finder AppleShowAllFiles YES
+	_say .dotfiles will be shown
+fi
+
+killall Finder
