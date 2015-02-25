@@ -90,59 +90,57 @@ asking user for confirmation."
 (let ((d "~/lib/emacs/org-mode/lisp"))
   (when (file-exists-p d) (push d load-path)))
 
-(eval-after-load "org"
-  '(progn
-    (setq org-startup-indented t)
-    (setq org-directory "~/.org")
+(with-eval-after-load 'org
+  (setq org-startup-indented t)
+  (setq org-directory "~/.org")
 
-    ;; http://doc.norang.ca/org-mode.html#TodoKeywords
-    (setq org-todo-keywords
-	  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-	    (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-	  org-treat-S-cursor-todo-selection-as-state-change nil
-	  org-enforce-todo-dependencies t)
-    (setq org-todo-keyword-faces
-	  '(("TODO" :foreground "red" :weight bold)
-	    ("NEXT" :foreground "blue" :weight bold)
-	    ("DONE" :foreground "forest green" :weight bold)
-	    ("WAITING" :foreground "orange" :weight bold)
-	    ("HOLD" :foreground "magenta" :weight bold)
-	    ("CANCELLED" :foreground "forest green" :weight bold)))
-    (setq org-todo-state-tags-triggers
-	  '(("CANCELLED" ("CANCELLED" . t))
-	    ("WAITING" ("WAITING" . t))
-	    ("HOLD" ("HOLD" . t) ("WAITING")) ; set :HOLD:, unset :WAITING:
-	    ("TODO" ("WAITING") ("HOLD") ("CANCELLED"))
-	    ("NEXT" ("WAITING") ("HOLD") ("CANCELLED"))
-	    ("DONE" ("WAITING") ("HOLD") ("CANCELLED"))
-	    (done ("WAITING") ("HOLD"))))
+  ;; http://doc.norang.ca/org-mode.html#TodoKeywords
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+	  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+	org-treat-S-cursor-todo-selection-as-state-change nil
+	org-enforce-todo-dependencies t)
+  (setq org-todo-keyword-faces
+	'(("TODO" :foreground "red" :weight bold)
+	  ("NEXT" :foreground "blue" :weight bold)
+	  ("DONE" :foreground "forest green" :weight bold)
+	  ("WAITING" :foreground "orange" :weight bold)
+	  ("HOLD" :foreground "magenta" :weight bold)
+	  ("CANCELLED" :foreground "forest green" :weight bold)))
+  (setq org-todo-state-tags-triggers
+	'(("CANCELLED" ("CANCELLED" . t))
+	  ("WAITING" ("WAITING" . t))
+	  ("HOLD" ("HOLD" . t) ("WAITING")) ; set :HOLD:, unset :WAITING:
+	  ("TODO" ("WAITING") ("HOLD") ("CANCELLED"))
+	  ("NEXT" ("WAITING") ("HOLD") ("CANCELLED"))
+	  ("DONE" ("WAITING") ("HOLD") ("CANCELLED"))
+	  (done ("WAITING") ("HOLD"))))
 
-    ;; http://doc.norang.ca/org-mode.html#NextTasks
-    (defun bh/mark-next-parent-tasks-todo ()
-      "Visit each parent task and change NEXT states to TODO"
-      (when (nth 2 (org-heading-components))
-	(save-excursion
-	  (while (org-up-heading-safe)
-	    (when (member (nth 2 (org-heading-components)) (list "NEXT"))
-	      (org-todo "TODO"))))))
-    (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo
-	      'append)
-    (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
+  ;; http://doc.norang.ca/org-mode.html#NextTasks
+  (defun bh/mark-next-parent-tasks-todo ()
+    "Visit each parent task and change NEXT states to TODO"
+    (when (nth 2 (org-heading-components))
+      (save-excursion
+	(while (org-up-heading-safe)
+	  (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+	    (org-todo "TODO"))))))
+  (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo
+	    'append)
+  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (shell . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)))
 
-    (global-set-key "\C-cl" 'org-store-link)
-    (global-set-key "\C-cb" 'org-iswitchb)))
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cb" 'org-iswitchb))
 
-(eval-after-load "org-clock"
-  '(progn
-     (setq org-clock-out-remove-zero-time-clocks t
-	   org-clock-into-drawer 2
-	   org-clock-idle-time 10)
-     (global-set-key "\C-cc" 'org-clock-goto)))
+(with-eval-after-load 'org-clock
+  (setq org-clock-out-remove-zero-time-clocks t
+	org-clock-into-drawer 2
+	org-clock-idle-time 10)
+  (global-set-key "\C-cc" 'org-clock-goto))
 
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
