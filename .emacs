@@ -35,20 +35,10 @@
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
 ;;; GNU global
-(let ((fn (locate-file "gtags/gtags.el"
-		       '("/opt/local/share" "/usr/local/share"))))
-  (when (and fn (file-readable-p fn))
-    (autoload 'gtags-mode fn nil t)
-    (setq gtags-suggested-key-mapping t gtags-pop-delete t)
-    (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))))
-(eval-after-load "gtags"
-  '(progn
-     (setq gtags-ignore-case nil)
-     ;; Don't let gtags overwrite some key sequences.
-     (define-key gtags-mode-map "\C-ct" nil)   ; `toggle-truncate-lines'
-     (define-key gtags-mode-map "\C-t" nil)    ; `transpose-chars'
-     (define-key gtags-mode-map "\C-ch" nil)   ; `hide-region-hide'
-     (define-key gtags-mode-map "\C-cf" nil))) ; `toggle-frame-fullscreen'
+;;; https://github.com/leoliu/ggtags
+(add-hook 'after-init-hook
+	  (lambda () (when (locate-library "ggtags")
+		       (add-hook 'c-mode-hook (lambda () (ggtags-mode 1))))))
 
 (add-hook 'sh-mode-hook
 	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
@@ -314,7 +304,8 @@ asking user for confirmation."
  ;; If there is more than one, they won't work right.
  '(initial-frame-alist (quote ((height . 47) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
- '(org-modules nil))
+ '(org-modules nil)
+ '(package-selected-packages (quote (ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
