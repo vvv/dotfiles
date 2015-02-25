@@ -216,12 +216,10 @@ asking user for confirmation."
    "russian-mac" "Russian" "RU" nil
    "ЙЦУКЕН Russian Mac layout"
    nil t t t t nil nil nil nil nil t)
-
   ;; >< 1! 2" 3№ 4% 5: 6, 7. 8; 9( 0) -_ =+
   ;;     Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ъ
   ;;      Ф  Ы  В  А  П  Р  О  Л  Д  Ж  Э  Ё
   ;;   ][  Я  Ч  С  М  И  Т  Ь  Б  Ю  /?
-
   (quail-define-rules
    ; row 1
    ("§" ?>)
@@ -248,6 +246,39 @@ asking user for confirmation."
    ("<" ?Б) (">" ?Ю))
 
   (setq default-input-method "russian-mac")
+
+  (quail-define-package
+   "ukrainian-mac" "Ukrainian" "UK" nil
+   "ЙЦУКЕН Ukrainian Mac layout"
+   nil t t t t nil nil nil nil nil t)
+  ;; >< 1! 2" 3№ 4% 5: 6, 7. 8; 9( 0) -_ =+
+  ;;     Й  Ц  У  К  Е  Н  Г  Ш  Щ  З  Х  Ї
+  ;;      Ф  И  В  А  П  Р  О  Л  Д  Ж  Є  Ґ
+  ;;   '~  Я  Ч  С  М  І  Т  Ь  Б  Ю  /?
+  (quail-define-rules
+   ; row 1
+   ("§" ?>)
+   ; row 2
+   ("q" ?й) ("w" ?ц) ("e" ?у) ("r" ?к) ("t" ?е) ("y" ?н) ("u" ?г) ("i" ?ш)
+   ("o" ?щ) ("p" ?з) ("[" ?х) ("]" ?ї)
+   ; row 3
+   ("a" ?ф) ("s" ?и) ("d" ?в) ("f" ?а) ("g" ?п) ("h" ?р) ("j" ?о) ("k" ?л)
+   ("l" ?д) (";" ?ж) ("'" ?є) ("\\" ?ґ)
+   ; row 4
+   ("`" ?\') ("z" ?я) ("x" ?ч) ("c" ?с) ("v" ?м) ("b" ?і) ("n" ?т) ("m" ?ь)
+   ("," ?б) ("." ?ю)
+   ; Shift row 1
+   ("±" ?<) ("@" ?\") ("#" ?№) ("$" ?%) ("%" ?:) ("^" ?,) ("&" ?.)
+   ("*" ?\;)
+   ; Shift row 2
+   ("Q" ?Й) ("W" ?Ц) ("E" ?У) ("R" ?К) ("T" ?Е) ("Y" ?Н) ("U" ?Г) ("I" ?Ш)
+   ("O" ?Щ) ("P" ?З) ("{" ?Х) ("}" ?Ї)
+   ; Shift row 3
+   ("A" ?Ф) ("S" ?И) ("D" ?В) ("F" ?А) ("G" ?П) ("H" ?Р) ("J" ?О) ("K" ?Л)
+   ("L" ?Д) (":" ?Ж) ("\"" ?Є) ("|" ?Ґ)
+   ; Shift row 4
+   ("~" ?\~) ("Z" ?Я) ("X" ?Ч) ("C" ?С) ("V" ?М) ("B" ?І) ("N" ?Т) ("M" ?Ь)
+   ("<" ?Б) (">" ?Ю))
 
   (when window-system
     ;; Stop falling back to rasterized Unicode characters.
