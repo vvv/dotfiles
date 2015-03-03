@@ -16,7 +16,14 @@
 (if (string< emacs-version "24.4")
     (progn
       (iswitchb-mode t) ; enable switching between buffers using substrings
-      (setq iswitchb-prompt-newbuffer nil)) ; create a buffer silently
+      (setq iswitchb-prompt-newbuffer nil) ; create a buffer silently
+      (defmacro with-eval-after-load (file &rest body)
+	"Execute BODY after FILE is loaded.
+FILE is normally a feature name, but it can also be a file name,
+in case that file does not provide any feature."
+	(declare (indent 1) (debug t))
+	`(eval-after-load ,file (lambda () ,@body))))
+  ;; emacs-version >= 24.4
   (electric-indent-mode -1) ; let `C-j' indent the line
   (ido-mode t))
 
@@ -331,7 +338,7 @@ asking user for confirmation."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(initial-frame-alist (quote ((height . 47) (width . 80) (top . 0))))
+ '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
  '(org-modules nil)
  '(package-selected-packages (quote (ggtags))))
