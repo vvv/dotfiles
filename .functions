@@ -28,10 +28,12 @@ which gtags &>/dev/null && {
 	    set -e
 	    [ -d .git ] || cd ~/src/mero
 	    if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
-	    	global -u 2>/dev/null
+		global -u 2>/dev/null
 	    else
-	    	gtags 2>/dev/null
+		gtags 2>/dev/null
 	    fi
+	    which mkid &>/dev/null && \
+		mkid 2>/dev/null
 	)
     }
     export -f gt
