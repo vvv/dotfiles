@@ -10,6 +10,9 @@
 (when window-system
   (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
+;; Always perform yes-or-no prompts using the echo area and keyboard input.
+(setq use-dialog-box nil)
+
 (transient-mark-mode t) ; highlight marked region
 
 (icomplete-mode t) ; enable incremental minibuffer completion
@@ -41,14 +44,22 @@ in case that file does not provide any feature."
 (setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
+(add-hook 'sh-mode-hook
+	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
+(add-hook 'java-mode-hook
+	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
+
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
 (add-hook 'after-init-hook
 	  (lambda () (when (locate-library "ggtags")
 		       (add-hook 'c-mode-hook (lambda () (ggtags-mode 1))))))
-
-(add-hook 'sh-mode-hook
-	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
+;; In case Emacs is unable to find `global executable, the following
+;; command might help (OSX >= 10.10.3):
+;;
+;;     sudo launchctl config system path "$PATH"
+;;
+;; [via https://twitter.com/launchderp/status/585874100939137024]
 
 (defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
