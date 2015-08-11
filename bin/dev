@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+HOST=`devvm`
+[ -n "$HOST" ] || {
+    echo 'No reachable hosts found' >&2
+    exit 1
+}
+exec ssh -t $HOST screen -DR
