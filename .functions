@@ -46,11 +46,6 @@ which gtags &>/dev/null && {
     export -f errgrep
 }
 
-if hostname | grep -qE '^masala\.?'; then
-    dwalin() { ssh -t dwalin screen -DR; }
-    export -f dwalin
-fi
-
 ## devhist() {
 ##     [ $# -eq 1 ] || { echo "Usage: devhist BRANCH" >&2; return 1; }
 ##     local BRANCH="$1"

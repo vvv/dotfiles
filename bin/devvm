@@ -1,0 +1,43 @@
+#!/bin/bash
+set -eu
+
+###
+### Tries to ssh to the first accessible host, specified in ~/.ssh/config.
+###
+
+case "${1:-}" in
+    '-v'|'--verbose') VERBOSE=1;;
+    *) VERBOSE=0;;
+esac
+
+say() {
+    if [ $VERBOSE -eq 1 ]; then
+	echo "$@" >&2
+    fi
+}
+
+reachable() {
+    local host ip
+
+    awk '
+/^Host/ { host = $2; next }
+host && $1 == "HostName" { print host, $2; host = "" }
+' ~/.ssh/config | while read host ip; do
+	say -n "$host "
+	if nc -z -w1 $ip 22 >&/dev/null; then
+	    say 'OK'
+	    echo $host
+	    break
+	else
+	    say 'unreachable'
+	fi
+    done
+}
+
+HOST=`reachable`
+if [ -n "$HOST" ]; then
+    exec ssh -t $HOST screen -DR
+else
+    echo 'None of the hosts are reachable' >&2
+    exit 1
+fi
