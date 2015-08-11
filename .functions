@@ -15,12 +15,13 @@ which hd &>/dev/null || {
 b() { git branch "$@"; }
 cl() { local OPT='-n'; [ "$*" = '-f' ] && OPT=''; git clean -fdx $OPT; }
 di() { git diff "$@"; }
-fe() { git fetch -p "$@"; }
+# fe() { git fetch -p "$@"; } # aliased to `git fe' and `git fea' (--all)
 lo() { git log "$@"; }
 me() { git merge --ff-only origin/$(git symbolic-ref HEAD | cut -d/ -f3-); }
+re() { git remote "$@"; }
 rp() { git rev-parse --short "$@"; }
-st() { git status "$@"; }
-export -f b cl di fe lo me rp st
+# st() { git status "$@"; } # aliased to `git st'
+export -f b cl di lo me re rp
 
 which gtags &>/dev/null && {
     gt() {
