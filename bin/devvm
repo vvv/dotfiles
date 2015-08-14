@@ -16,16 +16,26 @@ say() {
     fi
 }
 
-awk '
+host() {
+    awk '
 /^Host/ { host = $2; next }
 host && $1 == "HostName" { print host, $2; host = "" }
 ' ~/.ssh/config | while read host ip; do
-    say -n "$host "
-    if nc -z -w1 $ip 22 >&/dev/null; then
-	say 'OK'
-	echo $host  # print the name and exit
-	exit
-    else
-	say 'unreachable'
-    fi
-done
+	say -n "$host "
+	if nc -z -w1 $ip 22 >&/dev/null; then
+	    say 'OK'
+	    echo $host
+	    break
+	else
+	    say 'unreachable'
+	fi
+    done
+}
+
+HOST=`host`
+if [ -n "$HOST" ]; then
+    echo $HOST
+else
+    say 'No accessible hosts found'
+    exit 1
+fi
