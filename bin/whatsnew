@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BRANCH=$(git symbolic-ref HEAD | sed 's@^refs/heads/@@')
+BRANCH=$(git symbolic-ref --short HEAD)
 [ -n "$BRANCH" ] || exit 1
 
 WORK_REPO='f34a409794c6064a82d433318ae6a5aa48395f40'
