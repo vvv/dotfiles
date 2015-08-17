@@ -36,6 +36,6 @@ HOST=`host`
 if [ -n "$HOST" ]; then
     echo $HOST
 else
-    say 'No accessible hosts found'
+    echo 'No reachable hosts found' >&2
     exit 1
 fi
