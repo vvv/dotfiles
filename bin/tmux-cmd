@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eu
+
+die() { echo "$@" >&2; exit 1; }
+
+toggle_window_prefix() {
+    local logfile="$1"
+    local session_name="$2"
+    local window_name="$3"
+    local prefix="${4:-(L) }"
+
+    if [[ "$window_name" == "$prefix"* ]]; then
+        tmux display-message "Logfile \"$logfile\" closed."
+        tmux rename-window -t "$session_name" "${window_name#$prefix}"
+    else
+        if [ -s "$HOME/$logfile" ]; then
+            tmux display-message "Appending to logfile \"$logfile\"."
+        else
+            tmux display-message "Creating logfile \"$logfile\"."
+        fi
+        tmux rename-window -t "$session_name" "$prefix$window_name"
+    fi
+}
+
+[ $# -gt 0 ] || die 'Command is missing'
+case "$1" in
+    toggle-window-prefix) shift; toggle_window_prefix "$@";;
+    *) die "Unknown command: $1";;
+esac
