@@ -6,6 +6,18 @@ mkcd() {
 }
 export -f mkcd
 
+### Create a scratch dir.
+### See http://ku1ik.com/2012/05/04/scratch-dir.html
+scratch() {
+    local link=~/scratch
+    local dir=/tmp/scratch-`date +%s`
+
+    mkdir -p $dir
+    ln -nfs $dir $link
+    cd $link
+}
+export -f scratch
+
 which hd &>/dev/null || {
 	hd() { hexdump -C "$@"; }
 	export -f hd
