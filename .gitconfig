@@ -1,0 +1,17 @@
+[user]
+	name = Valery V. Vorotyntsev
+	email = valery.vv@gmail.com
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[alias]
+	sb = show-branch
+	fea = fetch -p --all
+	fe = fetch -p
+	st = git status -sb
+	st = status -sb
+	desc = describe
+	rp = rev-parse --short
+[rerere]
+	enabled = true
