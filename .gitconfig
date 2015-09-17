@@ -9,9 +9,9 @@
 	sb = show-branch
 	fea = fetch -p --all
 	fe = fetch -p
-	st = git status -sb
 	st = status -sb
 	desc = describe
 	rp = rev-parse --short
+	log1 = log --oneline
 [rerere]
 	enabled = true
