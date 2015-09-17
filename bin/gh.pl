@@ -28,11 +28,14 @@ while (<>) {
 sub getAddr($) {
     my ($ln) = @_;
     die "Galbadia strikes back!\n$ln\n"
+        # by default ^ and $ will not match at \n inside string, but only at the
+        # beginning and ending of a multi-line string, if more "grep" alike behavior
+        # is expected, one might use 'm' modifier for match operator: '//m'
         unless $ln =~ /^var\ addr\ =\ (?:
                                        "(.+)";         # 0. ready to use `addr'
                                        |new\ Array\(\) # 1. to be gathered
                                       )$/x;
-    return (defined $1 ? $1 : "");
+    return $1 // '';
 }
 
 unless ($addr = getAddr(shift @sloc)) {
@@ -40,8 +43,8 @@ unless ($addr = getAddr(shift @sloc)) {
 }
 
 foreach (@sloc) {
-    next unless m|^.+Address\.replace\(/(.+?)/g?, "(.+?)"\);$|;
-    push @decodings, [$1,$2];
+    push @decodings, [$1,$2]
+        if  m|^.+Address\.replace\(/(.+?)/g?, "(.+?)"\);$|;
 }
 
 $addr =~ s/$_->[0]/$_->[1]/g foreach (@decodings);
