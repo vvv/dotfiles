@@ -1,6 +1,6 @@
 ;;; -*- coding: utf-8-unix -*-
 
-;; (server-start)
+(server-start)
 
 (setq inhibit-startup-message t) ; don't show startup screen
 
