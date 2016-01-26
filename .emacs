@@ -45,7 +45,7 @@ in case that file does not provide any feature."
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
 (add-hook 'sh-mode-hook
-	  (lambda () (setq indent-tabs-mode t sh-basic-offset 8)))
+	  (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
 (add-hook 'java-mode-hook
 	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
 
@@ -183,7 +183,10 @@ asking user for confirmation."
     (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
     ;; Don't let org-mode grab the binding.
     (add-hook 'org-mode-hook
-	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))))
+	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))
+    ;; Don't let conf-mode grab the binding.
+    (add-hook 'conf-mode-hook
+	      '(lambda () (define-key conf-mode-map (kbd "C-c SPC") nil)))))
 
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
@@ -343,6 +346,22 @@ asking user for confirmation."
 
 (when (file-readable-p "~/lib/emacs/htmlize.el")
   (autoload 'htmlize-buffer "~/lib/emacs/htmlize.el" nil t))
+
+(when (file-readable-p "~/lib/emacs/local.el")
+  (load "~/lib/emacs/local.el"))
+
+(when (file-accessible-directory-p "/opt/local/share/info/")
+  ;; # Create a `dir' file, if necessary:
+  ;; cd /opt/local/share/info
+  ;; if ! [ -f dir ]; then
+  ;;     for f in {coreutils,make,gawk,gsed}.info {libc,gcc,cpp,gdb}.info.gz; do
+  ;;         sudo install-info $f dir
+  ;;     done
+  ;; fi
+  (add-hook 'Info-mode-hook
+	    (lambda ()
+	      (setq Info-additional-directory-list
+		    '("/opt/local/share/info/")))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
