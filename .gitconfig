@@ -13,5 +13,7 @@
 	desc = describe
 	rp = rev-parse --short
 	log1 = log --oneline
+	rfm = push origin HEAD:refs/for/master
+	sbo = show-branch origin/master HEAD
 [rerere]
 	enabled = true
