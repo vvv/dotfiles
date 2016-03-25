@@ -1,0 +1,32 @@
+#!/bin/bash
+set -eu
+
+## SEE http://superuser.com/questions/54054/convert-pdf-2-sides-per-page-to-1-side-per-page
+##
+## Find out the size of a page (MediaBox). If you use Mac OS X's
+## Preview app then select `Tools -> Show Inspector' in the menu or
+## type `Cmd-I'.
+
+MEDIA_BOX=612x792
+
+die() { echo "$@" >&2; exit 1; }
+
+[ $# -eq 1 ] || die "Usage: ${0##*/} <file>"
+INFILE="$1"
+[ -f "$INFILE" ] || die "$INFILE: No such file"
+file -b "$INFILE" | grep -q '^PDF document' || die 'PDF document expected'
+
+W=$((${MEDIA_BOX%x*} * 5))
+H=$((${MEDIA_BOX#*x} * 10))
+
+L=/tmp/_left.pdf
+R=/tmp/_right.pdf
+
+gs -q -o $L -sDEVICE=pdfwrite -g${W}x${H} \
+    -c '<</PageOffset [0 0]>> setpagedevice' -f "$INFILE"
+gs -q -o $R -sDEVICE=pdfwrite -g${W}x${H} \
+    -c "<</PageOffset [-$(($W / 10)) 0]>> setpagedevice" -f "$INFILE"
+pdftk A=$L B=$R \
+    shuffle A1-endodd B1-endodd A1-endeven B1-endeven \
+    output ${INFILE%.pdf}_1p.pdf
+rm $L $R
