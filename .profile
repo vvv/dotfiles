@@ -17,7 +17,7 @@ _path_prepend /usr/local/bin
 _path_prepend_safe /opt/packer # https://www.packer.io/
 _path_prepend_safe ~/Library/Python/2.7/bin # mavlink
 _path_prepend_safe ~/bin
-_path_prepend_safe /opt/local/libexec/qt4/bin # qt4-mac
+_path_prepend_safe /opt/local/libexec/qt5/bin # qt5
 
 unset -f _path_prepend_safe _path_prepend
 export PATH
