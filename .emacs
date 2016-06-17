@@ -48,6 +48,7 @@ in case that file does not provide any feature."
 	  (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
 (add-hook 'java-mode-hook
 	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
@@ -349,6 +350,10 @@ asking user for confirmation."
 
 (when (file-readable-p "~/lib/emacs/local.el")
   (load "~/lib/emacs/local.el"))
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
 
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
