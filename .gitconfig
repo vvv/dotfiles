@@ -6,14 +6,18 @@
 	smudge = git hawser smudge %f
 	required = true
 [alias]
-	sb = show-branch
-	fea = fetch -p --all
+	D1 = branch -D @{-1}
+	cam = commit --amend
+	camH = commit --amend -C HEAD
 	fe = fetch -p
-	st = status -sb
-	desc = describe
-	rp = rev-parse --short
+	fea = fetch -p --all
+	fem = fetch -p origin master:master
+	g = grep -nHE
 	log1 = log --oneline
 	rfm = push origin HEAD:refs/for/master
+	rp = rev-parse --short
+	sb = show-branch
 	sbo = show-branch origin/master HEAD
+	st = status -sb
 [rerere]
 	enabled = true
