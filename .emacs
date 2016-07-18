@@ -62,6 +62,11 @@ in case that file does not provide any feature."
 ;;
 ;; [via https://twitter.com/launchderp/status/585874100939137024]
 
+(dolist (m '(c-mode python-mode))
+  (font-lock-add-keywords m
+   ; Fontify the word "XXX", even in comments.
+   '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
+
 (defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
   (interactive)
@@ -382,4 +387,5 @@ asking user for confirmation."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo")))))
+ '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo"))))
+ '(font-lock-warning-face ((t (:inherit error :background "Yellow" :foreground "black")))))
