@@ -49,6 +49,8 @@ in case that file does not provide any feature."
 (add-hook 'java-mode-hook
 	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+(add-hook 'octave-mode-hook
+	  (lambda () (setq octave-block-offset 4)))
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
