@@ -28,5 +28,9 @@ export PATH
 export PS1='\h:\W\$ '
 export LC_CTYPE='en_US.UTF-8'
 
+# export EDITOR=emacs
+
+[ -x /opt/local/bin/bash ] && export SHELL=/opt/local/bin/bash
+
 [ -f ~/.functions ] && . ~/.functions
 [ -f ~/.bashrc ] && . ~/.bashrc
