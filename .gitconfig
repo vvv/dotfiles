@@ -19,5 +19,6 @@
 	sb = show-branch
 	sbo = show-branch origin/master HEAD
 	st = status -sb
+	author = log -1 --pretty='%an <%ae>' --author
 [rerere]
 	enabled = true
