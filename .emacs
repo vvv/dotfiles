@@ -2,6 +2,8 @@
 
 (server-start)
 
+(setenv "LANG" "en_US.UTF-8")
+
 (setq inhibit-startup-message t) ; don't show startup screen
 
 ;;; Remove toolbar, scrollbar, and menu bar
@@ -28,7 +30,7 @@ in case that file does not provide any feature."
 	`(eval-after-load ,file (lambda () ,@body))))
   ;; emacs-version >= 24.4
   (electric-indent-mode -1) ; let `C-j' indent the line
-  (ido-mode t))
+  (unless (locate-library "ivy") (ido-mode 1)))
 
 (progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
@@ -54,9 +56,13 @@ in case that file does not provide any feature."
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
-(add-hook 'after-init-hook
-	  (lambda () (when (locate-library "ggtags")
-		       (add-hook 'c-mode-hook (lambda () (ggtags-mode 1))))))
+(add-hook 'c-mode-common-hook
+	  (lambda ()
+	    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+	      (ggtags-mode 1))))
+(with-eval-after-load "ggtags"
+  (define-key ggtags-navigation-map "\M-*" 'ggtags-navigation-mode-abort)
+  (define-key ggtags-mode-map "\M-*" 'ggtags-find-tag-continue))
 ;; In case Emacs is unable to find `global executable, the following
 ;; command might help (OSX >= 10.10.3):
 ;;
@@ -64,7 +70,7 @@ in case that file does not provide any feature."
 ;;
 ;; [via https://twitter.com/launchderp/status/585874100939137024]
 
-(dolist (m '(c-mode python-mode))
+(dolist (m '(c-mode python-mode sh-mode rust-mode))
   (font-lock-add-keywords m
    ; Fontify the word "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -102,19 +108,12 @@ asking user for confirmation."
 (global-set-key (kbd "C-c u") 'untabify)
 (global-set-key (kbd "C-c T") 'tabify)
 
-(global-set-key (kbd "C-c v f") 'view-file)
-(global-set-key (kbd "C-c v v") 'view-mode)
-;; Don't let gtags overwrite `C-c v'
-(eval-after-load "gtags" '(define-key gtags-mode-map "\C-cv" nil))
+(global-set-key (kbd "C-c v") 'view-mode)
 
 (setq calendar-week-start-day 1) ; weeks should begin on Monday
 
 ;;; --------------------------------------------------------------------
 ;;; Org Mode
-
-; http://orgmode.org/worg/org-faq.html#keeping-current-with-Org-mode-development
-(let ((d "~/lib/emacs/org-mode/lisp"))
-  (when (file-exists-p d) (push d load-path)))
 
 (with-eval-after-load 'org
   (setq org-startup-indented t)
@@ -160,7 +159,9 @@ asking user for confirmation."
      (shell . t)))
 
   (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-cb" 'org-iswitchb))
+  (global-set-key "\C-cb" 'org-switchb)
+
+  (setq org-outline-path-complete-in-steps nil))
 
 (with-eval-after-load 'org-clock
   (setq org-clock-out-remove-zero-time-clocks t
@@ -182,19 +183,20 @@ asking user for confirmation."
 	 ps-print-header nil
 	 ps-multibyte-buffer 'bdf-font-except-latin))
 
-;;; https://github.com/winterTTr/ace-jump-mode
-(let ((fn "~/lib/emacs/ace-jump-mode/ace-jump-mode.el"))
-  (when (file-readable-p fn)
-    (autoload 'ace-jump-mode fn nil t)
-    (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-    (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
-    (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
-    ;; Don't let org-mode grab the binding.
-    (add-hook 'org-mode-hook
-	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))
-    ;; Don't let conf-mode grab the binding.
-    (add-hook 'conf-mode-hook
-	      '(lambda () (define-key conf-mode-map (kbd "C-c SPC") nil)))))
+;XXX; ;;; https://github.com/winterTTr/ace-jump-mode
+;XXX; (let ((fn "~/lib/emacs/ace-jump-mode/ace-jump-mode.el"))
+;XXX;   (when (file-readable-p fn)
+;XXX;     (autoload 'ace-jump-mode fn nil t)
+;XXX;     (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+;XXX;     (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
+;XXX;     ;; (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+;XXX;     (global-set-key (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+;XXX;     ;; Don't let org-mode grab the binding.
+;XXX;     (add-hook 'org-mode-hook
+;XXX; 	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))
+;XXX;     ;; Don't let conf-mode grab the binding.
+;XXX;     (add-hook 'conf-mode-hook
+;XXX; 	      '(lambda () (define-key conf-mode-map (kbd "C-c SPC") nil)))))
 
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
@@ -211,9 +213,9 @@ asking user for confirmation."
 	(interactive)
 	(set-frame-parameter
 	 nil 'fullscreen
-	 (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+	 (unless (frame-parameter nil 'fullscreen) 'fullboth)))
       (global-set-key (kbd "C-c f") 'toggle-fullscreen))
-(global-set-key (kbd "C-c f") 'toggle-frame-fullscreen))
+  (global-set-key (kbd "C-c f") 'toggle-frame-fullscreen))
 
 (setq vc-follow-symlinks t)
 
@@ -362,6 +364,29 @@ asking user for confirmation."
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;;; ----------------------------------------------------------------------
+;;; https://github.com/abo-abo
+
+(when (require 'ivy nil 'noerror)
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (global-set-key (kbd "C-s") 'swiper)
+  (global-set-key (kbd "C-S-s") 'isearch-forward)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-c p") 'ivy-push-view)
+  (global-set-key (kbd "C-c P") 'ivy-pop-view))
+
+(when (require 'avy nil 'noerror)
+  (setq avy-all-windows 'all-frames)
+  (global-set-key (kbd "C-;") 'avy-goto-word-or-subword-1)
+  (global-set-key (kbd "C-:") 'avy-goto-char-timer) ; avy-goto-char-2 ?
+  (global-set-key (kbd "C-x SPC") 'avy-pop-mark))
+
+(when (require 'ace-window nil 'noerror)
+  (global-set-key (kbd "M-p") 'ace-window))
+;;; ----------------------------------------------------------------------
+
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
   ;; cd /opt/local/share/info
@@ -383,7 +408,9 @@ asking user for confirmation."
  '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
  '(org-modules nil)
- '(package-selected-packages (quote (ggtags))))
+ '(package-selected-packages
+   (quote
+    (rust-mode fill-column-indicator haskell-mode yaml-mode counsel org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
