@@ -50,6 +50,11 @@ in case that file does not provide any feature."
 	  (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
 (add-hook 'java-mode-hook
 	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
+(add-hook 'html-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'sgml-basic-offset) 4)
+	    (setq indent-tabs-mode nil)))
+(add-hook 'js-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 (add-hook 'octave-mode-hook
 	  (lambda () (setq octave-block-offset 4)))
@@ -70,7 +75,7 @@ in case that file does not provide any feature."
 ;;
 ;; [via https://twitter.com/launchderp/status/585874100939137024]
 
-(dolist (m '(c-mode python-mode sh-mode rust-mode))
+(dolist (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode))
   (font-lock-add-keywords m
    ; Fontify the word "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -167,7 +172,7 @@ asking user for confirmation."
   (setq org-clock-out-remove-zero-time-clocks t
 	org-clock-into-drawer 2
 	org-clock-idle-time 10)
-  (global-set-key "\C-cc" 'org-clock-goto))
+  (global-set-key "\C-cC" 'org-clock-goto))
 
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
@@ -374,8 +379,26 @@ asking user for confirmation."
   (global-set-key (kbd "C-S-s") 'isearch-forward)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-c g") 'counsel-git-grep)
+  (global-set-key (kbd "C-c i") 'counsel-imenu)
   (global-set-key (kbd "C-c p") 'ivy-push-view)
   (global-set-key (kbd "C-c P") 'ivy-pop-view))
+
+(with-eval-after-load "counsel"
+  ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
+  (defun counsel-git-grep-function (string &optional _pred &rest _unused)
+    "Grep in the current git repository for STRING."
+    (if (and (> counsel--git-grep-count 20000)
+	     (< (length string) 3))
+	(counsel-more-chars 3)
+      (let* ((string (car (split-string string "\n" t))) ; XXX Modify `string'
+	     (default-directory counsel--git-grep-dir)
+	     (cmd (format counsel-git-grep-cmd
+			  (setq ivy--old-re (ivy--regex string t)))))
+	(if (<= counsel--git-grep-count 20000)
+	    (split-string (shell-command-to-string cmd) "\n" t)
+	  (counsel--gg-candidates (ivy--regex string))
+	  nil)))))
 
 (when (require 'avy nil 'noerror)
   (setq avy-all-windows 'all-frames)
@@ -386,6 +409,34 @@ asking user for confirmation."
 (when (require 'ace-window nil 'noerror)
   (global-set-key (kbd "M-p") 'ace-window))
 ;;; ----------------------------------------------------------------------
+
+;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
+(setq mode-line-misc-info
+      ;; We remove Which Function Mode from the mode line, because it's mostly
+      ;; invisible there anyway.
+      (assq-delete-all 'which-func-mode mode-line-misc-info))
+(advice-add 'which-function-mode :before
+	    (lambda (&rest ignore)
+	      (setq header-line-format
+		    (unless which-function-mode
+		      '((which-func-mode ("" which-func-format " ")))))))
+(global-set-key (kbd "C-c c") 'which-function-mode)
+
+;;; https://github.com/benma/visual-regexp.el
+(when (require 'visual-regexp nil 'noerror)
+  (define-key global-map (kbd "C-M-%") ; query-replace-regexp
+    'vr/query-replace))
+
+(defun vvv/insert-date (arg)
+  "Insert today's date in \"%Y-%m-%d (%a)\" format.
+
+A prefix argument specifies the number of days to add to today."
+  (interactive "P")
+  (let ((shift_days (prefix-numeric-value (or arg 0))))
+    (insert (format-time-string
+	     "%Y-%m-%d (%a)"
+	     (time-add (current-time) (* shift_days 24 3600))))))
+(define-key global-map (kbd "C-c d") 'vvv/insert-date)
 
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
@@ -410,7 +461,7 @@ asking user for confirmation."
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (rust-mode fill-column-indicator haskell-mode yaml-mode counsel org ace-window swiper ggtags))))
+    (hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
