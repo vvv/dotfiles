@@ -12,3 +12,5 @@ GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
 
 [ -f ~/lib/tmuxinator/completion/tmuxinator.bash ] &&
     . ~/lib/tmuxinator/completion/tmuxinator.bash
+
+ssh-add -A &>/dev/null
