@@ -19,8 +19,9 @@ scratch() {
 export -f scratch
 
 which hd &>/dev/null || {
-	hd() { hexdump -C "$@"; }
-	export -f hd
+#    hd() { hexdump -C "$@"; }
+    hd() { xxd "$@"; }
+    export -f hd
 }
 
 ### git helpers
@@ -55,6 +56,11 @@ which gtags &>/dev/null && {
 [ -d /usr/include/asm-generic ] && {
     errgrep() { grep -nH "$@" /usr/include/asm-generic/errno*; }
     export -f errgrep
+}
+
+### http://wttr.in/:bash.function
+wttr() {
+    curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}"
 }
 
 ## devhist() {
