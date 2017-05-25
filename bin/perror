@@ -6,20 +6,23 @@ import os
 import sys
 
 
-def usage():
-    print('Usage: {} ERRNO'.format(os.path.basename(sys.argv[0])),
-          file=sys.stderr)
-    sys.exit(1)
+def usage_and_exit(exit_code=0):
+    print('Usage: {} ERRNO...'.format(os.path.basename(sys.argv[0])),
+          file=(sys.stdout if exit_code == 0 else sys.stderr))
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        usage()
-    try:
-        err = int(sys.argv[1])
-        print('{} ({}): {}'.format(errno.errorcode[err], err,
-                                   os.strerror(err)))
-    except ValueError:
-        usage()
-    except KeyError:
-        print('Unknown error code', file=sys.stderr)
+    if len(sys.argv) < 2:
+        usage_and_exit(1)
+    if sys.argv[1] in ('-h', '--help'):
+        usage_and_exit()
+    for arg in sys.argv[1:]:
+        try:
+            err = int(arg)
+            print('{} ({}): {}'.format(errno.errorcode[err], err,
+                                       os.strerror(err)))
+        except ValueError:
+            usage_and_exit(1)
+        except KeyError:
+            print('Unknown error code: {}'.format(arg), file=sys.stderr)
