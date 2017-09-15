@@ -41,6 +41,9 @@ in case that file does not provide any feature."
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 
+(setq display-time-day-and-date nil display-time-24hr-format nil)
+(display-time)
+
 (setq enable-local-variables :safe)
 
 (setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
@@ -75,7 +78,9 @@ in case that file does not provide any feature."
 ;;
 ;; [via https://twitter.com/launchderp/status/585874100939137024]
 
-(dolist (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode))
+(dolist
+    (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
+		markdown-mode yaml-mode ruby-mode))
   (font-lock-add-keywords m
    ; Fontify the word "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -180,8 +185,8 @@ asking user for confirmation."
 ;;; --------------------------------------------------------------------
 
 ;;; Spell check
-(global-set-key (kbd "C-c ib") 'ispell-buffer)
-(global-set-key (kbd "C-c ir") 'ispell-region)
+(global-set-key (kbd "C-c Ib") 'ispell-buffer)
+(global-set-key (kbd "C-c Ir") 'ispell-region)
 
 (eval-after-load "ps-print"
   '(setq ps-paper-type 'a4
@@ -379,6 +384,7 @@ asking user for confirmation."
   (global-set-key (kbd "C-S-s") 'isearch-forward)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-c j") 'counsel-git)
   (global-set-key (kbd "C-c g") 'counsel-git-grep)
   (global-set-key (kbd "C-c i") 'counsel-imenu)
   (global-set-key (kbd "C-c p") 'ivy-push-view)
@@ -407,7 +413,12 @@ asking user for confirmation."
   (global-set-key (kbd "C-x SPC") 'avy-pop-mark))
 
 (when (require 'ace-window nil 'noerror)
-  (global-set-key (kbd "M-p") 'ace-window))
+  (global-set-key (kbd "M-p") 'ace-window)
+  ;; Don't let diff-mode steal the binding.
+  (add-hook 'diff-mode-hook
+	    (lambda () (define-key diff-mode-map (kbd "M-p") nil)))
+  (add-hook 'markdown-mode-hook
+	    (lambda () (define-key markdown-mode-map (kbd "M-p") nil))))
 ;;; ----------------------------------------------------------------------
 
 ;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
@@ -438,6 +449,30 @@ A prefix argument specifies the number of days to add to today."
 	     (time-add (current-time) (* shift_days 24 3600))))))
 (define-key global-map (kbd "C-c d") 'vvv/insert-date)
 
+(defun vvv/copy-file-path (&optional *dir-path-only-p)
+  "Copy the current buffer's file path or dired path to `kill-ring'.
+Result is full path.
+If `universal-argument' is called first, copy only the dir path.
+
+Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
+  (interactive "P")
+  (let ((-fpath
+	 (abbreviate-file-name
+	  (if (equal major-mode 'dired-mode)
+	      (expand-file-name default-directory)
+	    (if (buffer-file-name)
+		(buffer-file-name)
+	      (user-error "Current buffer is not associated with a file!"))))))
+    (kill-new
+     (if *dir-path-only-p
+         (progn
+           (message "Directory path copied: %s"
+		    (file-name-directory -fpath))
+           (file-name-directory -fpath))
+       (progn
+         (message "File path copied: %s" -fpath) -fpath)))))
+(define-key global-map (kbd "C-c 1") 'vvv/copy-file-path)
+
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
   ;; cd /opt/local/share/info
@@ -461,7 +496,7 @@ A prefix argument specifies the number of days to add to today."
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
+    (markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
