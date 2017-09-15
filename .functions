@@ -19,8 +19,8 @@ scratch() {
 export -f scratch
 
 which hd &>/dev/null || {
-#    hd() { hexdump -C "$@"; }
-    hd() { xxd "$@"; }
+    hd() { hexdump -C "$@"; }
+#    hd() { xxd "$@"; }
     export -f hd
 }
 
@@ -57,6 +57,18 @@ which gtags &>/dev/null && {
     errgrep() { grep -nH "$@" /usr/include/asm-generic/errno*; }
     export -f errgrep
 }
+
+_run() {
+    local cmd="$*"
+    time $cmd
+    local rc=$?
+    [ $rc -eq 0 ] || echo FAIL $rc >&2
+    if which osa 2>/dev/null; then
+        osa "$cmd: $rc"
+    fi
+    return $rc
+}
+export -f _run
 
 ### http://wttr.in/:bash.function
 wttr() {
