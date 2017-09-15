@@ -11,13 +11,22 @@ _path_prepend_safe() {
     fi
 }
 
+# XXX 2017-03-26 (Sun)
+# coreutils has the following notes:
+#   The tools provided by GNU coreutils are prefixed with the character 'g' by
+#   default to distinguish them from the BSD commands.
+#   For example, cp becomes gcp and ls becomes gls.
+#
+#   If you want to use the GNU tools by default, add this directory to the front
+#   of your PATH environment variable:
+#       /opt/local/libexec/gnubin/
+
 _path_prepend /usr/sbin:/sbin
 _path_prepend /usr/local/bin
-[ -d /opt/local ] && _path_prepend /opt/local/bin:/opt/local/sbin # MacPorts
-_path_prepend_safe /opt/packer # https://www.packer.io/
-_path_prepend_safe ~/Library/Python/2.7/bin # mavlink
+_path_prepend_safe ~/.cargo/bin # https://github.com/rust-lang-nursery/rustfmt
+_path_prepend_safe ~/.cabal/bin # cabal install hasktags
+_path_prepend_safe ~/.local/bin # stack install hlint
 _path_prepend_safe ~/bin
-_path_prepend_safe /opt/local/libexec/qt5/bin # qt5
 
 unset -f _path_prepend_safe _path_prepend
 export PATH
@@ -27,10 +36,18 @@ export PATH
 
 export PS1='\h:\W\$ '
 export LC_CTYPE='en_US.UTF-8'
+export HISTCONTROL='ignoreboth'
 
 # export EDITOR=emacs
 
 [ -x /opt/local/bin/bash ] && export SHELL=/opt/local/bin/bash
 
+#XXX if type -f brew &>/dev/null; then
+#XXX     ### http://docs.brew.sh/Gems,-Eggs-and-Perl-Modules.html#perl-cpan-modules-without-sudo
+#XXX     eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
+#XXX fi
+[ -d ~/perl5/perlbrew ] && . ~/perl5/perlbrew/etc/bashrc
+
 [ -f ~/.functions ] && . ~/.functions
 [ -f ~/.bashrc ] && . ~/.bashrc
+[ -f ~/.bash-private ] && . ~/.bash-private
