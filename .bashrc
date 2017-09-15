@@ -1,6 +1,8 @@
-### https://trac.macports.org/wiki/howto/bash-completion
-[ -f /opt/local/etc/profile.d/bash_completion.sh ] &&
-    . /opt/local/etc/profile.d/bash_completion.sh
+BREW_PREFIX=$(brew --prefix)
+if [[ -n $BREW_PREFIX ]]; then
+    [ -f $BREW_PREFIX/etc/bash_completion.d/rustup ] &&
+        . $BREW_PREFIX/etc/bash_completion.d/rustup
+fi
 
 GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
 [ -f $GIT_CORE/git-completion.bash ] && . $GIT_CORE/git-completion.bash
