@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+rc=0
+time $* || rc=$?
+[ $rc -eq 0 ] || echo FAIL $rc >&2
+if which osadialog 2>/dev/null; then
+    osadialog "$*: $rc" >/dev/null
+fi
+exit $rc

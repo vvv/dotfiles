@@ -58,21 +58,9 @@ which gtags &>/dev/null && {
     export -f errgrep
 }
 
-_run() {
-    local cmd="$*"
-    time $cmd
-    local rc=$?
-    [ $rc -eq 0 ] || echo FAIL $rc >&2
-    if which osa 2>/dev/null; then
-        osa "$cmd: $rc"
-    fi
-    return $rc
-}
-export -f _run
-
 ### http://wttr.in/:bash.function
 wttr() {
-    curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}"
+    curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
 }
 
 ## devhist() {
