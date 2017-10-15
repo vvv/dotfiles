@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eu
+
+osascript -e "
+tell application (path to frontmost application as text)
+    display dialog \"$@\" buttons {\"OK\"} with icon caution
+end tell"
