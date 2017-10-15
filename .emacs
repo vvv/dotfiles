@@ -80,7 +80,7 @@ in case that file does not provide any feature."
 
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
-		markdown-mode yaml-mode ruby-mode))
+		markdown-mode yaml-mode ruby-mode org-mode))
   (font-lock-add-keywords m
    ; Fontify the word "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -193,21 +193,6 @@ asking user for confirmation."
 	 ps-print-header nil
 	 ps-multibyte-buffer 'bdf-font-except-latin))
 
-;XXX; ;;; https://github.com/winterTTr/ace-jump-mode
-;XXX; (let ((fn "~/lib/emacs/ace-jump-mode/ace-jump-mode.el"))
-;XXX;   (when (file-readable-p fn)
-;XXX;     (autoload 'ace-jump-mode fn nil t)
-;XXX;     (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-;XXX;     (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
-;XXX;     ;; (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
-;XXX;     (global-set-key (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
-;XXX;     ;; Don't let org-mode grab the binding.
-;XXX;     (add-hook 'org-mode-hook
-;XXX; 	      '(lambda () (define-key org-mode-map (kbd "C-c SPC") nil)))
-;XXX;     ;; Don't let conf-mode grab the binding.
-;XXX;     (add-hook 'conf-mode-hook
-;XXX; 	      '(lambda () (define-key conf-mode-map (kbd "C-c SPC") nil)))))
-
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
   (when (file-readable-p fn)
@@ -239,16 +224,20 @@ asking user for confirmation."
 
 (define-key help-map "A" 'apropos-variable)
 
-(progn ;; Unset unwelcome key bindings.
-  (global-unset-key (kbd "s-q"))      ; `save-buffers-kill-emacs'
-  (global-unset-key (kbd "s-w"))      ; `delete-frame'
-  (global-unset-key "\C-z")           ; `suspend-frame'
-  (global-unset-key (kbd "C-x C-z"))  ; `suspend-frame'
-  (global-unset-key (kbd "s-:"))      ; `ispell'
-  (global-unset-key (kbd "s-g"))      ; `isearch-repeat-forward'
-  (global-unset-key (kbd "s-n"))      ; `ns-new-frame'
-  (global-unset-key (kbd "s-z"))      ; `undo'
-  (global-unset-key "\C-z"))          ; `undo'
+;; Unset unwelcome key bindings.
+(dolist
+    (b (list
+	(kbd "s-q")       ; `save-buffers-kill-emacs'
+	(kbd "s-w")       ; `delete-frame'
+	"\C-z"            ; `suspend-frame'
+	(kbd "C-x C-z")   ; `suspend-frame'
+	(kbd "s-:")       ; `ispell'
+	(kbd "s-g")       ; `isearch-repeat-forward'
+	(kbd "s-n")       ; `ns-new-frame'
+	(kbd "s-z")       ; `undo'
+	"\C-z"            ; `undo'
+	(kbd "C-x C-p"))) ; `mark-page'
+  (global-unset-key b))
 
 (setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
 
@@ -472,6 +461,33 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
        (progn
          (message "File path copied: %s" -fpath) -fpath)))))
 (define-key global-map (kbd "C-c 1") 'vvv/copy-file-path)
+
+;;; - https://blog.chmouel.com/2016/09/07/dealing-with-yaml-in-emacs/
+;;; - https://stackoverflow.com/a/4459159/136238
+(defun aj-toggle-fold ()
+  "Toggle fold all lines larger than indentation on current line"
+  (interactive)
+  (let ((col 1))
+    (save-excursion
+      (back-to-indentation)
+      (setq col (1+ (current-column)))
+      (set-selective-display
+       (if selective-display nil (or col 1))))))
+(define-key global-map (kbd "C-c $") 'aj-toggle-fold)
+
+;;; ------------------------------------------------------------------
+;;; http://nullprogram.com/blog/2010/10/06/
+
+(defun set-window-width (n)
+  "Set the selected window's width."
+  (adjust-window-trailing-edge (selected-window) (- n (window-width)) t))
+
+(defun set-80-columns ()
+  "Set the selected window to 80 columns."
+  (interactive)
+  (set-window-width 80))
+(global-set-key (kbd "C-c 8") 'set-80-columns)
+;;; ------------------------------------------------------------------
 
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
