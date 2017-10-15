@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+from bs4 import BeautifulSoup
+import urllib.request
+import os.path
+import os
+import sys
+
+
+g_album = 'alien-isolation-pc-gamerip-2014-'
+
+g_out_dir = os.path.expanduser('~/Downloads/' + g_album)
+g_cache_dir = '/tmp/_DELETEME_cache'
+g_verbose_p = True
+
+
+def say(msg):
+    if g_verbose_p:
+        print(msg, file=sys.stderr)
+
+
+def is_ost_link(tag):
+    if tag.name == 'a':
+        href = tag.get('href')
+        return href.find(g_album) != -1 and href.endswith('.mp3')
+
+
+def ost_links(html_str):
+    links = set()
+    soup = BeautifulSoup(html_str, 'html.parser')
+    for tag in soup.find_all(is_ost_link):
+        links.add(tag.get('href'))
+    return links
+
+
+def output_path(url):
+    j = os.path.join
+    if not url.endswith('.mp3'):
+        return j(g_cache_dir, 'index.html')
+    if url.startswith('https://downloads.'):
+        return j(g_cache_dir, os.path.basename(url).replace('.mp3', '.html'))
+    return j(g_out_dir, os.path.basename(url))
+
+
+def retrieve(url):
+    cached = output_path(url)
+    if not os.path.exists(cached):
+        urllib.request.urlretrieve(url, cached)
+    return cached
+
+
+def main():
+    for d in g_out_dir, g_cache_dir:
+        if not os.path.exists(d):
+            os.makedirs(d)
+
+    url = 'https://downloads.khinsider.com/game-soundtracks/album/' + g_album
+    with open(retrieve(url)) as f:
+        links = ost_links(f.read())
+
+    for i, url in enumerate(links):
+        say('Link {} of {}'.format(i+1, len(links)))
+        with open(retrieve(url)) as f:
+            links1 = ost_links(f.read())
+        assert len(links1) == 1
+        for mp3 in links1:
+            retrieve(mp3)
+
+
+if __name__ == '__main__':
+    main()
