@@ -383,14 +383,16 @@ asking user for confirmation."
   ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
   (defun counsel-git-grep-function (string &optional _pred &rest _unused)
     "Grep in the current git repository for STRING."
-    (if (and (> counsel--git-grep-count 20000)
+    (if (and (or counsel-git-grep-skip-counting-lines
+		 (> counsel--git-grep-count 20000))
 	     (< (length string) 3))
 	(counsel-more-chars 3)
       (let* ((string (car (split-string string "\n" t))) ; XXX Modify `string'
-	     (default-directory counsel--git-grep-dir)
+	     (default-directory counsel--git-dir)
 	     (cmd (format counsel-git-grep-cmd
 			  (setq ivy--old-re (ivy--regex string t)))))
-	(if (<= counsel--git-grep-count 20000)
+	(if (and (not counsel-git-grep-skip-counting-lines)
+		 (<= counsel--git-grep-count 20000))
 	    (split-string (shell-command-to-string cmd) "\n" t)
 	  (counsel--gg-candidates (ivy--regex string))
 	  nil)))))
