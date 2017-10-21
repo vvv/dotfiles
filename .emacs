@@ -405,11 +405,18 @@ asking user for confirmation."
 
 (when (require 'ace-window nil 'noerror)
   (global-set-key (kbd "M-p") 'ace-window)
-  ;; Don't let diff-mode steal the binding.
+  (global-set-key (kbd "M-P") 'ace-swap-window)
+  (setq aw-ignore-current t)
+
+  ;; Prevent some modules from stealing "M-p" binding.
   (add-hook 'diff-mode-hook
-	    (lambda () (define-key diff-mode-map (kbd "M-p") nil)))
+            (lambda () (define-key diff-mode-map (kbd "M-p") nil)))
   (add-hook 'markdown-mode-hook
-	    (lambda () (define-key markdown-mode-map (kbd "M-p") nil))))
+            (lambda () (define-key markdown-mode-map (kbd "M-p") nil)))
+  (add-hook 'compilation-mode-hook
+            (lambda () (define-key compilation-mode-map (kbd "M-p") nil)))
+  (add-hook 'grep-mode-hook
+            (lambda () (define-key grep-mode-map (kbd "M-p") nil))))
 ;;; ----------------------------------------------------------------------
 
 ;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
@@ -491,6 +498,9 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
 (global-set-key (kbd "C-c 8") 'set-80-columns)
 ;;; ------------------------------------------------------------------
 
+(with-eval-after-load "iedit"
+  (global-set-key (kbd "C-/") 'iedit-mode))  ; replaces `undo'
+
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
   ;; cd /opt/local/share/info
@@ -514,7 +524,7 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
+    (iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
