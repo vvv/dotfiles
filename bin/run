@@ -4,7 +4,12 @@ set -eu -o pipefail
 rc=0
 time $* || rc=$?
 [ $rc -eq 0 ] || echo FAIL $rc >&2
-if which osadialog 2>/dev/null; then
-    osadialog "$*: $rc" >/dev/null
+if which osascript &>/dev/null; then
+    # One beep -- success, two beeps -- failure.
+    osascript -e beep
+    [ $rc -eq 0 ] || osascript -e beep
+fi
+if [[ ${0%-n} = $0 ]] && which osadialog &>/dev/null; then
+    osadialog "$*: $rc" 2>/dev/null
 fi
 exit $rc
