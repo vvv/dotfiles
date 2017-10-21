@@ -1,15 +1,44 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [OPTION]... COMMAND [ARGUMENT]...
+
+Options:
+    -n, --no-dialog           Don't show pop-up window.
+    -q, --no-beep, --quiet    Don't emit audio bell.
+    -h, --help                Show this help and exit.
+EOF
+}
+
+if [ $# -eq 0 ]; then
+    echo 'Command is missing' >&2
+    usage >&2
+    exit 1
+fi
+
+DIALOG_P=1
+BEEP_P=1
+while true; do
+    case "$1" in
+        -n|--no-dialog) DIALOG_P=0; shift;;
+        -q|--no-beep|--quiet) BEEP_P=0; shift;;
+        -h|--help) usage; exit;;
+        *) break;;
+    esac
+done
+
 rc=0
 time $* || rc=$?
 [ $rc -eq 0 ] || echo FAIL $rc >&2
-if which osascript &>/dev/null; then
+
+if [ $BEEP_P -eq 1 ] && which osascript &>/dev/null; then
     # One beep -- success, two beeps -- failure.
     osascript -e beep
     [ $rc -eq 0 ] || osascript -e beep
 fi
-if [[ ${0%-n} = $0 ]] && which osadialog &>/dev/null; then
+if [ $DIALOG_P -eq 1 ] && which osadialog &>/dev/null; then
     osadialog "$*: $rc" 2>/dev/null
 fi
 exit $rc
