@@ -431,11 +431,6 @@ asking user for confirmation."
 		      '((which-func-mode ("" which-func-format " ")))))))
 (global-set-key (kbd "C-c c") 'which-function-mode)
 
-;;; https://github.com/benma/visual-regexp.el
-(when (require 'visual-regexp nil 'noerror)
-  (define-key global-map (kbd "C-M-%") ; query-replace-regexp
-    'vr/query-replace))
-
 (defun vvv/insert-date (arg)
   "Insert today's date in \"%Y-%m-%d (%a)\" format.
 
