@@ -39,6 +39,7 @@ if [ $BEEP_P -eq 1 ] && which osascript &>/dev/null; then
     [ $rc -eq 0 ] || osascript -e beep
 fi
 if [ $DIALOG_P -eq 1 ] && which osadialog &>/dev/null; then
-    osadialog "$*: $rc" 2>/dev/null
+    if [ $rc -eq 0 ]; then icon='note'; else icon='stop'; fi
+    osadialog -i $icon "$*: $rc" &>/dev/null
 fi
 exit $rc

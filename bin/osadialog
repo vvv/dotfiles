@@ -1,7 +1,26 @@
 #!/usr/bin/env bash
 set -eu
 
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [-i|--icon {caution|note|stop}] [message]
+EOF
+}
+
+ICON='caution'
+
+case "${1:-}" in
+    -i|--icon)
+        ICON="${2:-}"
+        shift 2
+        case "$ICON" in
+            caution|note|stop) ;;
+            *) usage >&2; exit 1;;
+        esac
+        ;;
+esac
+
 osascript -e "
 tell application (path to frontmost application as text)
-    display dialog \"$@\" buttons {\"OK\"} with icon caution
+    display dialog \"$@\" buttons {\"OK\"} with icon $ICON
 end tell"
