@@ -80,9 +80,9 @@ in case that file does not provide any feature."
 
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
-		markdown-mode yaml-mode ruby-mode org-mode))
+		markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode))
   (font-lock-add-keywords m
-   ; Fontify the word "XXX", even in comments.
+   ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
 
 (defun copy-buffer-as-kill ()
@@ -92,6 +92,8 @@ in case that file does not provide any feature."
   (when (interactive-p)
     (message "Buffer saved")))
 (global-set-key "\M-W" 'copy-buffer-as-kill)
+
+(global-set-key (kbd "C-M-5") 'replace-string)
 
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
@@ -125,7 +127,7 @@ asking user for confirmation."
 ;;; --------------------------------------------------------------------
 ;;; Org Mode
 
-(with-eval-after-load 'org
+(with-eval-after-load "org"
   (setq org-startup-indented t)
   (setq org-directory "~/.org")
 
@@ -173,7 +175,7 @@ asking user for confirmation."
 
   (setq org-outline-path-complete-in-steps nil))
 
-(with-eval-after-load 'org-clock
+(with-eval-after-load "org-clock"
   (setq org-clock-out-remove-zero-time-clocks t
 	org-clock-into-drawer 2
 	org-clock-idle-time 10)
@@ -182,6 +184,18 @@ asking user for confirmation."
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
 	       'org-archive-subtree-default-with-confirmation))
+
+;;; --------------------------------------------------------------------
+;;; Haskell
+
+;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
+(with-eval-after-load "haskell-indentation"
+  (setq haskell-indentation-layout-offset 2
+	haskell-indentation-starter-offset 4
+	haskell-indentation-left-offset 4
+	haskell-indentation-where-pre-offset 2
+	haskell-indentation-where-post-offset 2))
+
 ;;; --------------------------------------------------------------------
 
 ;;; Spell check
@@ -399,8 +413,8 @@ asking user for confirmation."
 
 (when (require 'avy nil 'noerror)
   (setq avy-all-windows 'all-frames)
-  (global-set-key (kbd "C-;") 'avy-goto-word-or-subword-1)
-  (global-set-key (kbd "C-:") 'avy-goto-char-timer) ; avy-goto-char-2 ?
+  (global-set-key (kbd "C-/") 'avy-goto-word-or-subword-1)
+  (global-set-key (kbd "C-?") 'avy-goto-char-timer) ; avy-goto-char-2 ?
   (global-set-key (kbd "C-x SPC") 'avy-pop-mark))
 
 (when (require 'ace-window nil 'noerror)
@@ -493,8 +507,9 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
 (global-set-key (kbd "C-c 8") 'set-80-columns)
 ;;; ------------------------------------------------------------------
 
-(with-eval-after-load "iedit"
-  (global-set-key (kbd "C-/") 'iedit-mode))  ; replaces `undo'
+(require 'iedit)
+
+(setq compilation-scroll-output t)
 
 (when (file-accessible-directory-p "/opt/local/share/info/")
   ;; # Create a `dir' file, if necessary:
@@ -509,6 +524,24 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
 	      (setq Info-additional-directory-list
 		    '("/opt/local/share/info/")))))
 
+(when (require 'fill-column-indicator nil 'noerror)
+  (setq fci-rule-column 80)
+  (global-set-key (kbd "C-c F") 'fci-mode))
+
+;;; Solarized color theme
+;;; - http://ethanschoonover.com/solarized
+;;; - https://github.com/sellout/emacs-color-theme-solarized
+(when (require 'color-theme-solarized nil 'noerror)
+  (load-theme 'solarized t)
+  (defun toggle-solarized-light ()
+    "Switch dark/light modes of Solarized color theme."
+    (interactive)
+    (setq frame-background-mode
+	  (if (eq frame-background-mode 'dark) 'light 'dark))
+    (load-theme 'solarized t)
+    (mapc 'frame-set-background-mode (frame-list)))
+  (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -519,11 +552,10 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
+    (color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "Black" :foreground "White" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo"))))
- '(font-lock-warning-face ((t (:inherit error :background "Yellow" :foreground "black")))))
+ '(default ((t (:height 140 :foundry "apple" :family "Menlo")))))
