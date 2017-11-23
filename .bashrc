@@ -4,7 +4,11 @@ if [[ -n $BREW_PREFIX ]]; then
         . $BREW_PREFIX/etc/bash_completion.d/rustup
 fi
 
-GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
+if [[ $(uname) = Darwin ]]; then
+    GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
+else
+    GIT_CORE=/usr/share/doc/git-1.8.3.1/contrib/completion
+fi
 [ -f $GIT_CORE/git-completion.bash ] && . $GIT_CORE/git-completion.bash
 [ -f $GIT_CORE/git-prompt.sh ] && {
     . $GIT_CORE/git-prompt.sh
