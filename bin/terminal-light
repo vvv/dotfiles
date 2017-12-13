@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+set -eu -o pipefail
 
 usage() {
     cat <<EOF
@@ -21,7 +21,7 @@ case "${1:-auto}" in
     [Dd]ark|off|0|no) PROFILE="$DARK";;
     [Ll]ight|on|1|yes) PROFILE="$LIGHT";;
     auto)
-        HOUR=$(date +%H)
+        HOUR=$(date +%-H)
         if (($HOUR >= 16 || $HOUR < 5)); then
             PROFILE="$DARK"
         else
