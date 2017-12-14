@@ -98,15 +98,19 @@ in case that file does not provide any feature."
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
 
-(defvar trailing-whitespace-allowed "\.diff$"
-  "If file name matches this regexp,
+(defvar trailing-whitespace-allowed
+  (list "\.diff$"
+	(concat "^" (expand-file-name "~/\.emacs\.d/elpa/")))
+  "If file name matches any regexp from this list,
 `delete-trailing-whitespace-if-confirmed' will skip it.")
 
 (defun delete-trailing-whitespace-if-confirmed ()
   "Delete all the trailing whitespace across the current buffer,
 asking user for confirmation."
   (unless (and trailing-whitespace-allowed
-	       (string-match trailing-whitespace-allowed (buffer-file-name)))
+	       (cl-some (lambda (regexp)
+			  (string-match-p regexp (buffer-file-name)))
+			trailing-whitespace-allowed))
     (when (and (save-excursion (goto-char (point-min))
 			       (re-search-forward "[[:blank:]]$" nil t))
 	       (y-or-n-p (format "Delete trailing whitespace from %s? "
