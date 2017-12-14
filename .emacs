@@ -484,6 +484,76 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
          (message "File path copied: %s" -fpath) -fpath)))))
 (define-key global-map (kbd "C-c 1") 'vvv/copy-file-path)
 
+(defun xah-open-file-at-cursor ()
+  "Open the file path under cursor.
+If there is text selection, uses the text selection for path.
+If the path starts with “http://”, open the URL in browser.
+Input path can be {relative, full path, URL}.
+Path may have a trailing “:‹n›” that indicates line number. If
+so, jump to that line number.
+If path does not have a file extention, automatically try with
+“.el” for elisp files.
+This command is similar to `find-file-at-point' but without
+prompting for confirmation.
+
+URL `http://ergoemacs.org/emacs/emacs_open_file_path_fast.html'
+Version 2017-09-01"
+  (interactive)
+  (let*
+      (($inputStr
+	(if (use-region-p)
+	    (buffer-substring-no-properties (region-beginning) (region-end))
+	  (let
+	      ($p0 $p1 $p2
+		   ;; chars that are likely to be delimiters of
+		   ;; file path or url, e.g. space, tabs,
+		   ;; brakets. The colon is a problem. cuz it's in
+		   ;; url, but not in file name. Don't want to use
+		   ;; just space as delimiter because path or url
+		   ;; are often in brackets or quotes as in
+		   ;; markdown or html
+		   ($pathStops "^  \t\n\"`'‘’“”|()[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭·。\\"))
+	    (setq $p0 (point))
+	    (skip-chars-backward $pathStops)
+	    (setq $p1 (point))
+	    (goto-char $p0)
+	    (skip-chars-forward $pathStops)
+	    (setq $p2 (point))
+	    (goto-char $p0)
+	    (buffer-substring-no-properties $p1 $p2))))
+       ($path
+	(replace-regexp-in-string
+	 "^file:///" "/"
+	 (replace-regexp-in-string ":\\'" "" $inputStr))))
+    (if (string-match-p "\\`https?://" $path)
+        (if (fboundp 'xahsite-url-to-filepath)
+            (progn (find-file (xahsite-url-to-filepath $path)))
+          (progn (browse-url $path)))
+      (progn                            ; not starting “http://”
+        (if (string-match "^\\`\\(.+?\\):\\([0-9]+\\)\\'" $path)
+            (progn
+              (let (($fpath (match-string 1 $path))
+                    ($line-num (string-to-number (match-string 2 $path))))
+                (if (file-exists-p $fpath)
+                    (progn
+                      (find-file $fpath)
+                      (goto-char 1)
+                      (forward-line (1- $line-num)))
+                  (progn
+                    (when (y-or-n-p
+			   (format "file doesn't exist: 「%s」. Create?"
+				   $fpath))
+                      (find-file $fpath))))))
+          (progn
+            (if (file-exists-p $path)
+                (find-file $path)
+              (if (file-exists-p (concat $path ".el"))
+                  (find-file (concat $path ".el"))
+                (when (y-or-n-p (format "file doesn't exist: 「%s」. Create?"
+					$path))
+                  (find-file $path ))))))))))
+(global-set-key (kbd "C-c o") 'xah-open-file-at-cursor)
+
 ;;; - https://blog.chmouel.com/2016/09/07/dealing-with-yaml-in-emacs/
 ;;; - https://stackoverflow.com/a/4459159/136238
 (defun aj-toggle-fold ()
