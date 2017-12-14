@@ -22,3 +22,5 @@
 	author = log -1 --pretty='%an <%ae>' --author
 [rerere]
 	enabled = true
+[rebase]
+	autoSquash = true
