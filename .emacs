@@ -616,6 +616,18 @@ Version 2017-09-01"
     (mapc 'frame-set-background-mode (frame-list)))
   (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
 
+(when (require 'god-mode nil 'noerror)
+  (global-set-key (kbd "<escape>") 'god-mode-all)
+  (setq god-exempt-major-modes nil god-exempt-predicates nil))
+
+;;; https://www.emacswiki.org/emacs/WinnerMode
+(when (fboundp 'winner-mode) (winner-mode))
+
+;;; Use `S-{right,left,up,down}' to move between neighbouring windows
+;;; in a frame.
+(windmove-default-keybindings)
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -626,7 +638,7 @@ Version 2017-09-01"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
+    (god-mode color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
