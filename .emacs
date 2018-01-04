@@ -16,6 +16,7 @@
 (setq use-dialog-box nil)
 
 (transient-mark-mode t) ; highlight marked region
+(column-number-mode) ; enable column number display in the mode line
 
 (icomplete-mode t) ; enable incremental minibuffer completion
 (if (string< emacs-version "24.4")
@@ -617,7 +618,9 @@ Version 2017-09-01"
   (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
 
 (when (require 'god-mode nil 'noerror)
-  (global-set-key (kbd "<escape>") 'god-mode-all)
+  ;; I don't use <escape> here for I don't want to break `ESC-ESC-ESC'
+  ;; key binding (`keyboard-escape-quit').
+  (global-set-key (kbd "s-g") 'god-mode-all)
   (setq god-exempt-major-modes nil god-exempt-predicates nil))
 
 ;;; https://www.emacswiki.org/emacs/WinnerMode
