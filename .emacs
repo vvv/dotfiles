@@ -187,9 +187,9 @@ asking user for confirmation."
 	org-clock-idle-time 10)
   (global-set-key "\C-cC" 'org-clock-goto))
 
-(eval-after-load "org-archive"
-  '(org-defkey org-mode-map "\C-c\C-x\C-a"
-	       'org-archive-subtree-default-with-confirmation))
+(with-eval-after-load "org-archive"
+  (org-defkey org-mode-map "\C-c\C-x\C-a"
+	      'org-archive-subtree-default-with-confirmation))
 
 (when (file-exists-p "~/.org/at.org")
   (global-set-key "\C-cb"
@@ -206,16 +206,24 @@ asking user for confirmation."
 	haskell-indentation-where-pre-offset 2
 	haskell-indentation-where-post-offset 2))
 
+(add-hook 'haskell-mode-hook
+	  ;; Needed for `C-M-a' and `C-M-e' to work properly.
+	  #'haskell-decl-scan-mode)
+
+(with-eval-after-load "speedbar"
+  (speedbar-add-supported-extension ".hs"))
+(global-set-key (kbd "C-c r") 'speedbar)
+
 ;;; --------------------------------------------------------------------
 
 ;;; Spell check
 (global-set-key (kbd "C-c Ib") 'ispell-buffer)
 (global-set-key (kbd "C-c Ir") 'ispell-region)
 
-(eval-after-load "ps-print"
-  '(setq ps-paper-type 'a4
-	 ps-print-header nil
-	 ps-multibyte-buffer 'bdf-font-except-latin))
+(with-eval-after-load "ps-print"
+  (setq ps-paper-type 'a4
+	ps-print-header nil
+	ps-multibyte-buffer 'bdf-font-except-latin))
 
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
