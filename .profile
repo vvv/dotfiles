@@ -22,7 +22,7 @@ _path_prepend_safe() {
 #       /opt/local/libexec/gnubin/
 
 _path_prepend /usr/sbin:/sbin
-_path_prepend /usr/local/bin
+_path_prepend /usr/local/bin:/usr/local/sbin
 _path_prepend_safe ~/.cargo/bin # https://github.com/rust-lang-nursery/rustfmt
 _path_prepend_safe ~/.cabal/bin # cabal install hasktags
 _path_prepend_safe ~/.local/bin # stack install hlint
