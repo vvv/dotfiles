@@ -81,7 +81,8 @@ in case that file does not provide any feature."
 
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
-		markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode))
+		markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
+		sql-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -176,7 +177,7 @@ asking user for confirmation."
      (shell . t)))
 
   (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-cb" 'org-switchb)
+  (global-set-key "\C-cB" 'org-switchb)
 
   (setq org-outline-path-complete-in-steps nil))
 
@@ -189,6 +190,10 @@ asking user for confirmation."
 (eval-after-load "org-archive"
   '(org-defkey org-mode-map "\C-c\C-x\C-a"
 	       'org-archive-subtree-default-with-confirmation))
+
+(when (file-exists-p "~/.org/at.org")
+  (global-set-key "\C-cb"
+		  '(lambda () (interactive) (find-file "~/.org/at.org"))))
 
 ;;; --------------------------------------------------------------------
 ;;; Haskell
@@ -393,7 +398,7 @@ asking user for confirmation."
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "C-c j") 'counsel-git)
-  (global-set-key (kbd "C-c g") 'counsel-git-grep)
+  (global-set-key (kbd "C-c G") 'counsel-git-grep)
   (global-set-key (kbd "C-c i") 'counsel-imenu)
   (global-set-key (kbd "C-c p") 'ivy-push-view)
   (global-set-key (kbd "C-c P") 'ivy-pop-view))
@@ -484,6 +489,27 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
        (progn
          (message "File path copied: %s" -fpath) -fpath)))))
 (define-key global-map (kbd "C-c 1") 'vvv/copy-file-path)
+
+(defun vvv/grep (command-args)
+  "When in git repository, run git-grep from its top-level directory;
+otherwise run ordinary grep."
+  (interactive
+   (progn
+     (grep-compute-defaults)
+     (let* ((git-toplevel (string-trim-right
+			   (shell-command-to-string
+			    "git rev-parse --show-toplevel 2>/dev/null")))
+	    (git-p (not (string-empty-p git-toplevel))))
+       (when git-p
+	 (setq default-directory git-toplevel))
+       (list (read-shell-command "Run: "
+				 (if git-p
+				     "git --no-pager grep -nHE "
+				   grep-command)
+				 'grep-history)))))
+  (compilation-start command-args 'grep-mode)
+  (switch-to-buffer-other-window grep-last-buffer))
+(global-set-key (kbd "C-c g") 'vvv/grep)
 
 (defun xah-open-file-at-cursor ()
   "Open the file path under cursor.
@@ -621,7 +647,11 @@ Version 2017-09-01"
   ;; I don't use <escape> here for I don't want to break `ESC-ESC-ESC'
   ;; key binding (`keyboard-escape-quit').
   (global-set-key (kbd "s-g") 'god-mode-all)
-  (setq god-exempt-major-modes nil god-exempt-predicates nil))
+  (setq god-exempt-major-modes nil god-exempt-predicates nil)
+  (define-key god-local-mode-map (kbd "z") 'repeat)
+  (define-key god-local-mode-map (kbd "i") 'god-local-mode))
+
+(global-set-key (kbd "M-`") 'repeat)  ; instead of 'tmm-menubar
 
 ;;; https://www.emacswiki.org/emacs/WinnerMode
 (when (fboundp 'winner-mode) (winner-mode))
@@ -630,6 +660,9 @@ Version 2017-09-01"
 ;;; in a frame.
 (windmove-default-keybindings)
 
+(global-set-key (kbd "C-c H") 'hl-line-mode)
+(when (fboundp 'column-highlight-mode)
+  (global-set-key (kbd "C-c h") 'column-highlight-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
