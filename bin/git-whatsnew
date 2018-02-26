@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+usage() {
+    cat <<EOF
+Usage: ${0##*/} <where> [<git-log(1) options>]
+
+<where> argument is:
+    ..    Show remote commits not present in the local branch.
+    .     Show local commits not pushed to the origin.
+
+Example:
+    ${0##*/} .. --patch
+EOF
+}
+
+case "${1:-}" in
+    ..) shift; git log "$@" ..@{push};;
+    .) shift; git log "$@" @{push}..;;
+    -h|--help) usage;;
+    *) usage >&2; exit 1;;
+esac
