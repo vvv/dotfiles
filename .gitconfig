@@ -14,13 +14,20 @@
 	fem = fetch -p origin master:master
 	g = grep -nHE
 	log1 = log --oneline
+	me = merge --ff-only @{upstream}
 	rfm = push origin HEAD:refs/for/master
 	rp = rev-parse --short
 	sb = show-branch
-	sbo = show-branch origin/master HEAD
+	sbo = show-branch HEAD origin/master
+	sbu = show-branch HEAD @{upstream}
 	st = status -sb
 	author = log -1 --pretty='%an <%ae>' --author
 [rerere]
 	enabled = true
 [rebase]
 	autoSquash = true
+# Let us give `git log --follow` thing a try.
+# I never used it, but read good things about it
+# [https://twitter.com/mwotton/status/945049811010703360].
+[log]
+	follow = true

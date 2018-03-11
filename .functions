@@ -29,10 +29,9 @@ b() { git branch "$@"; }
 cl() { local OPT='-n'; [ "$*" = '-f' ] && OPT=''; git clean -fdx $OPT; }
 di() { git diff "$@"; }
 lo() { git log "$@"; }
-me() { git merge --ff-only origin/$(git symbolic-ref HEAD | cut -d/ -f3-); }
 re() { git remote "$@"; }
 st() { git status "$@"; }
-export -f b cl di lo me re st
+export -f b cl di lo re st
 
 which gtags &>/dev/null && {
     gt() {
