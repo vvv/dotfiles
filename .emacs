@@ -96,6 +96,7 @@ in case that file does not provide any feature."
 (global-set-key "\M-W" 'copy-buffer-as-kill)
 
 (global-set-key (kbd "C-M-5") 'replace-string)
+(global-set-key (kbd "C-S-K") 'kill-whole-line)
 
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
@@ -185,7 +186,7 @@ asking user for confirmation."
   (setq org-clock-out-remove-zero-time-clocks t
 	org-clock-into-drawer 2
 	org-clock-idle-time 10)
-  (global-set-key "\C-cC" 'org-clock-goto))
+  (global-set-key "\C-cc" 'org-clock-goto))
 
 (with-eval-after-load "org-archive"
   (org-defkey org-mode-map "\C-c\C-x\C-a"
@@ -194,6 +195,9 @@ asking user for confirmation."
 (when (file-exists-p "~/.org/at.org")
   (global-set-key "\C-cb"
 		  '(lambda () (interactive) (find-file "~/.org/at.org"))))
+
+(when (locate-library "org-brain")
+  (global-set-key "\C-cn" 'org-brain-visualize))
 
 ;;; --------------------------------------------------------------------
 ;;; Haskell
@@ -413,21 +417,18 @@ asking user for confirmation."
 
 (with-eval-after-load "counsel"
   ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
-  (defun counsel-git-grep-function (string &optional _pred &rest _unused)
-    "Grep in the current git repository for STRING."
-    (if (and (or counsel-git-grep-skip-counting-lines
-		 (> counsel--git-grep-count 20000))
-	     (< (length string) 3))
-	(counsel-more-chars 3)
-      (let* ((string (car (split-string string "\n" t))) ; XXX Modify `string'
-	     (default-directory counsel--git-dir)
-	     (cmd (format counsel-git-grep-cmd
-			  (setq ivy--old-re (ivy--regex string t)))))
-	(if (and (not counsel-git-grep-skip-counting-lines)
-		 (<= counsel--git-grep-count 20000))
-	    (split-string (shell-command-to-string cmd) "\n" t)
-	  (counsel--gg-candidates (ivy--regex string))
-	  nil)))))
+  ;;
+  ;; `string' parameter of `counsel-git-grep-function' may be equal to
+  ;; "\n\n3 chars more". In this case the command
+  ;; git --no-pager grep --full-name -n --no-color -i -e \"\(
+  ;;
+  ;; 3\).*\(chars\).*\(more\)\"
+  ;; will be executed, resulting in
+  ;; "fatal: -e option, '\(': Unmatched ( or \(" error.
+  (defun vvv/first-line (args)
+    (let ((string (car args)))
+      (list (car (split-string string "[\f\n\r\v]+")))))
+  (advice-add #'counsel-git-grep-function :filter-args #'vvv/first-line))
 
 (when (require 'avy nil 'noerror)
   (setq avy-all-windows 'all-frames)
@@ -461,7 +462,7 @@ asking user for confirmation."
 	      (setq header-line-format
 		    (unless which-function-mode
 		      '((which-func-mode ("" which-func-format " ")))))))
-(global-set-key (kbd "C-c c") 'which-function-mode)
+(global-set-key (kbd "C-c W") 'which-function-mode)
 
 (defun vvv/insert-date (arg)
   "Insert today's date in \"%Y-%m-%d (%a)\" format.
@@ -507,9 +508,8 @@ otherwise run ordinary grep."
      (let* ((git-toplevel (string-trim-right
 			   (shell-command-to-string
 			    "git rev-parse --show-toplevel 2>/dev/null")))
-	    (git-p (not (string-empty-p git-toplevel))))
-       (when git-p
-	 (setq default-directory git-toplevel))
+	    (git-p (not (string-empty-p git-toplevel)))
+	    (default-directory (if git-p git-toplevel default-directory)))
        (list (read-shell-command "Run: "
 				 (if git-p
 				     "git --no-pager grep -nHE "
@@ -661,8 +661,12 @@ Version 2017-09-01"
 
 (global-set-key (kbd "M-`") 'repeat)  ; instead of 'tmm-menubar
 
-;;; https://www.emacswiki.org/emacs/WinnerMode
-(when (fboundp 'winner-mode) (winner-mode))
+;;; "Undo" (and "redo") changes in the window configuration with the
+;;; key commands `C-c left' and `C-c right'.
+;;;
+;;; See https://www.emacswiki.org/emacs/WinnerMode
+(when (fboundp 'winner-mode)
+  (winner-mode))
 
 ;;; Use `S-{right,left,up,down}' to move between neighbouring windows
 ;;; in a frame.
@@ -671,21 +675,29 @@ Version 2017-09-01"
 (global-set-key (kbd "C-c H") 'hl-line-mode)
 (when (fboundp 'column-highlight-mode)
   (global-set-key (kbd "C-c h") 'column-highlight-mode))
+
+;; ;;; Disable italic font style in comments and documentation.
+;; (set-face-italic 'font-lock-comment-face nil)
+;; (set-face-italic 'font-lock-doc-face nil)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-highlight-mode nil)
  '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (god-mode color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags))))
+    (org-brain god-mode color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+ '(which-function-mode t))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :foundry "apple" :family "Menlo")))))
+ '(default ((t (:height 140 :foundry "apple" :family "Menlo"))))
+ '(which-func ((t (:foreground "dark cyan")))))
