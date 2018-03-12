@@ -508,13 +508,13 @@ otherwise run ordinary grep."
      (let* ((git-toplevel (string-trim-right
 			   (shell-command-to-string
 			    "git rev-parse --show-toplevel 2>/dev/null")))
-	    (git-p (not (string-empty-p git-toplevel)))
-	    (default-directory (if git-p git-toplevel default-directory)))
-       (list (read-shell-command "Run: "
-				 (if git-p
-				     "git --no-pager grep -nHE "
-				   grep-command)
-				 'grep-history)))))
+	    (git-p (not (string-empty-p git-toplevel))))
+       (list (read-shell-command
+	      "Run: "
+	      (if git-p
+		  (format "cd %s; git --no-pager grep -nHE " git-toplevel)
+		grep-command)
+	      'grep-history)))))
   (compilation-start command-args 'grep-mode)
   (switch-to-buffer-other-window grep-last-buffer))
 (global-set-key (kbd "C-c g") 'vvv/grep)
