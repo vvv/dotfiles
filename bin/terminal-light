@@ -36,7 +36,7 @@ tell application \"Terminal\"
     repeat with W in windows
         set current settings of W to settings set \"${PROFILE}\"
     end repeat
-end tell" 2>/dev/null
+end tell" 2>/dev/null || true
 # Hiding the error which I don't know how to deal with.
 # 117:192: execution error: Terminal got an error: AppleEvent handler failed. (-10000)
 
