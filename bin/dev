@@ -3,6 +3,4 @@ set -eu
 
 HOST=`devvm`
 # exec ssh -t $HOST screen -DR
-exec ssh -t $HOST '
-    tmux attach-session -d ||
-    tmux new-session -s devvm \; set-option -g status-bg green'
+exec ssh -t $HOST 'tmux attach-session -d || tmux new-session -s devvm'

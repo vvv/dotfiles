@@ -1,7 +1,10 @@
-BREW_PREFIX=$(brew --prefix)
-if [[ -n $BREW_PREFIX ]]; then
-    [ -f $BREW_PREFIX/etc/bash_completion.d/rustup ] &&
-        . $BREW_PREFIX/etc/bash_completion.d/rustup
+if [[ $(uname) = Darwin ]]; then
+    BREW_PREFIX=$(brew --prefix)
+
+    if [[ -n $BREW_PREFIX ]]; then
+        [ -f $BREW_PREFIX/etc/bash_completion.d/rustup ] &&
+            . $BREW_PREFIX/etc/bash_completion.d/rustup
+    fi
 fi
 
 if [[ $(uname) = Darwin ]]; then
@@ -16,7 +19,9 @@ fi
     export PS1='\h:\W$(__git_ps1 " (%s)")\$ '
 }
 
-[ -f ~/lib/tmuxinator/completion/tmuxinator.bash ] &&
-    . ~/lib/tmuxinator/completion/tmuxinator.bash
+# [[ -f ~/lib/tmuxinator/completion/tmuxinator.bash ]] &&
+#     . ~/lib/tmuxinator/completion/tmuxinator.bash
 
-ssh-add -A &>/dev/null
+if [[ $(uname) = Darwin ]]; then
+    ssh-add -A &>/dev/null
+fi
