@@ -26,7 +26,12 @@ which hd &>/dev/null || {
 
 ### git helpers
 b() { git branch "$@"; }
-cl() { local OPT='-n'; [ "$*" = '-f' ] && OPT=''; git clean -fdx $OPT; }
+cl() {
+    local OPT='-n'
+    [ "$*" = '-f' ] && OPT=''
+    git clean -fdx $OPT
+    git submodule -q foreach --recursive git clean -fdx $OPT
+}
 di() { git diff "$@"; }
 lo() { git log "$@"; }
 re() { git remote "$@"; }
@@ -35,38 +40,36 @@ export -f b cl di lo re st
 
 which gtags &>/dev/null && {
     gt() {
-	(
-	    set -e
-	    [ -d .git ] || cd ~/src/mero
-	    if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
-		global -u 2>/dev/null
-	    else
-		gtags 2>/dev/null
-	    fi
-	    which mkid &>/dev/null && \
-		mkid 2>/dev/null
-	)
+        (
+            set -eu -o pipefail
+            d=$(git rev-parse --show-toplevel 2>/dev/null || true)
+            cd ${d:-~/src/mero}
+            if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
+                global -u 2>/dev/null
+            else
+                gtags 2>/dev/null
+            fi
+            mkid &>/dev/null || true
+        )
     }
     export -f gt
 }
 
 ### Alternative (and better) approach is to use `errno' (Debian) or
 ### `perror' (from `mysql-server' yum package).
-[ -d /usr/include/asm-generic ] && {
-    errgrep() { grep -nH "$@" /usr/include/asm-generic/errno*; }
-    export -f errgrep
+errgrep() {
+    if [[ -z $(tr -d '0-9' <<<$*) ]]; then
+        local errno=$*
+        cpp -dM /usr/include/errno.h | grep '^#define E' |
+            grep -E "\<$errno\>" | tr -d \\n
+        perl -E '$!=shift; say " /* $! */"' $errno
+    else
+        cpp -dM /usr/include/errno.h | grep '^#define E' | grep "$@"
+    fi
 }
+export -f errgrep
 
 ### http://wttr.in/:bash.function
 wttr() {
     curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
 }
-
-## devhist() {
-##     [ $# -eq 1 ] || { echo "Usage: devhist BRANCH" >&2; return 1; }
-##     local BRANCH="$1"
-##     echo -n 'Development history: '
-##     echo -n "$(git rev-parse --short $(git merge-base origin/master $BRANCH))"
-##     echo "..$(git rev-parse --short $BRANCH)"
-## }
-## export -f devhist

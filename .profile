@@ -6,6 +6,10 @@ _path_prepend() {
 }
 
 _path_prepend_safe() {
+    if [[ $1 = *:* ]]; then
+        echo "_path_prepend_safe: Argument may not contain ':'" >&2
+        return 1
+    fi
     if [ -d "$1" ]; then
         _path_prepend "$1"
     fi
@@ -21,8 +25,10 @@ _path_prepend_safe() {
 #   of your PATH environment variable:
 #       /opt/local/libexec/gnubin/
 
-_path_prepend /usr/sbin:/sbin
-_path_prepend /usr/local/bin:/usr/local/sbin
+_path_prepend_safe /sbin
+_path_prepend_safe /usr/sbin
+_path_prepend_safe /usr/local/sbin
+_path_prepend_safe /usr/local/bin
 _path_prepend_safe ~/.cargo/bin # https://github.com/rust-lang-nursery/rustfmt
 _path_prepend_safe ~/.cabal/bin # cabal install hasktags
 _path_prepend_safe ~/.local/bin # stack install hlint
@@ -37,7 +43,6 @@ export PATH
 export PS1='\h:\W\$ '
 export LC_CTYPE='en_US.UTF-8'
 export HISTCONTROL='ignoreboth'
-
 # export EDITOR=emacs
 
 [ -x /opt/local/bin/bash ] && export SHELL=/opt/local/bin/bash
