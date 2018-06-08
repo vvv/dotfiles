@@ -1,5 +1,13 @@
 ;;; -*- coding: utf-8-unix -*-
 
+;;; We don't want to see this warning:
+;;;
+;;; > gnutls.c: [1] Note that the security level of the Diffie-Hellman
+;;; > key exchange has been lowered to 256 bits and this may allow
+;;; > decryption of the session data
+(when (= gnutls-min-prime-bits 256)
+  (setq gnutls-min-prime-bits 1024))
+
 (server-start)
 
 (setenv "LANG" "en_US.UTF-8")
@@ -12,6 +20,23 @@
 (when window-system
   (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+(defun find-user-init-file ()
+  "Edit `user-init-file'."
+  (interactive)
+  (find-file user-init-file))
+;;; Kudos to @jamiecollinson for posting
+;;; https://jamiecollinson.com/blog/my-emacs-config/
+(global-set-key (kbd "C-c I") 'find-user-init-file)
+
+;;; If `use-package' is not installed, install it.
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 ;; Always perform yes-or-no prompts using the echo area and keyboard input.
 (setq use-dialog-box nil)
 
@@ -19,7 +44,7 @@
 (column-number-mode) ; enable column number display in the mode line
 
 (icomplete-mode t) ; enable incremental minibuffer completion
-(if (string< emacs-version "24.4")
+(if (version< emacs-version "24.4")
     (progn
       (iswitchb-mode t) ; enable switching between buffers using substrings
       (setq iswitchb-prompt-newbuffer nil) ; create a buffer silently
@@ -97,6 +122,7 @@ in case that file does not provide any feature."
 
 (global-set-key (kbd "C-M-5") 'replace-string)
 (global-set-key (kbd "C-S-K") 'kill-whole-line)
+(global-set-key (kbd "C-c l") 'sort-lines)
 
 ;;; --------------------------------------------------------------------
 ;;; Semi-automatic rstripping
@@ -135,8 +161,12 @@ asking user for confirmation."
 ;;; Org Mode
 
 (with-eval-after-load "org"
-  (setq org-startup-indented t)
-  (setq org-directory "~/.org")
+  (setq org-startup-indented t
+	org-directory "~/.org")
+
+  ;; capture
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
+  (global-set-key "\C-cc" 'org-capture)
 
   ;; http://doc.norang.ca/org-mode.html#TodoKeywords
   (setq org-todo-keywords
@@ -177,7 +207,7 @@ asking user for confirmation."
    '((emacs-lisp . t)
      (shell . t)))
 
-  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cL" 'org-store-link)
   (global-set-key "\C-cB" 'org-switchb)
 
   (setq org-outline-path-complete-in-steps nil))
@@ -218,11 +248,23 @@ asking user for confirmation."
   (speedbar-add-supported-extension ".hs"))
 (global-set-key (kbd "C-c r") 'speedbar)
 
+(defun vvv/reload-tags-table (arg)
+  "A combination of `tags-reset-tags-tables' and `visit-tags-table'."
+  (interactive "P")
+  (tags-reset-tags-tables)
+  (if (null current-prefix-arg)
+      (let ((tags-file (locate-dominating-file default-directory "TAGS")))
+	(when tags-file
+	  (visit-tags-table tags-file)
+	  (message "Loaded tags file: %s" tags-file-name)))
+    (call-interactively 'visit-tags-table)))
+(global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
+
 ;;; --------------------------------------------------------------------
 
 ;;; Spell check
-(global-set-key (kbd "C-c Ib") 'ispell-buffer)
-(global-set-key (kbd "C-c Ir") 'ispell-region)
+(global-set-key (kbd "C-c ib") 'ispell-buffer)
+(global-set-key (kbd "C-c ir") 'ispell-region)
 
 (with-eval-after-load "ps-print"
   (setq ps-paper-type 'a4
@@ -272,6 +314,7 @@ asking user for confirmation."
 	(kbd "s-n")       ; `ns-new-frame'
 	(kbd "s-z")       ; `undo'
 	"\C-z"            ; `undo'
+	(kbd "C-/")       ; `undo'
 	(kbd "C-x C-p"))) ; `mark-page'
   (global-unset-key b))
 
@@ -395,25 +438,28 @@ asking user for confirmation."
 (when (file-readable-p "~/lib/emacs/local.el")
   (load "~/lib/emacs/local.el"))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
 ;;; ----------------------------------------------------------------------
 ;;; https://github.com/abo-abo
 
-(when (require 'ivy nil 'noerror)
-  (ivy-mode)
-  (setq ivy-use-virtual-buffers t)
-  (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "C-S-s") 'isearch-forward)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "C-c j") 'counsel-git)
-  (global-set-key (kbd "C-c G") 'counsel-git-grep)
-  (global-set-key (kbd "C-c i") 'counsel-imenu)
-  (global-set-key (kbd "C-c p") 'ivy-push-view)
-  (global-set-key (kbd "C-c P") 'ivy-pop-view))
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+      (ivy-mode t)
+      ;; Add recent files and bookmarks to ‘ivy-switch-buffer’.
+      (setq ivy-use-virtual-buffers t)
+  :bind (("C-s"   . swiper)
+	 ("C-S-s" . isearch-forward)
+	 ("C-c p" . ivy-push-view)
+	 ("C-c P" . ivy-pop-view)))
+
+(use-package counsel
+  :ensure t
+  :bind (("M-x"     . counsel-M-x)
+	 ("C-x C-f" . counsel-find-file)
+	 ("C-c j"   . counsel-git)
+	 ("C-c G"   . counsel-git-grep)
+	 ("C-c i"   . counsel-imenu)))
 
 (with-eval-after-load "counsel"
   ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
@@ -428,12 +474,13 @@ asking user for confirmation."
   (defun vvv/first-line (args)
     (let ((string (car args)))
       (list (car (split-string string "[\f\n\r\v]+")))))
-  (advice-add #'counsel-git-grep-function :filter-args #'vvv/first-line))
+  (when (version<= "24.4" emacs-version)
+    (advice-add #'counsel-git-grep-function :filter-args #'vvv/first-line)))
 
 (when (require 'avy nil 'noerror)
   (setq avy-all-windows 'all-frames)
-  (global-set-key (kbd "C-/") 'avy-goto-word-or-subword-1)
-  (global-set-key (kbd "C-?") 'avy-goto-char-timer) ; avy-goto-char-2 ?
+  (global-set-key (kbd "C-.") 'avy-goto-word-or-subword-1)
+  (global-set-key (kbd "C->") 'avy-goto-char-timer) ; avy-goto-char-2 ?
   (global-set-key (kbd "C-x SPC") 'avy-pop-mark))
 
 (when (require 'ace-window nil 'noerror)
@@ -449,7 +496,9 @@ asking user for confirmation."
   (add-hook 'compilation-mode-hook
             (lambda () (define-key compilation-mode-map (kbd "M-p") nil)))
   (add-hook 'grep-mode-hook
-            (lambda () (define-key grep-mode-map (kbd "M-p") nil))))
+            (lambda () (define-key grep-mode-map (kbd "M-p") nil)))
+  (with-eval-after-load "haskell-cabal"
+    (define-key haskell-cabal-mode-map (kbd "M-p") nil)))
 ;;; ----------------------------------------------------------------------
 
 ;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
@@ -457,11 +506,12 @@ asking user for confirmation."
       ;; We remove Which Function Mode from the mode line, because it's mostly
       ;; invisible there anyway.
       (assq-delete-all 'which-func-mode mode-line-misc-info))
-(advice-add 'which-function-mode :before
-	    (lambda (&rest ignore)
-	      (setq header-line-format
-		    (unless which-function-mode
-		      '((which-func-mode ("" which-func-format " ")))))))
+(when (version<= "24.4" emacs-version)
+  (advice-add 'which-function-mode :before
+	      (lambda (&rest ignore)
+		(setq header-line-format
+		      (unless which-function-mode
+			'((which-func-mode ("" which-func-format " "))))))))
 (global-set-key (kbd "C-c W") 'which-function-mode)
 
 (defun vvv/insert-date (arg)
@@ -473,7 +523,7 @@ A prefix argument specifies the number of days to add to today."
     (insert (format-time-string
 	     "%Y-%m-%d (%a)"
 	     (time-add (current-time) (* shift_days 24 3600))))))
-(define-key global-map (kbd "C-c d") 'vvv/insert-date)
+(global-set-key (kbd "C-c d") 'vvv/insert-date)
 
 (defun vvv/copy-file-path (&optional *dir-path-only-p)
   "Copy the current buffer's file path or dired path to `kill-ring'.
@@ -497,7 +547,7 @@ Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
            (file-name-directory -fpath))
        (progn
          (message "File path copied: %s" -fpath) -fpath)))))
-(define-key global-map (kbd "C-c 1") 'vvv/copy-file-path)
+(global-set-key (kbd "C-c 1") 'vvv/copy-file-path)
 
 (defun vvv/grep (command-args)
   "When in git repository, run git-grep from its top-level directory;
@@ -512,7 +562,8 @@ otherwise run ordinary grep."
        (list (read-shell-command
 	      "Run: "
 	      (if git-p
-		  (format "cd %s; git --no-pager grep -nHE " git-toplevel)
+		  (format "cd %s; git --no-pager grep -nHE '%s'"
+			  git-toplevel (current-word))
 		grep-command)
 	      'grep-history)))))
   (compilation-start command-args 'grep-mode)
@@ -600,7 +651,7 @@ Version 2017-09-01"
       (setq col (1+ (current-column)))
       (set-selective-display
        (if selective-display nil (or col 1))))))
-(define-key global-map (kbd "C-c $") 'aj-toggle-fold)
+(global-set-key (kbd "C-c $") 'aj-toggle-fold)
 
 ;;; ------------------------------------------------------------------
 ;;; http://nullprogram.com/blog/2010/10/06/
@@ -616,7 +667,8 @@ Version 2017-09-01"
 (global-set-key (kbd "C-c 8") 'set-80-columns)
 ;;; ------------------------------------------------------------------
 
-(require 'iedit)
+(use-package iedit
+  :ensure t)
 
 (setq compilation-scroll-output t)
 
@@ -686,13 +738,14 @@ Version 2017-09-01"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-highlight-mode nil)
+ '(debug-on-error nil)
  '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (org-brain god-mode color-theme-solarized iedit markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
- '(which-function-mode t))
+    (iedit htmlize use-package-chords diminish use-package org-brain god-mode color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+ '(which-function-mode nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
