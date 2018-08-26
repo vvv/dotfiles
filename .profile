@@ -1,3 +1,16 @@
+if [ $(uname) = Darwin ]; then
+    if [ -f /etc/profile ]; then
+        ## tmux runs as login shell; /etc/profile is read, which calls
+        ## path_helper(8).  This workaround prevents path_helper from
+        ## leaving $HOME/bin in the middle of the $PATH (I need it at
+        ## the _beginning_ of the $PATH).
+        ##
+        ## See https://superuser.com/a/583502
+        PATH=''
+        . /etc/profile
+    fi
+fi
+
 _path_prepend() {
     case ":$PATH:" in
         *:"$1":*) ;; # already there
