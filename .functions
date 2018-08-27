@@ -55,6 +55,10 @@ which gtags &>/dev/null && {
     export -f gt
 }
 
+which hasktags &>/dev/null && {
+    ht() { hasktags --etags .; }
+}
+
 ### Alternative (and better) approach is to use `errno' (Debian) or
 ### `perror' (from `mysql-server' yum package).
 errgrep() {
