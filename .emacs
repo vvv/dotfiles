@@ -1,5 +1,7 @@
 ;;; -*- coding: utf-8-unix -*-
 
+(eval-when-compile (require 'subr-x))  ; string-empty-p, string-trim-right
+
 ;;; We don't want to see this warning:
 ;;;
 ;;; > gnutls.c: [1] Note that the security level of the Diffie-Hellman
