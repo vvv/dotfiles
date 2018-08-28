@@ -20,10 +20,6 @@
 (when window-system
   (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
 (defun find-user-init-file ()
   "Edit `user-init-file'."
   (interactive)
@@ -31,6 +27,14 @@
 ;;; Kudos to @jamiecollinson for posting
 ;;; https://jamiecollinson.com/blog/my-emacs-config/
 (global-set-key (kbd "C-c I") 'find-user-init-file)
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)))  ; Use spaces, not tabs.
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
 
 ;;; If `use-package' is not installed, install it.
 (unless (package-installed-p 'use-package)
@@ -49,11 +53,11 @@
       (iswitchb-mode t) ; enable switching between buffers using substrings
       (setq iswitchb-prompt-newbuffer nil) ; create a buffer silently
       (defmacro with-eval-after-load (file &rest body)
-	"Execute BODY after FILE is loaded.
+        "Execute BODY after FILE is loaded.
 FILE is normally a feature name, but it can also be a file name,
 in case that file does not provide any feature."
-	(declare (indent 1) (debug t))
-	`(eval-after-load ,file (lambda () ,@body))))
+        (declare (indent 1) (debug t))
+        `(eval-after-load ,file (lambda () ,@body))))
   ;; emacs-version >= 24.4
   (electric-indent-mode -1) ; let `C-j' indent the line
   (unless (locate-library "ivy") (ido-mode 1)))
@@ -76,24 +80,24 @@ in case that file does not provide any feature."
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
 (add-hook 'sh-mode-hook
-	  (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
+          (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
 (add-hook 'java-mode-hook
-	  (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
+          (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
 (add-hook 'html-mode-hook
-	  (lambda ()
-	    (set (make-local-variable 'sgml-basic-offset) 4)
-	    (setq indent-tabs-mode nil)))
+          (lambda ()
+            (set (make-local-variable 'sgml-basic-offset) 4)
+            (setq indent-tabs-mode nil)))
 (add-hook 'js-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 (add-hook 'octave-mode-hook
-	  (lambda () (setq octave-block-offset 4)))
+          (lambda () (setq octave-block-offset 4)))
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
 (add-hook 'c-mode-common-hook
-	  (lambda ()
-	    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-	      (ggtags-mode 1))))
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+              (ggtags-mode 1))))
 (with-eval-after-load "ggtags"
   (define-key ggtags-navigation-map "\M-*" 'ggtags-navigation-mode-abort)
   (define-key ggtags-mode-map "\M-*" 'ggtags-find-tag-continue))
@@ -106,8 +110,8 @@ in case that file does not provide any feature."
 
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
-		markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-		sql-mode))
+                markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
+                sql-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -129,7 +133,7 @@ in case that file does not provide any feature."
 
 (defvar trailing-whitespace-allowed
   (list "\.diff$"
-	(concat "^" (expand-file-name "~/\.emacs\.d/elpa/")))
+        (concat "^" (expand-file-name "~/\.emacs\.d/elpa/")))
   "If file name matches any regexp from this list,
 `delete-trailing-whitespace-if-confirmed' will skip it.")
 
@@ -137,13 +141,13 @@ in case that file does not provide any feature."
   "Delete all the trailing whitespace across the current buffer,
 asking user for confirmation."
   (unless (and trailing-whitespace-allowed
-	       (cl-some (lambda (regexp)
-			  (string-match-p regexp (buffer-file-name)))
-			trailing-whitespace-allowed))
+               (cl-some (lambda (regexp)
+                          (string-match-p regexp (buffer-file-name)))
+                        trailing-whitespace-allowed))
     (when (and (save-excursion (goto-char (point-min))
-			       (re-search-forward "[[:blank:]]$" nil t))
-	       (y-or-n-p (format "Delete trailing whitespace from %s? "
-				 (buffer-name))))
+                               (re-search-forward "[[:blank:]]$" nil t))
+               (y-or-n-p (format "Delete trailing whitespace from %s? "
+                                 (buffer-name))))
       (delete-trailing-whitespace))))
 (add-hook 'before-save-hook 'delete-trailing-whitespace-if-confirmed)
 ;;; --------------------------------------------------------------------
@@ -162,7 +166,7 @@ asking user for confirmation."
 
 (with-eval-after-load "org"
   (setq org-startup-indented t
-	org-directory "~/.org")
+        org-directory "~/.org")
 
   ;; capture
   (setq org-default-notes-file (concat org-directory "/notes.org"))
@@ -170,36 +174,36 @@ asking user for confirmation."
 
   ;; http://doc.norang.ca/org-mode.html#TodoKeywords
   (setq org-todo-keywords
-	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-	  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-	org-treat-S-cursor-todo-selection-as-state-change nil
-	org-enforce-todo-dependencies t)
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+        org-treat-S-cursor-todo-selection-as-state-change nil
+        org-enforce-todo-dependencies t)
   (setq org-todo-keyword-faces
-	'(("TODO" :foreground "red" :weight bold)
-	  ("NEXT" :foreground "blue" :weight bold)
-	  ("DONE" :foreground "forest green" :weight bold)
-	  ("WAITING" :foreground "orange" :weight bold)
-	  ("HOLD" :foreground "magenta" :weight bold)
-	  ("CANCELLED" :foreground "forest green" :weight bold)))
+        '(("TODO" :foreground "red" :weight bold)
+          ("NEXT" :foreground "blue" :weight bold)
+          ("DONE" :foreground "forest green" :weight bold)
+          ("WAITING" :foreground "orange" :weight bold)
+          ("HOLD" :foreground "magenta" :weight bold)
+          ("CANCELLED" :foreground "forest green" :weight bold)))
   (setq org-todo-state-tags-triggers
-	'(("CANCELLED" ("CANCELLED" . t))
-	  ("WAITING" ("WAITING" . t))
-	  ("HOLD" ("HOLD" . t) ("WAITING")) ; set :HOLD:, unset :WAITING:
-	  ("TODO" ("WAITING") ("HOLD") ("CANCELLED"))
-	  ("NEXT" ("WAITING") ("HOLD") ("CANCELLED"))
-	  ("DONE" ("WAITING") ("HOLD") ("CANCELLED"))
-	  (done ("WAITING") ("HOLD"))))
+        '(("CANCELLED" ("CANCELLED" . t))
+          ("WAITING" ("WAITING" . t))
+          ("HOLD" ("HOLD" . t) ("WAITING")) ; set :HOLD:, unset :WAITING:
+          ("TODO" ("WAITING") ("HOLD") ("CANCELLED"))
+          ("NEXT" ("WAITING") ("HOLD") ("CANCELLED"))
+          ("DONE" ("WAITING") ("HOLD") ("CANCELLED"))
+          (done ("WAITING") ("HOLD"))))
 
   ;; http://doc.norang.ca/org-mode.html#NextTasks
   (defun bh/mark-next-parent-tasks-todo ()
     "Visit each parent task and change NEXT states to TODO"
     (when (nth 2 (org-heading-components))
       (save-excursion
-	(while (org-up-heading-safe)
-	  (when (member (nth 2 (org-heading-components)) (list "NEXT"))
-	    (org-todo "TODO"))))))
+        (while (org-up-heading-safe)
+          (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+            (org-todo "TODO"))))))
   (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo
-	    'append)
+            'append)
   (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 
   (org-babel-do-load-languages
@@ -214,17 +218,17 @@ asking user for confirmation."
 
 (with-eval-after-load "org-clock"
   (setq org-clock-out-remove-zero-time-clocks t
-	org-clock-into-drawer 2
-	org-clock-idle-time 10)
+        org-clock-into-drawer 2
+        org-clock-idle-time 10)
   (global-set-key "\C-cc" 'org-clock-goto))
 
 (with-eval-after-load "org-archive"
   (org-defkey org-mode-map "\C-c\C-x\C-a"
-	      'org-archive-subtree-default-with-confirmation))
+              'org-archive-subtree-default-with-confirmation))
 
 (when (file-exists-p "~/.org/at.org")
   (global-set-key "\C-cb"
-		  '(lambda () (interactive) (find-file "~/.org/at.org"))))
+                  '(lambda () (interactive) (find-file "~/.org/at.org"))))
 
 (when (locate-library "org-brain")
   (global-set-key "\C-cn" 'org-brain-visualize))
@@ -235,14 +239,14 @@ asking user for confirmation."
 ;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
 (with-eval-after-load "haskell-indentation"
   (setq haskell-indentation-layout-offset 2
-	haskell-indentation-starter-offset 4
-	haskell-indentation-left-offset 4
-	haskell-indentation-where-pre-offset 2
-	haskell-indentation-where-post-offset 2))
+        haskell-indentation-starter-offset 4
+        haskell-indentation-left-offset 4
+        haskell-indentation-where-pre-offset 2
+        haskell-indentation-where-post-offset 2))
 
 (add-hook 'haskell-mode-hook
-	  ;; Needed for `C-M-a' and `C-M-e' to work properly.
-	  #'haskell-decl-scan-mode)
+          ;; Needed for `C-M-a' and `C-M-e' to work properly.
+          #'haskell-decl-scan-mode)
 
 (with-eval-after-load "speedbar"
   (speedbar-add-supported-extension ".hs"))
@@ -254,9 +258,9 @@ asking user for confirmation."
   (tags-reset-tags-tables)
   (if (null current-prefix-arg)
       (let ((tags-file (locate-dominating-file default-directory "TAGS")))
-	(when tags-file
-	  (visit-tags-table tags-file)
-	  (message "Loaded tags file: %s" tags-file-name)))
+        (when tags-file
+          (visit-tags-table tags-file)
+          (message "Loaded tags file: %s" tags-file-name)))
     (call-interactively 'visit-tags-table)))
 (global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
 
@@ -268,8 +272,8 @@ asking user for confirmation."
 
 (with-eval-after-load "ps-print"
   (setq ps-paper-type 'a4
-	ps-print-header nil
-	ps-multibyte-buffer 'bdf-font-except-latin))
+        ps-print-header nil
+        ps-multibyte-buffer 'bdf-font-except-latin))
 
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
@@ -283,10 +287,10 @@ asking user for confirmation."
 (if (string< emacs-version "24.4")
     (progn
       (defun toggle-fullscreen ()
-	(interactive)
-	(set-frame-parameter
-	 nil 'fullscreen
-	 (unless (frame-parameter nil 'fullscreen) 'fullboth)))
+        (interactive)
+        (set-frame-parameter
+         nil 'fullscreen
+         (unless (frame-parameter nil 'fullscreen) 'fullboth)))
       (global-set-key (kbd "C-c f") 'toggle-fullscreen))
   (global-set-key (kbd "C-c f") 'toggle-frame-fullscreen))
 
@@ -305,17 +309,17 @@ asking user for confirmation."
 ;; Unset unwelcome key bindings.
 (dolist
     (b (list
-	(kbd "s-q")       ; `save-buffers-kill-emacs'
-	(kbd "s-w")       ; `delete-frame'
-	"\C-z"            ; `suspend-frame'
-	(kbd "C-x C-z")   ; `suspend-frame'
-	(kbd "s-:")       ; `ispell'
-	(kbd "s-g")       ; `isearch-repeat-forward'
-	(kbd "s-n")       ; `ns-new-frame'
-	(kbd "s-z")       ; `undo'
-	"\C-z"            ; `undo'
-	(kbd "C-/")       ; `undo'
-	(kbd "C-x C-p"))) ; `mark-page'
+        (kbd "s-q")       ; `save-buffers-kill-emacs'
+        (kbd "s-w")       ; `delete-frame'
+        "\C-z"            ; `suspend-frame'
+        (kbd "C-x C-z")   ; `suspend-frame'
+        (kbd "s-:")       ; `ispell'
+        (kbd "s-g")       ; `isearch-repeat-forward'
+        (kbd "s-n")       ; `ns-new-frame'
+        (kbd "s-z")       ; `undo'
+        "\C-z"            ; `undo'
+        (kbd "C-/")       ; `undo'
+        (kbd "C-x C-p"))) ; `mark-page'
   (global-unset-key b))
 
 (setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
@@ -404,32 +408,32 @@ asking user for confirmation."
 (defun current-word-and-regexp-history ()
   (let ((nearest (current-word t)))
     (if nearest
-	(cons nearest regexp-history)
+        (cons nearest regexp-history)
       regexp-history)))
 
 ;; Overwrite the original `occur-read-primary-args', defined in `replace.el'.
 (defun occur-read-primary-args ()
   (let* ((perform-collect (consp current-prefix-arg))
-	 (w (current-word t))
-	 (defaults (if w (cons w regexp-history) regexp-history))
+         (w (current-word t))
+         (defaults (if w (cons w regexp-history) regexp-history))
          (regexp (read-regexp (if perform-collect
                                   "Collect strings matching regexp"
                                 "List lines matching regexp")
                               'current-word-and-regexp-history)))
     (list regexp
-	  (if perform-collect
-	      ;; Perform collect operation
-	      (if (zerop (regexp-opt-depth regexp))
-		  ;; No subexpression so collect the entire match.
-		  "\\&"
-		;; Get the regexp for collection pattern.
-		(let ((default (car occur-collect-regexp-history)))
-		  (read-regexp
-		   (format "Regexp to collect (default %s): " default)
-		   default 'occur-collect-regexp-history)))
-	    ;; Otherwise normal occur takes numerical prefix argument.
-	    (when current-prefix-arg
-	      (prefix-numeric-value current-prefix-arg))))))
+          (if perform-collect
+              ;; Perform collect operation
+              (if (zerop (regexp-opt-depth regexp))
+                  ;; No subexpression so collect the entire match.
+                  "\\&"
+                ;; Get the regexp for collection pattern.
+                (let ((default (car occur-collect-regexp-history)))
+                  (read-regexp
+                   (format "Regexp to collect (default %s): " default)
+                   default 'occur-collect-regexp-history)))
+            ;; Otherwise normal occur takes numerical prefix argument.
+            (when current-prefix-arg
+              (prefix-numeric-value current-prefix-arg))))))
 ;;; ----------------------------------------------------------------------
 
 (when (file-readable-p "~/lib/emacs/htmlize.el")
@@ -449,17 +453,17 @@ asking user for confirmation."
       ;; Add recent files and bookmarks to ‘ivy-switch-buffer’.
       (setq ivy-use-virtual-buffers t)
   :bind (("C-s"   . swiper)
-	 ("C-S-s" . isearch-forward)
-	 ("C-c p" . ivy-push-view)
-	 ("C-c P" . ivy-pop-view)))
+         ("C-S-s" . isearch-forward)
+         ("C-c p" . ivy-push-view)
+         ("C-c P" . ivy-pop-view)))
 
 (use-package counsel
   :ensure t
   :bind (("M-x"     . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file)
-	 ("C-c j"   . counsel-git)
-	 ("C-c G"   . counsel-git-grep)
-	 ("C-c i"   . counsel-imenu)))
+         ("C-x C-f" . counsel-find-file)
+         ("C-c j"   . counsel-git)
+         ("C-c G"   . counsel-git-grep)
+         ("C-c i"   . counsel-imenu)))
 
 (with-eval-after-load "counsel"
   ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
@@ -508,10 +512,10 @@ asking user for confirmation."
       (assq-delete-all 'which-func-mode mode-line-misc-info))
 (when (version<= "24.4" emacs-version)
   (advice-add 'which-function-mode :before
-	      (lambda (&rest ignore)
-		(setq header-line-format
-		      (unless which-function-mode
-			'((which-func-mode ("" which-func-format " "))))))))
+              (lambda (&rest ignore)
+                (setq header-line-format
+                      (unless which-function-mode
+                        '((which-func-mode ("" which-func-format " "))))))))
 (global-set-key (kbd "C-c W") 'which-function-mode)
 
 (defun vvv/insert-date (arg)
@@ -521,8 +525,8 @@ A prefix argument specifies the number of days to add to today."
   (interactive "P")
   (let ((shift_days (prefix-numeric-value (or arg 0))))
     (insert (format-time-string
-	     "%Y-%m-%d (%a)"
-	     (time-add (current-time) (* shift_days 24 3600))))))
+             "%Y-%m-%d (%a)"
+             (time-add (current-time) (* shift_days 24 3600))))))
 (global-set-key (kbd "C-c d") 'vvv/insert-date)
 
 (defun vvv/copy-file-path (&optional *dir-path-only-p)
@@ -533,17 +537,17 @@ If `universal-argument' is called first, copy only the dir path.
 Adopted from Xah Lee's `http://ergoemacs.org/emacs/emacs_copy_file_path.html'"
   (interactive "P")
   (let ((-fpath
-	 (abbreviate-file-name
-	  (if (equal major-mode 'dired-mode)
-	      (expand-file-name default-directory)
-	    (if (buffer-file-name)
-		(buffer-file-name)
-	      (user-error "Current buffer is not associated with a file!"))))))
+         (abbreviate-file-name
+          (if (equal major-mode 'dired-mode)
+              (expand-file-name default-directory)
+            (if (buffer-file-name)
+                (buffer-file-name)
+              (user-error "Current buffer is not associated with a file!"))))))
     (kill-new
      (if *dir-path-only-p
          (progn
            (message "Directory path copied: %s"
-		    (file-name-directory -fpath))
+                    (file-name-directory -fpath))
            (file-name-directory -fpath))
        (progn
          (message "File path copied: %s" -fpath) -fpath)))))
@@ -556,16 +560,16 @@ otherwise run ordinary grep."
    (progn
      (grep-compute-defaults)
      (let* ((git-toplevel (string-trim-right
-			   (shell-command-to-string
-			    "git rev-parse --show-toplevel 2>/dev/null")))
-	    (git-p (not (string-empty-p git-toplevel))))
+                           (shell-command-to-string
+                            "git rev-parse --show-toplevel 2>/dev/null")))
+            (git-p (not (string-empty-p git-toplevel))))
        (list (read-shell-command
-	      "Run: "
-	      (if git-p
-		  (format "cd %s; git --no-pager grep -nHE '%s'"
-			  git-toplevel (current-word))
-		grep-command)
-	      'grep-history)))))
+              "Run: "
+              (if git-p
+                  (format "cd %s; git --no-pager grep -nHE '%s'"
+                          git-toplevel (current-word))
+                grep-command)
+              'grep-history)))))
   (compilation-start command-args 'grep-mode)
   (switch-to-buffer-other-window grep-last-buffer))
 (global-set-key (kbd "C-c g") 'vvv/grep)
@@ -587,30 +591,30 @@ Version 2017-09-01"
   (interactive)
   (let*
       (($inputStr
-	(if (use-region-p)
-	    (buffer-substring-no-properties (region-beginning) (region-end))
-	  (let
-	      ($p0 $p1 $p2
-		   ;; chars that are likely to be delimiters of
-		   ;; file path or url, e.g. space, tabs,
-		   ;; brakets. The colon is a problem. cuz it's in
-		   ;; url, but not in file name. Don't want to use
-		   ;; just space as delimiter because path or url
-		   ;; are often in brackets or quotes as in
-		   ;; markdown or html
-		   ($pathStops "^  \t\n\"`'‘’“”|()[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭·。\\"))
-	    (setq $p0 (point))
-	    (skip-chars-backward $pathStops)
-	    (setq $p1 (point))
-	    (goto-char $p0)
-	    (skip-chars-forward $pathStops)
-	    (setq $p2 (point))
-	    (goto-char $p0)
-	    (buffer-substring-no-properties $p1 $p2))))
+        (if (use-region-p)
+            (buffer-substring-no-properties (region-beginning) (region-end))
+          (let
+              ($p0 $p1 $p2
+                   ;; chars that are likely to be delimiters of
+                   ;; file path or url, e.g. space, tabs,
+                   ;; brakets. The colon is a problem. cuz it's in
+                   ;; url, but not in file name. Don't want to use
+                   ;; just space as delimiter because path or url
+                   ;; are often in brackets or quotes as in
+                   ;; markdown or html
+                   ($pathStops "^  \t\n\"`'‘’“”|()[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭·。\\"))
+            (setq $p0 (point))
+            (skip-chars-backward $pathStops)
+            (setq $p1 (point))
+            (goto-char $p0)
+            (skip-chars-forward $pathStops)
+            (setq $p2 (point))
+            (goto-char $p0)
+            (buffer-substring-no-properties $p1 $p2))))
        ($path
-	(replace-regexp-in-string
-	 "^file:///" "/"
-	 (replace-regexp-in-string ":\\'" "" $inputStr))))
+        (replace-regexp-in-string
+         "^file:///" "/"
+         (replace-regexp-in-string ":\\'" "" $inputStr))))
     (if (string-match-p "\\`https?://" $path)
         (if (fboundp 'xahsite-url-to-filepath)
             (progn (find-file (xahsite-url-to-filepath $path)))
@@ -627,8 +631,8 @@ Version 2017-09-01"
                       (forward-line (1- $line-num)))
                   (progn
                     (when (y-or-n-p
-			   (format "file doesn't exist: 「%s」. Create?"
-				   $fpath))
+                           (format "file doesn't exist: 「%s」. Create?"
+                                   $fpath))
                       (find-file $fpath))))))
           (progn
             (if (file-exists-p $path)
@@ -636,7 +640,7 @@ Version 2017-09-01"
               (if (file-exists-p (concat $path ".el"))
                   (find-file (concat $path ".el"))
                 (when (y-or-n-p (format "file doesn't exist: 「%s」. Create?"
-					$path))
+                                        $path))
                   (find-file $path ))))))))))
 (global-set-key (kbd "C-c o") 'xah-open-file-at-cursor)
 
@@ -681,9 +685,9 @@ Version 2017-09-01"
   ;;     done
   ;; fi
   (add-hook 'Info-mode-hook
-	    (lambda ()
-	      (setq Info-additional-directory-list
-		    '("/opt/local/share/info/")))))
+            (lambda ()
+              (setq Info-additional-directory-list
+                    '("/opt/local/share/info/")))))
 
 (when (require 'fill-column-indicator nil 'noerror)
   (setq fci-rule-column 80)
@@ -698,7 +702,7 @@ Version 2017-09-01"
     "Switch dark/light modes of Solarized color theme."
     (interactive)
     (setq frame-background-mode
-	  (if (eq frame-background-mode 'dark) 'light 'dark))
+          (if (eq frame-background-mode 'dark) 'light 'dark))
     (load-theme 'solarized t)
     (mapc 'frame-set-background-mode (frame-list)))
   (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
