@@ -568,8 +568,11 @@ otherwise run ordinary grep."
        (list (read-shell-command
               "Run: "
               (if git-p
-                  (format "cd %s; git --no-pager grep -nHE '%s'"
-                          git-toplevel (current-word))
+                  (let ((word (if (null current-prefix-arg)
+                                  (current-word)
+                                (format "\\<%s\\>" (current-word)))))
+                    (format "cd %s; git --no-pager grep -nHE '%s'"
+                            git-toplevel word))
                 grep-command)
               'grep-history)))))
   (compilation-start command-args 'grep-mode)
