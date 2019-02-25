@@ -30,9 +30,7 @@
 ;;; https://jamiecollinson.com/blog/my-emacs-config/
 (global-set-key (kbd "C-c I") 'find-user-init-file)
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode nil)))  ; Use spaces, not tabs.
+(setq-default indent-tabs-mode nil)  ; Use spaces, not tabs.
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -42,6 +40,12 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+;;; Use $PATH and some other environment variables from the user's shell.
+;;; https://github.com/purcell/exec-path-from-shell
+(when (memq window-system '(mac ns x))
+  (use-package exec-path-from-shell
+    :config (exec-path-from-shell-initialize)))
 
 ;; Always perform yes-or-no prompts using the echo area and keyboard input.
 (setq use-dialog-box nil)
@@ -81,15 +85,14 @@ in case that file does not provide any feature."
 (setq c-default-style '((c-mode . "linux") (awk-mode . "awk") (other . "gnu")))
 (global-set-key (kbd "M-g f") 'ff-find-other-file)
 
+(add-hook 'c-mode-hook
+          (lambda () (setq indent-tabs-mode t)))
 (add-hook 'sh-mode-hook
-          (lambda () (setq indent-tabs-mode nil sh-basic-offset 4)))
+          (lambda () (setq sh-basic-offset 4)))
 (add-hook 'java-mode-hook
           (lambda () (setq c-basic-offset 8 tab-width 8 indent-tabs-mode t)))
 (add-hook 'html-mode-hook
-          (lambda ()
-            (set (make-local-variable 'sgml-basic-offset) 4)
-            (setq indent-tabs-mode nil)))
-(add-hook 'js-mode-hook (lambda () (setq indent-tabs-mode nil)))
+          (lambda () (set (make-local-variable 'sgml-basic-offset) 4)))
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 (add-hook 'octave-mode-hook
           (lambda () (setq octave-block-offset 4)))
@@ -215,6 +218,7 @@ asking user for confirmation."
 
   (global-set-key "\C-cL" 'org-store-link)
   (global-set-key "\C-cB" 'org-switchb)
+  (global-set-key (kbd "C-c a") 'org-agenda)
 
   (setq org-outline-path-complete-in-steps nil))
 
@@ -228,27 +232,32 @@ asking user for confirmation."
   (org-defkey org-mode-map "\C-c\C-x\C-a"
               'org-archive-subtree-default-with-confirmation))
 
-(when (file-exists-p "~/.org/at.org")
-  (global-set-key "\C-cb"
-                  '(lambda () (interactive) (find-file "~/.org/at.org"))))
+;;; http://www.emacslife.com/baby-steps-org.html
+(let ((f "~/.org/todo.org"))
+  (when (file-exists-p f)
+    (global-set-key "\C-cb"
+                    `(lambda () (interactive) (find-file ,f)))
+    (setq org-agenda-files `(,f))))
 
-(when (locate-library "org-brain")
-  (global-set-key "\C-cn" 'org-brain-visualize))
+;XXX; (when (locate-library "org-brain")
+;XXX;   (global-set-key "\C-cn" 'org-brain-visualize))
 
 ;;; --------------------------------------------------------------------
 ;;; Haskell
 
-;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
-(with-eval-after-load "haskell-indentation"
-  (setq haskell-indentation-layout-offset 2
-        haskell-indentation-starter-offset 4
-        haskell-indentation-left-offset 4
-        haskell-indentation-where-pre-offset 2
-        haskell-indentation-where-post-offset 2))
-
-(add-hook 'haskell-mode-hook
-          ;; Needed for `C-M-a' and `C-M-e' to work properly.
-          #'haskell-decl-scan-mode)
+(use-package haskell-mode
+  :ensure t
+  :diminish haskell-mode
+  :config
+    ;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
+    (setq haskell-indentation-layout-offset 2
+          haskell-indentation-starter-offset 4
+          haskell-indentation-left-offset 4
+          haskell-indentation-where-pre-offset 2
+          haskell-indentation-where-post-offset 2)
+    (add-hook 'haskell-mode-hook
+              ;; Needed for `C-M-a' and `C-M-e' to work properly.
+              #'haskell-decl-scan-mode))
 
 (with-eval-after-load "speedbar"
   (speedbar-add-supported-extension ".hs"))
@@ -440,6 +449,11 @@ asking user for confirmation."
 
 (when (file-readable-p "~/lib/emacs/htmlize.el")
   (autoload 'htmlize-buffer "~/lib/emacs/htmlize.el" nil t))
+
+;;; https://github.com/petere/emacs-eruby-mode.git
+(let ((fn "~/lib/emacs/emacs-eruby-mode/eruby-mode.el"))
+  (when (file-readable-p fn)
+    (autoload 'eruby-mode fn nil t)))
 
 (when (file-readable-p "~/lib/emacs/local.el")
   (load "~/lib/emacs/local.el"))
@@ -747,13 +761,12 @@ Version 2017-09-01"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-highlight-mode nil)
- '(debug-on-error nil)
  '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (iedit htmlize use-package-chords diminish use-package org-brain god-mode color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode multiple-cursors visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+    (elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package god-mode color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
  '(which-function-mode nil))
 
 (custom-set-faces
