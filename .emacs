@@ -239,9 +239,6 @@ asking user for confirmation."
                     `(lambda () (interactive) (find-file ,f)))
     (setq org-agenda-files `(,f))))
 
-;XXX; (when (locate-library "org-brain")
-;XXX;   (global-set-key "\C-cn" 'org-brain-visualize))
-
 ;;; --------------------------------------------------------------------
 ;;; Haskell
 
@@ -276,10 +273,6 @@ asking user for confirmation."
 (global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
 
 ;;; --------------------------------------------------------------------
-
-;;; Spell check
-(global-set-key (kbd "C-c ib") 'ispell-buffer)
-(global-set-key (kbd "C-c ir") 'ispell-region)
 
 (with-eval-after-load "ps-print"
   (setq ps-paper-type 'a4
@@ -497,29 +490,27 @@ asking user for confirmation."
   (when (version<= "24.4" emacs-version)
     (advice-add #'counsel-git-grep-function :filter-args #'vvv/first-line)))
 
-(when (require 'avy nil 'noerror)
-  (setq avy-all-windows 'all-frames)
-  (global-set-key (kbd "C-.") 'avy-goto-word-or-subword-1)
-  (global-set-key (kbd "C->") 'avy-goto-char-timer) ; avy-goto-char-2 ?
-  (global-set-key (kbd "C-x SPC") 'avy-pop-mark))
+(use-package avy
+  :ensure t
+  :config
+    (setq avy-all-windows 'all-frames)
+  :bind (("C-."     . avy-goto-word-or-subword-1)
+         ("C->"     . avy-goto-char-timer)  ; avy-goto-char-2 ?
+         ("C-x SPC" . avy-pop-mark)))
 
-(when (require 'ace-window nil 'noerror)
-  (global-set-key (kbd "M-p") 'ace-window)
-  (global-set-key (kbd "M-P") 'ace-swap-window)
-  (setq aw-ignore-current t)
-
-  ;; Prevent some modules from stealing "M-p" binding.
-  (add-hook 'diff-mode-hook
-            (lambda () (define-key diff-mode-map (kbd "M-p") nil)))
-  (add-hook 'markdown-mode-hook
-            (lambda () (define-key markdown-mode-map (kbd "M-p") nil)))
-  (add-hook 'compilation-mode-hook
-            (lambda () (define-key compilation-mode-map (kbd "M-p") nil)))
-  (add-hook 'grep-mode-hook
-            (lambda () (define-key grep-mode-map (kbd "M-p") nil)))
-  (with-eval-after-load "haskell-cabal"
-    (define-key haskell-cabal-mode-map (kbd "M-p") nil)))
+(use-package ace-window
+  :ensure t
+  :config (setq aw-ignore-current t)
+  :bind (("M-o" . ace-window)
+         ("M-O" . ace-swap-window)))
 ;;; ----------------------------------------------------------------------
+
+;;; https://github.com/yjwen/Org-Reveal
+(let ((d "~/src/reveal.js"))
+  (when (file-directory-p d)
+    (use-package ox-reveal
+      :ensure t
+      :config (setq org-reveal-root (concat "file://" (expand-file-name d))))))
 
 ;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
 (setq mode-line-misc-info
@@ -726,14 +717,6 @@ Version 2017-09-01"
     (mapc 'frame-set-background-mode (frame-list)))
   (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
 
-(when (require 'god-mode nil 'noerror)
-  ;; I don't use <escape> here for I don't want to break `ESC-ESC-ESC'
-  ;; key binding (`keyboard-escape-quit').
-  (global-set-key (kbd "s-g") 'god-mode-all)
-  (setq god-exempt-major-modes nil god-exempt-predicates nil)
-  (define-key god-local-mode-map (kbd "z") 'repeat)
-  (define-key god-local-mode-map (kbd "i") 'god-local-mode))
-
 (global-set-key (kbd "M-`") 'repeat)  ; instead of 'tmm-menubar
 
 ;;; "Undo" (and "redo") changes in the window configuration with the
@@ -751,9 +734,14 @@ Version 2017-09-01"
 (when (fboundp 'column-highlight-mode)
   (global-set-key (kbd "C-c h") 'column-highlight-mode))
 
-;; ;;; Disable italic font style in comments and documentation.
-;; (set-face-italic 'font-lock-comment-face nil)
-;; (set-face-italic 'font-lock-doc-face nil)
+;XXX; ;;; Disable italic font style in comments and documentation.
+;XXX; (set-face-italic 'font-lock-comment-face nil)
+;XXX; (set-face-italic 'font-lock-doc-face nil)
+
+;XXX; (use-package use-package-chords
+;XXX;   :ensure t
+;XXX;   :config (key-chord-mode 1))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -766,7 +754,7 @@ Version 2017-09-01"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package god-mode color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+    (elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
  '(which-function-mode nil))
 
 (custom-set-faces
