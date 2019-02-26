@@ -1,7 +1,7 @@
-#!/usr/bin/awk -f
+#!/usr/bin/env awk -f
 
 {
     printf("----- %d -----\n", NR);
-    for (i=1; i <= NF; i++)
-	printf("%d  %s\n", i, $i);
+    for (i = 1; i <= NF; i++)
+        printf("%d  %s\n", i, $i);
 }

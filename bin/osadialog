@@ -23,6 +23,6 @@ esac
 osascript -e "
 tell application (path to frontmost application as text)
     try  -- 'try' disarms 'AppleEvent timed out. (-1712)' error
-        display dialog \"$@\" buttons {\"OK\"} with icon $ICON
+        display dialog \"$*\" buttons {\"OK\"} with icon $ICON
     end try
 end tell" >/dev/null  # hide "button returned:OK" message
