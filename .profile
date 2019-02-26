@@ -47,6 +47,9 @@ _path_prepend_safe ~/.cabal/bin # cabal install hasktags
 _path_prepend_safe ~/.local/bin # stack install hlint
 _path_prepend_safe ~/bin
 
+# brew info sphinx-doc
+_path_prepend_safe /usr/local/opt/sphinx-doc/bin
+
 unset -f _path_prepend_safe _path_prepend
 export PATH
 
