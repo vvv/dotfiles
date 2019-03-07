@@ -116,7 +116,7 @@ in case that file does not provide any feature."
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
                 markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-                sql-mode))
+                sql-mode elm-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -362,7 +362,7 @@ asking user for confirmation."
    ("~" ?\[) ("Z" ?Я) ("X" ?Ч) ("C" ?С) ("V" ?М) ("B" ?И) ("N" ?Т) ("M" ?Ь)
    ("<" ?Б) (">" ?Ю))
 
-  (setq default-input-method "russian-mac")
+  (setq default-input-method "ukrainian-mac")
 
   (quail-define-package
    "ukrainian-mac" "Ukrainian" "UK" nil
@@ -733,6 +733,8 @@ Version 2017-09-01"
 (global-set-key (kbd "C-c H") 'hl-line-mode)
 (when (fboundp 'column-highlight-mode)
   (global-set-key (kbd "C-c h") 'column-highlight-mode))
+
+(global-set-key (kbd "C-c n") 'linum-mode)
 
 ;XXX; ;;; Disable italic font style in comments and documentation.
 ;XXX; (set-face-italic 'font-lock-comment-face nil)
