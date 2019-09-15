@@ -6,9 +6,12 @@
 	smudge = git hawser smudge %f
 	required = true
 [alias]
+	ap = add -p
 	D1 = branch -D @{-1}
 	cam = commit --amend
 	camH = commit --amend -C HEAD
+	ci = commit
+	co = checkout
 	fe = fetch -p
 	fea = fetch -p --all
 	fem = fetch -p origin master:master
@@ -22,6 +25,8 @@
 	sbu = show-branch HEAD @{upstream}
 	st = status -sb
 	author = log -1 --pretty='%an <%ae>' --author
+	wt = worktree
+	cb = !sh -c 'git checkout -b {,origin/}$1' -
 [rerere]
 	enabled = true
 [rebase]
