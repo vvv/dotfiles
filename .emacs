@@ -32,6 +32,11 @@
 
 (setq-default indent-tabs-mode nil)  ; Use spaces, not tabs.
 
+;;; Adjust font size.
+(dolist
+    (s (list "s-+" "s-=" "s--" "s-0"))
+  (global-set-key (kbd s) 'text-scale-adjust))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
@@ -96,6 +101,8 @@ in case that file does not provide any feature."
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 (add-hook 'octave-mode-hook
           (lambda () (setq octave-block-offset 4)))
+(add-hook 'ruby-mode-hook
+          (lambda () (setq ruby-indent-level 4)))
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
@@ -116,7 +123,7 @@ in case that file does not provide any feature."
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
                 markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-                sql-mode elm-mode))
+                sql-mode elm-mode dhall-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -220,6 +227,8 @@ asking user for confirmation."
   (global-set-key "\C-cB" 'org-switchb)
   (global-set-key (kbd "C-c a") 'org-agenda)
 
+  (add-to-list 'org-file-apps '("\\.erb\\'" . emacs))
+
   (setq org-outline-path-complete-in-steps nil))
 
 (with-eval-after-load "org-clock"
@@ -259,6 +268,14 @@ asking user for confirmation."
 (with-eval-after-load "speedbar"
   (speedbar-add-supported-extension ".hs"))
 (global-set-key (kbd "C-c r") 'speedbar)
+
+(use-package dhall-mode
+  :config
+    (remove-hook 'after-change-functions 'dhall-after-change)
+    (setq dhall-use-header-line nil
+          dhall-format-at-save nil)
+    (add-hook 'dhall-mode-hook
+              (lambda () (setq indent-tabs-mode nil))))
 
 (defun vvv/reload-tags-table (arg)
   "A combination of `tags-reset-tags-tables' and `visit-tags-table'."
@@ -756,7 +773,7 @@ Version 2017-09-01"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+    (dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
  '(which-function-mode nil))
 
 (custom-set-faces
