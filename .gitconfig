@@ -6,11 +6,12 @@
 	smudge = git hawser smudge %f
 	required = true
 [alias]
-	ap = add -p
 	D1 = branch -D @{-1}
-	cam = commit --amend
-	camH = commit --amend -C HEAD
+	ap = add -p
+	author = log -1 --pretty='%an <%ae>' --author
 	ci = commit
+	cia = commit --amend
+	ciaH = commit --amend -C HEAD
 	co = checkout
 	fe = fetch -p
 	fea = fetch -p --all
@@ -19,20 +20,18 @@
 	log1 = log --oneline
 	me = merge --ff-only @{upstream}
 	rfm = push origin HEAD:refs/for/master
-	rp = rev-parse --short
+	rp = rev-parse
+	rps = rev-parse --short
 	sb = show-branch
 	sbo = show-branch HEAD origin/master
 	sbu = show-branch HEAD @{upstream}
 	st = status -sb
-	author = log -1 --pretty='%an <%ae>' --author
 	wt = worktree
-	cb = !sh -c 'git checkout -b {,origin/}$1' -
 [rerere]
 	enabled = true
 [rebase]
 	autoSquash = true
-# Let us give `git log --follow` thing a try.
-# I never used it, but read good things about it
-# [https://twitter.com/mwotton/status/945049811010703360].
 [log]
+        # `git log --follow`
+        # [https://twitter.com/mwotton/status/945049811010703360]
 	follow = true
