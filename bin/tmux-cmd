@@ -1,5 +1,5 @@
-#!/bin/bash
-set -eu
+#!/usr/bin/env bash
+set -eu -o pipefail
 
 die() { echo "$@" >&2; exit 1; }
 
