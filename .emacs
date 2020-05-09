@@ -773,7 +773,7 @@ Version 2017-09-01"
  '(org-modules nil)
  '(package-selected-packages
    (quote
-    (dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+    (clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
  '(which-function-mode nil))
 
 (custom-set-faces
