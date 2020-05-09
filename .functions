@@ -38,6 +38,36 @@ re() { git remote "$@"; }
 st() { git status "$@"; }
 export -f b cl di lo re st
 
+worktree() {
+    if (($# != 2)); then
+        cat >&2 <<EOF
+Usage: ${FUNCNAME[0]} <branch-name> <start-point>
+
+Example: ${FUNCNAME[0]} feature origin/master
+EOF
+        return 1
+    fi
+    local branch=$1
+    local start=$2
+
+    local toplevel=$(git rev-parse --show-toplevel)
+    [[ -n $toplevel ]] || return 1
+    local newdir=${toplevel%/*}/_${toplevel##*/}.$branch
+
+    if [[ -d $newdir ]]; then
+        echo "$newdir already exists" >&2
+        return 1
+    fi
+
+    local opt_new_branch=
+    git rev-parse --verify $branch >&/dev/null ||
+        # branch doesn't exist ==> create it
+        opt_new_branch="-b $branch"
+
+    git worktree add $opt_new_branch $newdir $start && cd $newdir
+}
+export -f worktree
+
 which gtags &>/dev/null && {
     gt() {
         (
