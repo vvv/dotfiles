@@ -67,7 +67,7 @@ export PATH
 ### >= 10.10.3 (https://twitter.com/launchderp/status/585874100939137024)
 # sudo launchctl config system path "$PATH"
 
-export PS1='\h:\W\$ '
+# export PS1='\h:\W\$ '
 export LC_CTYPE='en_US.UTF-8'
 # export EDITOR=emacs
 
@@ -97,8 +97,27 @@ fi
 [ -f $GIT_CORE/git-prompt.sh ] && {
     . $GIT_CORE/git-prompt.sh
     export GIT_PS1_SHOWDIRTYSTATE=1
-    export PS1='\h:\W$(__git_ps1 " (%s)")\$ '
+    # export PS1='\h:\W$(__git_ps1 " (%s)")\$ '
 }
+
+__prompt_command() {
+    local rc=$?
+
+    PS1=
+    if ((rc != 0)); then
+        local red='\[\e[0;31m\]'
+        local reset='\[\e[0m\]'
+        local boom='\xf0\x9f\x92\xa5'
+        PS1+="${red}$rc${reset}$(printf $boom) "
+    fi
+    PS1+='\h:\W'
+    if command -v __git_ps1 >/dev/null; then
+        PS1+='$(__git_ps1 " (%s)")'
+    fi
+    PS1+='\$ '
+}
+export -f __prompt_command
+PROMPT_COMMAND=__prompt_command
 
 if [[ $(uname) = Darwin ]]; then
     ssh-add -A &>/dev/null
