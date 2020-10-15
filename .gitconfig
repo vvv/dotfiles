@@ -9,6 +9,7 @@
 	D1 = branch -D @{-1}
 	ap = add -p
 	author = log -1 --pretty='%an <%ae>' --author
+	brc = branch -r --contains
 	ci = commit
 	cia = commit --amend
 	ciaH = commit --amend -C HEAD
@@ -18,6 +19,7 @@
 	fem = fetch -p origin master:master
 	g = grep -nHE
 	log1 = log --oneline
+	logb = log --pretty=%B
 	me = merge --ff-only @{upstream}
 	rfm = push origin HEAD:refs/for/master
 	rp = rev-parse
