@@ -123,5 +123,8 @@ if [[ $(uname) = Darwin ]]; then
     ssh-add -A &>/dev/null
 fi
 
+if [[ -e ~/.nix-profile/etc/profile.d/nix.sh && -z ${NIX_PATH:-} ]]; then
+    . ~/.nix-profile/etc/profile.d/nix.sh
+fi
 [ -f ~/.functions ] && . ~/.functions
 [ -f ~/.bash-private ] && . ~/.bash-private

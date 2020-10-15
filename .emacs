@@ -2,13 +2,15 @@
 
 (eval-when-compile (require 'subr-x))  ; string-empty-p, string-trim-right
 
-;;; We don't want to see this warning:
-;;;
-;;; > gnutls.c: [1] Note that the security level of the Diffie-Hellman
-;;; > key exchange has been lowered to 256 bits and this may allow
-;;; > decryption of the session data
-(when (= gnutls-min-prime-bits 256)
-  (setq gnutls-min-prime-bits 1024))
+; XXX-DELETEME <<<<<<<
+; ;;; We don't want to see this warning:
+; ;;;
+; ;;; > gnutls.c: [1] Note that the security level of the Diffie-Hellman
+; ;;; > key exchange has been lowered to 256 bits and this may allow
+; ;;; > decryption of the session data
+; (when (= gnutls-min-prime-bits 256)
+;   (setq gnutls-min-prime-bits 1024))
+; XXX-DELETEME >>>>>>>
 
 (server-start)
 
@@ -75,7 +77,7 @@ in case that file does not provide any feature."
 
 (progn (require 'uniquify) (setq uniquify-buffer-name-style 'forward))
 
-(setq backup-directory-alist '((".*" . "~/.backups"))) ; backups location
+(setq backup-directory-alist '(("." . "~/.backups"))) ; backups location
 
 (setq require-final-newline t default-indicate-empty-lines t)
 
@@ -123,7 +125,7 @@ in case that file does not provide any feature."
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
                 markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-                sql-mode elm-mode dhall-mode))
+                sql-mode elm-mode dhall-mode makefile-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -751,7 +753,9 @@ Version 2017-09-01"
 (when (fboundp 'column-highlight-mode)
   (global-set-key (kbd "C-c h") 'column-highlight-mode))
 
-(global-set-key (kbd "C-c n") 'linum-mode)
+(use-package nlinum
+  :ensure t
+  :bind (("C-c n" . nlinum-mode)))
 
 ;XXX; ;;; Disable italic font style in comments and documentation.
 ;XXX; (set-face-italic 'font-lock-comment-face nil)

@@ -107,3 +107,12 @@ export -f errgrep
 wttr() {
     curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
 }
+
+### `ez` --- fuzzy-find a file and open it in Emacs.
+if which fzf >&/dev/null; then
+    ez() {
+        local f=$(fzf)
+        [[ -z $f ]] || emacsclient --no-wait $f
+    }
+    export -f ez
+fi
