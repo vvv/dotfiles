@@ -110,7 +110,7 @@ __prompt_command() {
         local boom='\xf0\x9f\x92\xa5'
         PS1+="${red}$rc${reset}$(printf $boom) "
     fi
-    PS1+='\h:\W'
+    PS1+='\A \h:\W'
     if command -v __git_ps1 >/dev/null; then
         PS1+='$(__git_ps1 " (%s)")'
     fi
