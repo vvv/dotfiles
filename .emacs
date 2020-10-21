@@ -52,6 +52,7 @@
 ;;; https://github.com/purcell/exec-path-from-shell
 (when (memq window-system '(mac ns x))
   (use-package exec-path-from-shell
+    :ensure t
     :config (exec-path-from-shell-initialize)))
 
 ;; Always perform yes-or-no prompts using the echo area and keyboard input.
@@ -272,6 +273,7 @@ asking user for confirmation."
 (global-set-key (kbd "C-c r") 'speedbar)
 
 (use-package dhall-mode
+  :ensure t
   :config
     (remove-hook 'after-change-functions 'dhall-after-change)
     (setq dhall-use-header-line nil
@@ -722,11 +724,16 @@ Version 2017-09-01"
   (setq fci-rule-column 80)
   (global-set-key (kbd "C-c F") 'fci-mode))
 
+;;; ------------------------------------------------------------------
 ;;; Solarized color theme
 ;;; - http://ethanschoonover.com/solarized
 ;;; - https://github.com/sellout/emacs-color-theme-solarized
-(when (require 'color-theme-solarized nil 'noerror)
-  (load-theme 'solarized t)
+
+(let ((path "~/.emacs.d/emacs-color-theme-solarized"))
+  (when (file-directory-p path)
+    (add-to-list 'custom-theme-load-path path)
+    (load-theme 'solarized t))
+
   (defun toggle-solarized-light ()
     "Switch dark/light modes of Solarized color theme."
     (interactive)
@@ -734,9 +741,9 @@ Version 2017-09-01"
           (if (eq frame-background-mode 'dark) 'light 'dark))
     (load-theme 'solarized t)
     (mapc 'frame-set-background-mode (frame-list)))
-  (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
 
-(global-set-key (kbd "M-`") 'repeat)  ; instead of 'tmm-menubar
+  (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
+;;; ------------------------------------------------------------------
 
 ;;; "Undo" (and "redo") changes in the window configuration with the
 ;;; key commands `C-c left' and `C-c right'.
@@ -757,13 +764,19 @@ Version 2017-09-01"
   :ensure t
   :bind (("C-c n" . nlinum-mode)))
 
-;XXX; ;;; Disable italic font style in comments and documentation.
-;XXX; (set-face-italic 'font-lock-comment-face nil)
-;XXX; (set-face-italic 'font-lock-doc-face nil)
-
-;XXX; (use-package use-package-chords
-;XXX;   :ensure t
-;XXX;   :config (key-chord-mode 1))
+;;; Set default font.
+;;;
+;;; See http://ergoemacs.org/emacs/emacs_list_and_set_font.html
+(cond
+ ((eq system-type 'windows-nt)
+  (when (member "Consolas" (font-family-list))
+    (set-frame-font "Consolas" t t)))
+ ((eq system-type 'darwin)  ; MacOS
+  (when (member "Menlo" (font-family-list))
+    (set-frame-font "Menlo" t t)))
+ ((eq system-type 'gnu/linux)
+  (when (member "DejaVu Sans Mono" (font-family-list))
+    (set-frame-font "DejaVu Sans Mono-13" nil t))))
 
 
 (custom-set-variables
