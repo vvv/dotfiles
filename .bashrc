@@ -1,3 +1,6 @@
+# --------------------------------------------------------------------
+# PATH
+
 if [ $(uname) = Darwin ]; then
     if [ -f /etc/profile ]; then
         ## tmux runs as login shell; /etc/profile is read, which calls
@@ -48,32 +51,22 @@ _path_prepend_safe /sbin
 _path_prepend_safe /usr/sbin
 _path_prepend_safe /usr/local/sbin
 _path_prepend_safe /usr/local/bin
-_path_prepend_safe ~/.cargo/bin # https://github.com/rust-lang-nursery/rustfmt
-_path_prepend_safe ~/.cabal/bin # cabal install hasktags
-_path_prepend_safe ~/.local/bin # stack install hlint
+_path_prepend_safe ~/.cargo/bin
+_path_prepend_safe ~/.local/bin
 _path_prepend_safe ~/bin
-
-# brew info sphinx-doc
-_path_prepend_safe /usr/local/opt/sphinx-doc/bin
-
-#XXX # pipx [https://pipxproject.github.io/pipx/]
-#XXX # `pipx` is the recommended installation method of `sysfacts`
-#XXX # [https://pypi.org/project/sysfacts/].
-#XXX _path_prepend_safe ~/Library/Python/3.7/bin
 
 unset -f _path_prepend_safe _path_prepend
 export PATH
+# --------------------------------------------------------------------
 
 ### >= 10.10.3 (https://twitter.com/launchderp/status/585874100939137024)
 # sudo launchctl config system path "$PATH"
 
-# export PS1='\h:\W\$ '
 export LC_CTYPE='en_US.UTF-8'
-# export EDITOR=emacs
+
 
 ### History settings
 shopt -s histappend  # don't overwrite the history on exit, append to it
-
 if (( ${BASH_VERSINFO[0]} < 5 )); then
     export HISTSIZE=50000
 else
@@ -82,13 +75,25 @@ fi
 export HISTCONTROL='ignoreboth:erasedups'
 # export HISTTIMEFORMAT='%FT%T%z%t'  # iso8601 format with a tab at the end
 
+
+# Check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# Make less more friendly for non-text input files, see lesspipe(1).
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+
 #XXX if type -f brew &>/dev/null; then
 #XXX     ### http://docs.brew.sh/Gems,-Eggs-and-Perl-Modules.html#perl-cpan-modules-without-sudo
 #XXX     eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
 #XXX fi
 [ -d ~/perl5/perlbrew ] && . ~/perl5/perlbrew/etc/bashrc
 
-if [[ $(uname) = Darwin ]]; then
+# --------------------------------------------------------------------
+# Git
+
+if [[ $(uname) == Darwin ]]; then
     GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
 else
     GIT_CORE=/usr/share/doc/git-1.8.3.1/contrib/completion
@@ -99,6 +104,10 @@ fi
     export GIT_PS1_SHOWDIRTYSTATE=1
     # export PS1='\h:\W$(__git_ps1 " (%s)")\$ '
 }
+# --------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# Prompt
 
 __prompt_command() {
     local rc=$?
@@ -118,13 +127,22 @@ __prompt_command() {
 }
 export -f __prompt_command
 PROMPT_COMMAND=__prompt_command
+# --------------------------------------------------------------------
 
-if [[ $(uname) = Darwin ]]; then
+if [[ $(uname) == Darwin ]]; then
     ssh-add -A &>/dev/null
 fi
 
 if [[ -e ~/.nix-profile/etc/profile.d/nix.sh && -z ${NIX_PATH:-} ]]; then
     . ~/.nix-profile/etc/profile.d/nix.sh
 fi
-[ -f ~/.functions ] && . ~/.functions
-[ -f ~/.bash-private ] && . ~/.bash-private
+
+for f in \
+    ~/.bash_aliases \
+    ~/.functions \
+    ~/.bash-private
+do
+    if [[ -f $f ]]; then
+        . $f
+    fi
+done
