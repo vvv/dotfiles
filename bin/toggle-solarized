@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [-h|--help]
+
+Toggle Emacs and Terminal app between dark and light Solarized profiles.
+
+See https://github.com/tomislav/osx-terminal.app-colors-solarized
+for instructions on how to install Solarized profiles.
+EOF
+}
+
+case "${1:-}" in
+    -h|--help) usage; exit;;
+esac
+
+emacsclient -n -e '(toggle-solarized-light)' >/dev/null
+
+if [[ $(uname) != Darwin ]]; then
+   exit
+fi
+
+dark='Solarized Dark ansi'
+light='Solarized Light ansi'
+
+current_terminal_profile() {
+    osascript <<EOF
+tell application "Terminal"
+    return name of current settings of first window
+end tell
+EOF
+}
+
+if [[ $(current_terminal_profile) == $light ]]; then
+    profile="$dark"
+else
+    profile="$light"
+fi
+
+osascript <<EOF
+tell application "Terminal"
+    set default settings to settings set "$profile"
+    repeat with W in windows
+        set current settings of W to settings set "$profile"
+    end repeat
+end tell
+EOF
