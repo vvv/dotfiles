@@ -773,10 +773,13 @@ Version 2017-09-01"
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin)  ; MacOS
   (when (member "Menlo" (font-family-list))
-    (set-frame-font "Menlo" t t)))
+    (set-frame-font "Menlo-13" nil t)))
  ((eq system-type 'gnu/linux)
   (when (member "DejaVu Sans Mono" (font-family-list))
     (set-frame-font "DejaVu Sans Mono-13" nil t))))
+
+;;; Position and size of the initial X window frame.
+(setq initial-frame-alist '((top . 0) (left . 0) (width . 80) (height . 53)))
 
 
 (custom-set-variables
@@ -785,8 +788,7 @@ Version 2017-09-01"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-highlight-mode nil)
- '(initial-frame-alist (quote ((height . 46) (width . 80) (top . 0))))
- '(mouse-wheel-scroll-amount (quote (1 ((shift) . 1) ((control)))))
+ '(mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control))))
  '(org-modules nil)
  '(package-selected-packages
    (quote
@@ -798,5 +800,4 @@ Version 2017-09-01"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :foundry "apple" :family "Menlo"))))
  '(which-func ((t (:foreground "dark cyan")))))
