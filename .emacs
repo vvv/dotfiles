@@ -773,7 +773,7 @@ Version 2017-09-01"
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin)  ; MacOS
   (when (member "Menlo" (font-family-list))
-    (set-frame-font "Menlo-13" nil t)))
+    (set-frame-font "Menlo-14" nil t)))
  ((eq system-type 'gnu/linux)
   (when (member "DejaVu Sans Mono" (font-family-list))
     (set-frame-font "DejaVu Sans Mono-13" nil t))))
