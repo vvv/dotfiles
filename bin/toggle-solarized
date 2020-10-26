@@ -39,7 +39,9 @@ else
     profile="$light"
 fi
 
-osascript <<EOF
+# Suppressing mysterious
+# "execution error: Terminal got an error: AppleEvent handler failed. (-10000)"
+osascript 2>/dev/null <<EOF || true
 tell application "Terminal"
     set default settings to settings set "$profile"
     repeat with W in windows
