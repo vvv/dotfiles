@@ -21,7 +21,7 @@
 	log1 = log --oneline
 	logb = log --pretty=%B
 	me = merge --ff-only @{upstream}
-	rfm = push origin HEAD:refs/for/master
+	poh = push origin HEAD
 	rp = rev-parse
 	rps = rev-parse --short
 	sb = show-branch
