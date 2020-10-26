@@ -255,7 +255,6 @@ asking user for confirmation."
 ;;; Haskell
 
 (use-package haskell-mode
-  :ensure t
   :diminish haskell-mode
   :config
     ;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
@@ -273,7 +272,6 @@ asking user for confirmation."
 (global-set-key (kbd "C-c r") 'speedbar)
 
 (use-package dhall-mode
-  :ensure t
   :config
     (remove-hook 'after-change-functions 'dhall-after-change)
     (setq dhall-use-header-line nil
@@ -791,8 +789,7 @@ Version 2017-09-01"
  '(mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control))))
  '(org-modules nil)
  '(package-selected-packages
-   (quote
-    (clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator haskell-mode yaml-mode org ace-window swiper ggtags)))
+   '(nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator yaml-mode org ace-window swiper ggtags))
  '(which-function-mode nil))
 
 (custom-set-faces
