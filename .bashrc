@@ -94,16 +94,24 @@ shopt -s checkwinsize
 # Git
 
 if [[ $(uname) == Darwin ]]; then
-    GIT_CORE=/Library/Developer/CommandLineTools/usr/share/git-core
-else
-    GIT_CORE=/usr/share/doc/git-1.8.3.1/contrib/completion
+    # Assuming git was installed with `brew install git`.
+    _git_prompt=/usr/local/etc/bash_completion.d/git-prompt.sh
+    _git_completion=/usr/local/etc/bash_completion.d/git-completion.bash
+elif [[ $(uname) == Linux ]]; then
+    # Tested on Ubuntu 20.04.
+    _git_prompt=/etc/bash_completion.d/git-prompt
+    _git_completion=/usr/share/bash-completion/completions/git
 fi
-[ -f $GIT_CORE/git-completion.bash ] && . $GIT_CORE/git-completion.bash
-[ -f $GIT_CORE/git-prompt.sh ] && {
-    . $GIT_CORE/git-prompt.sh
+
+if [[ -f $_git_prompt ]]; then
+    . $_git_prompt
     export GIT_PS1_SHOWDIRTYSTATE=1
-    # export PS1='\h:\W$(__git_ps1 " (%s)")\$ '
-}
+    export GIT_PS1_SHOWUNTRACKEDFILES=1
+fi
+if [[ -f $_git_completion ]]; then
+    . $_git_completion
+fi
+unset _git_prompt _git_completion
 # --------------------------------------------------------------------
 
 # --------------------------------------------------------------------
