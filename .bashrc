@@ -1,23 +1,15 @@
 # --------------------------------------------------------------------
 # PATH
 
-if [ $(uname) = Darwin ]; then
-    if [ -f /etc/profile ]; then
-        ## tmux runs as login shell; /etc/profile is read, which calls
-        ## path_helper(8).  This workaround prevents path_helper from
-        ## leaving $HOME/bin in the middle of the $PATH (I need it at
-        ## the _beginning_ of the $PATH).
-        ##
-        ## See https://superuser.com/a/583502
-        PATH=''
-        . /etc/profile
-    fi
-
-    BREW_PREFIX=$(brew --prefix)
-    if [ -n "$BREW_PREFIX" ]; then
-        [ -f $BREW_PREFIX/etc/bash_completion.d/rustup ] &&
-            . $BREW_PREFIX/etc/bash_completion.d/rustup
-    fi
+if [[ $(uname) == Darwin && -f /etc/profile ]]; then
+    ## tmux runs as login shell; /etc/profile is read, which calls
+    ## path_helper(8).  This workaround prevents path_helper from
+    ## leaving $HOME/bin in the middle of the $PATH (I need it at
+    ## the _beginning_ of the $PATH).
+    ##
+    ## See https://superuser.com/a/583502
+    PATH=''
+    . /etc/profile
 fi
 
 _path_prepend() {
@@ -37,16 +29,6 @@ _path_prepend_safe() {
     fi
 }
 
-# XXX 2017-03-26 (Sun)
-# coreutils has the following notes:
-#   The tools provided by GNU coreutils are prefixed with the character 'g' by
-#   default to distinguish them from the BSD commands.
-#   For example, cp becomes gcp and ls becomes gls.
-#
-#   If you want to use the GNU tools by default, add this directory to the front
-#   of your PATH environment variable:
-#       /opt/local/libexec/gnubin/
-
 _path_prepend_safe /sbin
 _path_prepend_safe /usr/sbin
 _path_prepend_safe /usr/local/sbin
@@ -59,11 +41,7 @@ unset -f _path_prepend_safe _path_prepend
 export PATH
 # --------------------------------------------------------------------
 
-### >= 10.10.3 (https://twitter.com/launchderp/status/585874100939137024)
-# sudo launchctl config system path "$PATH"
-
 export LC_CTYPE='en_US.UTF-8'
-
 
 ### History settings
 shopt -s histappend  # don't overwrite the history on exit, append to it
@@ -73,8 +51,6 @@ else
     export HISTSIZE=-1  # don't limit the history list
 fi
 export HISTCONTROL='ignoreboth:erasedups'
-# export HISTTIMEFORMAT='%FT%T%z%t'  # iso8601 format with a tab at the end
-
 
 # Check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -82,13 +58,6 @@ shopt -s checkwinsize
 
 # Make less more friendly for non-text input files, see lesspipe(1).
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-
-#XXX if type -f brew &>/dev/null; then
-#XXX     ### http://docs.brew.sh/Gems,-Eggs-and-Perl-Modules.html#perl-cpan-modules-without-sudo
-#XXX     eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
-#XXX fi
-[ -d ~/perl5/perlbrew ] && . ~/perl5/perlbrew/etc/bashrc
 
 # --------------------------------------------------------------------
 # Git
@@ -136,14 +105,6 @@ __prompt_command() {
 export -f __prompt_command
 PROMPT_COMMAND=__prompt_command
 # --------------------------------------------------------------------
-
-if [[ $(uname) == Darwin ]]; then
-    ssh-add -A &>/dev/null
-fi
-
-if [[ -e ~/.nix-profile/etc/profile.d/nix.sh && -z ${NIX_PATH:-} ]]; then
-    . ~/.nix-profile/etc/profile.d/nix.sh
-fi
 
 for f in \
     ~/.bash_aliases \
