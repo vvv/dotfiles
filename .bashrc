@@ -33,6 +33,11 @@ _path_prepend_safe /sbin
 _path_prepend_safe /usr/sbin
 _path_prepend_safe /usr/local/sbin
 _path_prepend_safe /usr/local/bin
+if [[ $(uname) == Darwin ]]; then
+    # This is where unversioned symlinks for python, python-config, pip, &c.
+    # are installed; see https://docs.brew.sh/Homebrew-and-Python
+    _path_prepend_safe $(brew --prefix)/opt/python/libexec/bin
+fi
 _path_prepend_safe ~/.cargo/bin
 _path_prepend_safe ~/.local/bin
 _path_prepend_safe ~/bin
