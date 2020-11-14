@@ -24,6 +24,29 @@
 (when window-system
   (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
+;; Unset unwelcome key bindings.
+(dolist
+    (b (list
+        (kbd "s-q")       ; `save-buffers-kill-emacs'
+        (kbd "s-w")       ; `delete-frame'
+        "\C-z"            ; `suspend-frame'
+        (kbd "C-x C-z")   ; `suspend-frame'
+        (kbd "s-:")       ; `ispell'
+        (kbd "s-g")       ; `isearch-repeat-forward'
+        (kbd "s-f")       ; `isearch-forward'
+        (kbd "s-l")       ; `goto-line`
+        (kbd "s-n")       ; `ns-new-frame'
+        (kbd "s-o")       ; `ns-open-file-using-panel'
+        (kbd "s-t")       ; `ns-popup-font-panel`
+        (kbd "s-v")       ; `yank`
+        (kbd "s-z")       ; `undo'
+        "\C-z"            ; `undo'
+        (kbd "C-/")       ; `undo'
+        (kbd "C-x C-p"))) ; `mark-page'
+  (global-unset-key b))
+
+(setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
+
 (defun find-user-init-file ()
   "Edit `user-init-file'."
   (interactive)
@@ -173,6 +196,7 @@ asking user for confirmation."
 (global-set-key (kbd "C-c T") 'tabify)
 
 (global-set-key (kbd "C-c v") 'view-mode)
+(global-set-key (kbd "s-v") 'view-mode)
 
 (setq calendar-week-start-day 1) ; weeks should begin on Monday
 
@@ -232,6 +256,10 @@ asking user for confirmation."
 
   (add-to-list 'org-file-apps '("\\.erb\\'" . emacs))
 
+  ;; https://orgmode.org/manual/Structure-Templates.html
+  ;; Enable org-tempo so that `< s <TAB>' is expanded to a code block.
+  (add-to-list 'org-modules 'org-tempo)
+
   (setq org-outline-path-complete-in-steps nil))
 
 (with-eval-after-load "org-clock"
@@ -250,34 +278,61 @@ asking user for confirmation."
     (global-set-key "\C-cb"
                     `(lambda () (interactive) (find-file ,f)))
     (setq org-agenda-files `(,f))))
-
 ;;; --------------------------------------------------------------------
-;;; Haskell
 
-(use-package haskell-mode
-  :diminish haskell-mode
+(use-package editorconfig
+  :ensure t
   :config
-    ;; https://github.com/tibbe/haskell-style-guide/blob/master/haskell-style.md#indentation
-    (setq haskell-indentation-layout-offset 2
-          haskell-indentation-starter-offset 4
-          haskell-indentation-left-offset 4
-          haskell-indentation-where-pre-offset 2
-          haskell-indentation-where-post-offset 2)
-    (add-hook 'haskell-mode-hook
-              ;; Needed for `C-M-a' and `C-M-e' to work properly.
-              #'haskell-decl-scan-mode))
+    (editorconfig-mode 1))
 
-(with-eval-after-load "speedbar"
-  (speedbar-add-supported-extension ".hs"))
-(global-set-key (kbd "C-c r") 'speedbar)
+(use-package treemacs
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c r") 'treemacs)
+  (global-set-key (kbd "s-r") 'treemacs))
+
+(use-package which-key
+  :ensure t
+  :config (which-key-mode))
+
+;;; Language Server Protocol
+(use-package lsp-mode
+  :ensure t
+  :hook ((rust-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+(use-package lsp-treemacs
+  :ensure t
+  :commands lsp-treemacs-errors-list)
+(use-package lsp-ivy
+  :ensure t
+  :commands lsp-ivy-workspace-symbol)
+(use-package flycheck
+  :ensure t)
+;; (use-package lsp-ui
+;;   :ensure t)
+(use-package company
+  :ensure t)
+
+;; (use-package projectile
+;;   :ensure t
+;;   :config
+;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+;;   ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+;;   (projectile-mode +1))
+
+;; (use-package counsel-projectile
+;;   :ensure t
+;;   :config
+;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map))
 
 (use-package dhall-mode
   :config
-    (remove-hook 'after-change-functions 'dhall-after-change)
-    (setq dhall-use-header-line nil
-          dhall-format-at-save nil)
-    (add-hook 'dhall-mode-hook
-              (lambda () (setq indent-tabs-mode nil))))
+  (remove-hook 'after-change-functions 'dhall-after-change)
+  (setq dhall-use-header-line nil
+        dhall-format-at-save nil)
+  (add-hook 'dhall-mode-hook
+            (lambda () (setq indent-tabs-mode nil))))
 
 (defun vvv/reload-tags-table (arg)
   "A combination of `tags-reset-tags-tables' and `visit-tags-table'."
@@ -290,8 +345,6 @@ asking user for confirmation."
           (message "Loaded tags file: %s" tags-file-name)))
     (call-interactively 'visit-tags-table)))
 (global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
-
-;;; --------------------------------------------------------------------
 
 (with-eval-after-load "ps-print"
   (setq ps-paper-type 'a4
@@ -307,15 +360,8 @@ asking user for confirmation."
     (global-set-key (kbd "C-c h u") 'hide-region-unhide)))
 
 ;;; http://www.emacswiki.org/emacs/FullScreen
-(if (string< emacs-version "24.4")
-    (progn
-      (defun toggle-fullscreen ()
-        (interactive)
-        (set-frame-parameter
-         nil 'fullscreen
-         (unless (frame-parameter nil 'fullscreen) 'fullboth)))
-      (global-set-key (kbd "C-c f") 'toggle-fullscreen))
-  (global-set-key (kbd "C-c f") 'toggle-frame-fullscreen))
+(global-set-key (kbd "C-c f") 'toggle-frame-fullscreen)
+(global-set-key (kbd "s-f") 'toggle-frame-fullscreen)
 
 (setq vc-follow-symlinks t)
 
@@ -325,27 +371,14 @@ asking user for confirmation."
 ;; `ring-bell-function':
 (setq ring-bell-function 'ignore)
 
-(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "s-o") 'other-window)
+(defun vvv/other-window-backwards ()
+  (interactive)
+  (other-window -1))
+(global-set-key (kbd "C-x O") 'vvv/other-window-backwards)
+(global-set-key (kbd "s-O") 'vvv/other-window-backwards)
 
 (define-key help-map "A" 'apropos-variable)
-
-;; Unset unwelcome key bindings.
-(dolist
-    (b (list
-        (kbd "s-q")       ; `save-buffers-kill-emacs'
-        (kbd "s-w")       ; `delete-frame'
-        "\C-z"            ; `suspend-frame'
-        (kbd "C-x C-z")   ; `suspend-frame'
-        (kbd "s-:")       ; `ispell'
-        (kbd "s-g")       ; `isearch-repeat-forward'
-        (kbd "s-n")       ; `ns-new-frame'
-        (kbd "s-z")       ; `undo'
-        "\C-z"            ; `undo'
-        (kbd "C-/")       ; `undo'
-        (kbd "C-x C-p"))) ; `mark-page'
-  (global-unset-key b))
-
-(setq confirm-kill-emacs 'yes-or-no-p) ; say "no" to accidental terminations
 
 (when (eq system-type 'darwin)
   (quail-define-package
@@ -718,9 +751,7 @@ Version 2017-09-01"
               (setq Info-additional-directory-list
                     '("/opt/local/share/info/")))))
 
-(when (require 'fill-column-indicator nil 'noerror)
-  (setq fci-rule-column 80)
-  (global-set-key (kbd "C-c F") 'fci-mode))
+(global-set-key (kbd "C-c F") 'display-fill-column-indicator-mode)
 
 ;;; ------------------------------------------------------------------
 ;;; Solarized color theme
@@ -755,12 +786,29 @@ Version 2017-09-01"
 (windmove-default-keybindings)
 
 (global-set-key (kbd "C-c H") 'hl-line-mode)
-(when (fboundp 'column-highlight-mode)
-  (global-set-key (kbd "C-c h") 'column-highlight-mode))
+
+;;; https://www.emacswiki.org/emacs/VlineMode
+(unless (fboundp 'vline-mode)
+  (let ((path "~/.emacs.d/vline.el")
+        (checksum))
+    (unless (file-exists-p path)
+      ;; download the file
+      (url-copy-file "http://www.emacswiki.org/emacs/download/vline.el" path))
+
+    ;; calculate checksum
+    (let ((buf (find-file-noselect path nil t)))
+      (setq checksum (secure-hash 'sha1 buf))
+      (kill-buffer buf))
+
+    (if (string= checksum "c4f5ea2731d8b89e24eec5e9be98e2652b54bdbc")
+      (progn (load-file path)
+             (global-set-key (kbd "C-c h") 'vline-mode))
+      (message "%s: checksum doesn't match" path))))
 
 (use-package nlinum
   :ensure t
-  :bind (("C-c n" . nlinum-mode)))
+  :bind (("C-c n" . nlinum-mode)
+         ("s-n" . nlinum-mode)))
 
 ;;; Set default font.
 ;;;
@@ -789,8 +837,9 @@ Version 2017-09-01"
  '(mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control))))
  '(org-modules nil)
  '(package-selected-packages
-   '(nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator yaml-mode org ace-window swiper ggtags))
- '(which-function-mode nil))
+   '(flycheck company company-mode which-key protobuf-mode lsp-ivy p editorconfig lsp-treemacs treemacs lsp-mode nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator yaml-mode org ace-window swiper ggtags))
+ '(which-function-mode nil)
+ '(which-key-mode t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
