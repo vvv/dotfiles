@@ -5,7 +5,7 @@ usage() {
     cat <<EOF
 Usage: ${0##*/} [-h|--help]
 
-Toggle Emacs and Terminal app between dark and light Solarized profiles.
+Toggle Emacs and iTerm|Terminal between dark and light Solarized presets.
 
 See https://github.com/tomislav/osx-terminal.app-colors-solarized
 for instructions on how to install Solarized profiles.
@@ -22,30 +22,53 @@ if [[ $(uname) != Darwin ]]; then
    exit
 fi
 
-dark='Solarized Dark ansi'
-light='Solarized Light ansi'
+if [[ -n ${ITERM_SESSION_ID:-} ]]; then
+    dark='Solarized Dark'
+    light='Solarized Light'
+else
+    dark='Solarized Dark ansi'
+    light='Solarized Light ansi'
+fi
 
-current_terminal_profile() {
-    osascript <<EOF
+current_preset() {
+    if [[ -n ${ITERM_SESSION_ID:-} ]]; then
+        osascript <<EOF
+tell application "iTerm"
+    return color preset of current session of current window
+end tell
+EOF
+    else
+        osascript <<EOF
 tell application "Terminal"
     return name of current settings of first window
 end tell
 EOF
+    fi
 }
 
-if [[ $(current_terminal_profile) == $light ]]; then
-    profile="$dark"
+if [[ $(current_preset) == $light ]]; then
+    preset="$dark"
 else
-    profile="$light"
+    preset="$light"
 fi
 
-# Suppressing mysterious
-# "execution error: Terminal got an error: AppleEvent handler failed. (-10000)"
-osascript 2>/dev/null <<EOF || true
-tell application "Terminal"
-    set default settings to settings set "$profile"
+if [[ -n ${ITERM_SESSION_ID:-} ]]; then
+    echo -e "\033]50;SetProfile=Default\a"
+    osascript <<EOF
+tell application "iTerm"
+    set color preset of current session of current window to "$preset"
     repeat with W in windows
-        set current settings of W to settings set "$profile"
+        set color preset of current session of W to "$preset"
     end repeat
 end tell
 EOF
+else
+    osascript <<EOF
+tell application "Terminal"
+    set default settings to settings set "$preset"
+    repeat with W in windows
+        set current settings of W to settings set "$preset"
+    end repeat
+end tell
+EOF
+fi
