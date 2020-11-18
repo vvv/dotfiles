@@ -2,17 +2,9 @@
 
 (eval-when-compile (require 'subr-x))  ; string-empty-p, string-trim-right
 
-; XXX-DELETEME <<<<<<<
-; ;;; We don't want to see this warning:
-; ;;;
-; ;;; > gnutls.c: [1] Note that the security level of the Diffie-Hellman
-; ;;; > key exchange has been lowered to 256 bits and this may allow
-; ;;; > decryption of the session data
-; (when (= gnutls-min-prime-bits 256)
-;   (setq gnutls-min-prime-bits 1024))
-; XXX-DELETEME >>>>>>>
-
-(server-start)
+;; (setq server-use-tcp t)
+(unless (server-running-p)
+  (server-start))
 
 (setenv "LANG" "en_US.UTF-8")
 
