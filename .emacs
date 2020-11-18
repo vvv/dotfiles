@@ -139,12 +139,6 @@ in case that file does not provide any feature."
 (with-eval-after-load "ggtags"
   (define-key ggtags-navigation-map "\M-*" 'ggtags-navigation-mode-abort)
   (define-key ggtags-mode-map "\M-*" 'ggtags-find-tag-continue))
-;; In case Emacs is unable to find `global executable, the following
-;; command might help (OSX >= 10.10.3):
-;;
-;;     sudo launchctl config system path "$PATH"
-;;
-;; [via https://twitter.com/launchderp/status/585874100939137024]
 
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
@@ -513,8 +507,7 @@ asking user for confirmation."
       (ivy-mode t)
       ;; Add recent files and bookmarks to ‘ivy-switch-buffer’.
       (setq ivy-use-virtual-buffers t)
-  :bind (("C-s"   . swiper)
-         ("C-S-s" . isearch-forward)
+  :bind (("C-S-s" . swiper)
          ("C-c p" . ivy-push-view)
          ("C-c P" . ivy-pop-view)))
 
