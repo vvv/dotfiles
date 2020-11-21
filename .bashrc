@@ -111,6 +111,12 @@ export -f __prompt_command
 PROMPT_COMMAND=__prompt_command
 # --------------------------------------------------------------------
 
+for f in /usr/local/opt/fzf/shell/{completion,key-bindings}.bash; do
+    if [[ -f $f ]]; then
+        . $f
+    fi
+done
+
 for f in \
     ~/.bash_aliases \
     ~/.functions \
