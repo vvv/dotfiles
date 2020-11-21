@@ -2,6 +2,7 @@
 
 (eval-when-compile (require 'subr-x))  ; string-empty-p, string-trim-right
 
+(require 'server)
 ;; (setq server-use-tcp t)
 (unless (server-running-p)
   (server-start))
@@ -53,6 +54,8 @@
 (dolist
     (s (list "s-+" "s-=" "s--" "s-0"))
   (global-set-key (kbd s) 'text-scale-adjust))
+
+(global-set-key (kbd "s-g") 'goto-line)
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
