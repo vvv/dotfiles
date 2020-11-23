@@ -289,6 +289,10 @@ asking user for confirmation."
   :ensure t
   :hook ((rust-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
+  :init
+  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/
+  (setq read-process-output-max (* 1024 1024)  ; 1MB
+        gc-cons-threshold 100000000)
   :commands lsp)
 (use-package lsp-treemacs
   :ensure t
