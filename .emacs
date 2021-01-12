@@ -66,6 +66,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(use-package diminish
+  :ensure t)
+
 ;;; Use $PATH and some other environment variables from the user's shell.
 ;;; https://github.com/purcell/exec-path-from-shell
 (when (memq window-system '(mac ns x))
@@ -98,7 +101,12 @@ in case that file does not provide any feature."
 
 (setq backup-directory-alist '(("." . "~/.backups"))) ; backups location
 
-(setq require-final-newline t default-indicate-empty-lines t)
+;;; Add a newline automatically at the end of the file.
+(setq require-final-newline t)
+
+;;; Indicate unused lines at the end of the window with a small image
+;;; in the left fringe.
+(setq-default indicate-empty-lines t)
 
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
@@ -138,7 +146,7 @@ in case that file does not provide any feature."
 (dolist
     (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
                 markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-                sql-mode elm-mode dhall-mode makefile-mode))
+                sql-mode elm-mode dhall-mode makefile-mode protobuf-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
    '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
@@ -271,6 +279,7 @@ asking user for confirmation."
 
 (use-package editorconfig
   :ensure t
+  :diminish editorconfig-mode
   :config
     (editorconfig-mode 1))
 
@@ -282,30 +291,43 @@ asking user for confirmation."
 
 (use-package which-key
   :ensure t
+  :diminish which-key-mode
   :config (which-key-mode))
 
 ;;; Language Server Protocol
 (use-package lsp-mode
   :ensure t
+  :diminish lsp-mode
   :hook ((rust-mode . lsp)
+         (ruby-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :init
   ;; https://emacs-lsp.github.io/lsp-mode/page/performance/
   (setq read-process-output-max (* 1024 1024)  ; 1MB
         gc-cons-threshold 100000000)
+  :config
+  ;; https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-enable-file-watchers nil)
   :commands lsp)
 (use-package lsp-treemacs
   :ensure t
   :commands lsp-treemacs-errors-list)
+
 (use-package lsp-ivy
   :ensure t
   :commands lsp-ivy-workspace-symbol)
+
 (use-package flycheck
-  :ensure t)
-;; (use-package lsp-ui
-;;   :ensure t)
+  :ensure t
+  :diminish flycheck-mode)
+
 (use-package company
-  :ensure t)
+  :ensure t
+  :diminish company-mode)
+
+;; (use-package yasnippet
+;;   :ensure t)
 
 ;; (use-package projectile
 ;;   :ensure t
@@ -506,7 +528,8 @@ asking user for confirmation."
       (ivy-mode t)
       ;; Add recent files and bookmarks to ‘ivy-switch-buffer’.
       (setq ivy-use-virtual-buffers t)
-  :bind (("C-S-s" . swiper)
+  :bind (("C-s" . swiper)
+         ("C-S-s" . isearch-forward)
          ("C-c p" . ivy-push-view)
          ("C-c P" . ivy-pop-view)))
 
@@ -516,7 +539,8 @@ asking user for confirmation."
          ("C-x C-f" . counsel-find-file)
          ("C-c j"   . counsel-git)
          ("C-c G"   . counsel-git-grep)
-         ("C-c i"   . counsel-imenu)))
+         ("C-c i"   . counsel-imenu))
+  :defer 0)
 
 (with-eval-after-load "counsel"
   ;; XXX Workaround for https://github.com/abo-abo/swiper/issues/866
@@ -544,7 +568,11 @@ asking user for confirmation."
 
 (use-package ace-window
   :ensure t
-  :config (setq aw-ignore-current t)
+  :config
+  (setq aw-ignore-current t)
+  (with-eval-after-load "diff-mode"
+    ;; Expropriate the key binding from `diff-mode'.
+    (define-key diff-mode-map (kbd "M-o") nil))
   :bind (("M-o" . ace-window)
          ("M-O" . ace-swap-window)))
 ;;; ----------------------------------------------------------------------
@@ -801,6 +829,9 @@ Version 2017-09-01"
   :ensure t
   :bind (("C-c n" . nlinum-mode)
          ("s-n" . nlinum-mode)))
+
+(use-package dockerfile-mode
+  :ensure t)
 
 ;;; Set default font.
 ;;;
