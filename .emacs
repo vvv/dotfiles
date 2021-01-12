@@ -310,6 +310,44 @@ asking user for confirmation."
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-enable-file-watchers nil)
   :commands lsp)
+
+;;; ------------------------------------------------------------------
+;;; lsp-rust-analyzer-inlay-hints-mode workaround
+
+(with-eval-after-load "lsp-rust"
+  ;; Activate inlay hints ..
+  ;; [https://emacs-lsp.github.io/lsp-mode/page/lsp-rust/#inlay-hints]
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
+  ;; .. but keep them hidden.
+  (defvar vvv/hide-inlay-hints t "Whether to keep inlay hints hidden.")
+
+  (defun vvv/lsp-rust-analyzer-inlay-hints-mode (orig-func &optional arg)
+    ;; 1) Inlay hints do not work unless
+    ;;    `lsp-rust-analyzer-server-display-inlay-hints' is set to `t'.
+    ;; `lsp-rust.el' has this piece of code
+    ;; ```
+    ;;   :after-open-fn (lambda ()
+    ;;                    (when lsp-rust-analyzer-server-display-inlay-hints
+    ;;                      (lsp-rust-analyzer-inlay-hints-mode)))
+    ;; ```
+    ;; `(lsp-rust-analyzer-inlay-hints-mode)' enables the mode; this behaviour
+    ;; is explained in the documentation of `define-minor-mode'.
+    (unless (and (null arg) vvv/hide-inlay-hints)
+      (funcall orig-func arg)))
+  (advice-add 'lsp-rust-analyzer-inlay-hints-mode :around
+              #'vvv/lsp-rust-analyzer-inlay-hints-mode)
+
+  (defun vvv/toggle-lsp-rust-analyzer-inlay-hints ()
+    "Show/hide inlay hints."
+    (interactive)
+    (let ((show vvv/hide-inlay-hints))
+      (setq vvv/hide-inlay-hints (not show))
+      (lsp-rust-analyzer-inlay-hints-mode (if show 1 -1))
+      (message "Inlay hints %sabled" (if show "en" "dis"))))
+
+  (global-set-key (kbd "s-L") #'vvv/toggle-lsp-rust-analyzer-inlay-hints))
+;;; ------------------------------------------------------------------
+
 (use-package lsp-treemacs
   :ensure t
   :commands lsp-treemacs-errors-list)
