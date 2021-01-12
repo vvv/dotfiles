@@ -21,7 +21,9 @@
 	log1 = log --oneline
 	logb = log --pretty=%B
 	me = merge --ff-only @{upstream}
+	pf = push --force-with-lease
 	ph = push origin HEAD
+	phf = push --force-with-lease origin HEAD
 	rp = rev-parse
 	rps = rev-parse --short
 	sb = show-branch
@@ -37,3 +39,5 @@
         # `git log --follow`
         # [https://twitter.com/mwotton/status/945049811010703360]
 	follow = true
+[init]
+	defaultBranch = main
