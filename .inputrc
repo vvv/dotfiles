@@ -1,32 +1,32 @@
 # color completions
 set colored-completion-prefix
 
-​# display file completions in different colors
+# display file completions in different colors
 set colored-stats
 
-​# prevent pasted text from partial execution
+# prevent pasted text from partial execution
 set enable-bracketed-paste
 
-​# add slash to symlinked dirs when completing
+# add slash to symlinked dirs when completing
 set mark-symlinked-directories
 
-​# don't ring the bell when there are multiple completions, show them right away
+# don't ring the bell when there are multiple completions, show them right away
 set show-all-if-ambiguous
 
-​# don't insert duplicated text when completing in the middle of a word
+# don't insert duplicated text when completing in the middle of a word
 set skip-completed-text
 
-​# append a file type character when listing completions
+# append a file type character when listing completions
 set visible-stats
 
-​# complete a command matched by the current input
+# complete a command matched by the current input
 "\C-\M-p": history-search-backward
 "\C-\M-n": history-search-forward
 
-​# menu completion, '\e' denotes meta key for most terminals (i.e. Alt)
+# menu completion, '\e' denotes meta key for most terminals (i.e. Alt)
 "\ei": menu-complete
 "\eI": menu-complete-backward
 
-​# dynamic abbreviation expansion, '\e' denotes meta key for most terminals
+# dynamic abbreviation expansion, '\e' denotes meta key for most terminals
 # (i.e. Alt)
 "\ej": dabbrev-expand
