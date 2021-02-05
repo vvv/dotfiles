@@ -17,13 +17,14 @@
 	fe = fetch -p
 	fea = fetch -p --all
 	fem = fetch -p origin master:master
+	fm = !git fetch -p --all && git merge --ff-only @{upstream}
 	g = grep -nHE
 	log1 = log --oneline
 	logb = log --pretty=%B
 	me = merge --ff-only @{upstream}
 	pf = push --force-with-lease
-	ph = push origin HEAD
-	phf = push --force-with-lease origin HEAD
+	ph = "!f() { local cmd='git push'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
+	phf = "!f() { local cmd='git push --force-with-lease'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
 	rp = rev-parse
 	rps = rev-parse --short
 	sb = show-branch
@@ -39,5 +40,9 @@
         # `git log --follow`
         # [https://twitter.com/mwotton/status/945049811010703360]
 	follow = true
+[diff "sopsdiffer"]
+	textconv = sops -d
 [init]
 	defaultBranch = main
+[url "git@github.com:"]
+	insteadOf = https://github.com/
