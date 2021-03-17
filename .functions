@@ -1,8 +1,8 @@
 # -*- sh -*-
 
 mkcd() {
-	[ $# -eq 1 ] || { echo 'Usage: mkcd <dir>' >&2; return 1; }
-	mkdir "$1" && cd "$1"
+    [ $# -eq 1 ] || { echo 'Usage: mkcd <dir>' >&2; return 1; }
+    mkdir "$1" && cd "$1"
 }
 export -f mkcd
 

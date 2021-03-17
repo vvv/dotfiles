@@ -17,7 +17,7 @@
 (when window-system
   (dolist (f '(scroll-bar-mode tool-bar-mode)) (funcall f -1)))
 
-;; Unset unwelcome key bindings.
+;; Unset unwanted key bindings.
 (dolist
     (b (list
         (kbd "s-q")       ; `save-buffers-kill-emacs'
@@ -27,11 +27,13 @@
         (kbd "s-:")       ; `ispell'
         (kbd "s-g")       ; `isearch-repeat-forward'
         (kbd "s-f")       ; `isearch-forward'
-        (kbd "s-l")       ; `goto-line`
+        (kbd "s-l")       ; `goto-line'
+        (kbd "s-m")       ; `iconify-frame'
         (kbd "s-n")       ; `ns-new-frame'
         (kbd "s-o")       ; `ns-open-file-using-panel'
-        (kbd "s-t")       ; `ns-popup-font-panel`
-        (kbd "s-v")       ; `yank`
+        (kbd "s-p")       ; `ns-print-buffer'
+        (kbd "s-t")       ; `ns-popup-font-panel'
+        (kbd "s-v")       ; `yank'
         (kbd "s-z")       ; `undo'
         "\C-z"            ; `undo'
         (kbd "C-/")       ; `undo'
@@ -55,6 +57,7 @@
     (s (list "s-+" "s-=" "s--" "s-0"))
   (global-set-key (kbd s) 'text-scale-adjust))
 
+(global-set-key (kbd "s-b") 'switch-to-buffer)
 (global-set-key (kbd "s-g") 'goto-line)
 
 (require 'package)
@@ -130,8 +133,6 @@ in case that file does not provide any feature."
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 (add-hook 'octave-mode-hook
           (lambda () (setq octave-block-offset 4)))
-(add-hook 'ruby-mode-hook
-          (lambda () (setq ruby-indent-level 4)))
 
 ;;; GNU global
 ;;; https://github.com/leoliu/ggtags
@@ -143,13 +144,16 @@ in case that file does not provide any feature."
   (define-key ggtags-navigation-map "\M-*" 'ggtags-navigation-mode-abort)
   (define-key ggtags-mode-map "\M-*" 'ggtags-find-tag-continue))
 
+; XXX Use `hl-todo' package instead?
+; [https://github.com/tarsius/hl-todo]
 (dolist
-    (m '(c-mode python-mode sh-mode rust-mode html-mode js-mode haskell-mode
-                markdown-mode yaml-mode ruby-mode org-mode emacs-lisp-mode
-                sql-mode elm-mode dhall-mode makefile-mode protobuf-mode))
+    (m '(c-mode dhall-mode elm-mode emacs-lisp-mode haskell-mode
+         html-mode js-mode makefile-mode markdown-mode org-mode
+         protobuf-mode python-mode ruby-mode rust-mode
+         rustic-mode sh-mode sql-mode yaml-mode))
   (font-lock-add-keywords m
    ; Fontify "XXX", even in comments.
-   '(("\\<\\(XXX\\)" 1 'font-lock-warning-face prepend))))
+   '(("\\<\\(XXX\\|TODO\\|FIXME\\)\\>" 1 'font-lock-warning-face prepend))))
 
 (defun copy-buffer-as-kill ()
   "Save the buffer as if killed, but don't kill it."
@@ -255,7 +259,7 @@ asking user for confirmation."
 
   ;; https://orgmode.org/manual/Structure-Templates.html
   ;; Enable org-tempo so that `< s <TAB>' is expanded to a code block.
-  (add-to-list 'org-modules 'org-tempo)
+  (require 'org-tempo)
 
   (setq org-outline-path-complete-in-steps nil))
 
@@ -279,7 +283,7 @@ asking user for confirmation."
 
 (use-package editorconfig
   :ensure t
-  :diminish editorconfig-mode
+  :diminish editorconfig-mode  ; FIXME
   :config
     (editorconfig-mode 1))
 
@@ -294,11 +298,16 @@ asking user for confirmation."
   :diminish which-key-mode
   :config (which-key-mode))
 
+(use-package rustic
+  :ensure t
+  :diminish rustic-mode)
+
 ;;; Language Server Protocol
 (use-package lsp-mode
   :ensure t
   :diminish lsp-mode
-  :hook ((rust-mode . lsp)
+  :hook (
+         (dhall-mode . lsp)
          (ruby-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :init
@@ -309,6 +318,7 @@ asking user for confirmation."
   ;; https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-enable-file-watchers nil)
+  (setq lsp-signature-render-documentation nil)
   :commands lsp)
 
 ;;; ------------------------------------------------------------------
@@ -345,16 +355,19 @@ asking user for confirmation."
       (lsp-rust-analyzer-inlay-hints-mode (if show 1 -1))
       (message "Inlay hints %sabled" (if show "en" "dis"))))
 
-  (global-set-key (kbd "s-L") #'vvv/toggle-lsp-rust-analyzer-inlay-hints))
+  (global-set-key (kbd "s-L") #'vvv/toggle-lsp-rust-analyzer-inlay-hints)
+
+  ;; (setq lsp-rust-analyzer-display-parameter-hints t)
+  (setq lsp-rust-analyzer-display-chaining-hints t))
 ;;; ------------------------------------------------------------------
 
-(use-package lsp-treemacs
-  :ensure t
-  :commands lsp-treemacs-errors-list)
+;XXX; (use-package lsp-treemacs
+;XXX;   :ensure t
+;XXX;   :commands lsp-treemacs-errors-list)
 
-(use-package lsp-ivy
-  :ensure t
-  :commands lsp-ivy-workspace-symbol)
+;XXX; (use-package lsp-ivy
+;XXX;   :ensure t
+;XXX;   :commands lsp-ivy-workspace-symbol)
 
 (use-package flycheck
   :ensure t
@@ -374,10 +387,11 @@ asking user for confirmation."
 ;;   ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 ;;   (projectile-mode +1))
 
-;; (use-package counsel-projectile
-;;   :ensure t
-;;   :config
-;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map))
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (counsel-projectile-mode))
 
 (use-package dhall-mode
   :config
@@ -415,6 +429,7 @@ asking user for confirmation."
 ;;; http://www.emacswiki.org/emacs/FullScreen
 (global-set-key (kbd "C-c f") 'toggle-frame-fullscreen)
 (global-set-key (kbd "s-f") 'toggle-frame-fullscreen)
+(global-set-key (kbd "<s-return>") 'toggle-frame-fullscreen)
 
 (setq vc-follow-symlinks t)
 
@@ -568,8 +583,8 @@ asking user for confirmation."
       (setq ivy-use-virtual-buffers t)
   :bind (("C-s" . swiper)
          ("C-S-s" . isearch-forward)
-         ("C-c p" . ivy-push-view)
-         ("C-c P" . ivy-pop-view)))
+         ("C-c v" . ivy-push-view)
+         ("C-c V" . ivy-pop-view)))
 
 (use-package counsel
   :ensure t
@@ -898,7 +913,7 @@ Version 2017-09-01"
  '(mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control))))
  '(org-modules nil)
  '(package-selected-packages
-   '(flycheck company company-mode which-key protobuf-mode lsp-ivy p editorconfig lsp-treemacs treemacs lsp-mode nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp rust-mode fill-column-indicator yaml-mode org ace-window swiper ggtags))
+   '(json-mode typescript-mode terraform-mode rustic org-roam org-roam-server counsel-projectile feature-mode flycheck company company-mode which-key protobuf-mode lsp-ivy p editorconfig lsp-treemacs treemacs lsp-mode nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp fill-column-indicator yaml-mode org ace-window swiper ggtags))
  '(which-function-mode nil)
  '(which-key-mode t))
 
