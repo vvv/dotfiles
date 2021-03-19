@@ -16,12 +16,12 @@
 	cia = commit --amend
 	ciaH = commit --amend -C HEAD
 	co = checkout
-	fe = fetch -p --all
-	fem = fetch -p origin master:master
+	f = fetch -p --all
+	fm = fetch -p origin master:master
 	g = grep -nHE
-	log1 = log --oneline
-	logb = log --pretty=%B
-	me = "!f() { git merge --ff-only ${*:-'@{upstream}'}; }; f"
+	l1 = log --oneline
+	lb = log --pretty=%B
+	mg = "!f() { git merge --ff-only ${*:-'@{upstream}'}; }; f"
 	pf = push --force-with-lease
 	ph = "!f() { local cmd='git push'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
 	phf = "!f() { local cmd='git push --force-with-lease'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
