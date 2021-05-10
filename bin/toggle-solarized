@@ -5,7 +5,7 @@ usage() {
     cat <<EOF
 Usage: ${0##*/} [-h|--help]
 
-Toggle Emacs and iTerm|Terminal between dark and light Solarized presets.
+Toggle Emacs and iTerm2 between dark and light Solarized presets.
 
 See https://github.com/tomislav/osx-terminal.app-colors-solarized
 for instructions on how to install Solarized profiles.
@@ -16,59 +16,9 @@ case "${1:-}" in
     -h|--help) usage; exit;;
 esac
 
-emacsclient -n -e '(toggle-solarized-light)' >/dev/null
-
-if [[ $(uname) != Darwin ]]; then
-   exit
-fi
+emacsclient -n -e '(vvv/toggle-solarized-light)' >/dev/null
 
 if [[ -n ${ITERM_SESSION_ID:-} ]]; then
-    dark='Solarized Dark'
-    light='Solarized Light'
-else
-    dark='Solarized Dark ansi'
-    light='Solarized Light ansi'
-fi
-
-current_preset() {
-    if [[ -n ${ITERM_SESSION_ID:-} ]]; then
-        osascript <<EOF
-tell application "iTerm"
-    return color preset of current session of current window
-end tell
-EOF
-    else
-        osascript <<EOF
-tell application "Terminal"
-    return name of current settings of first window
-end tell
-EOF
-    fi
-}
-
-if [[ $(current_preset) == $light ]]; then
-    preset="$dark"
-else
-    preset="$light"
-fi
-
-if [[ -n ${ITERM_SESSION_ID:-} ]]; then
-    echo -e "\033]50;SetProfile=Default\a"
-    osascript <<EOF
-tell application "iTerm"
-    set color preset of current session of current window to "$preset"
-    repeat with W in windows
-        set color preset of current session of W to "$preset"
-    end repeat
-end tell
-EOF
-else
-    osascript <<EOF
-tell application "Terminal"
-    set default settings to settings set "$preset"
-    repeat with W in windows
-        set current settings of W to settings set "$preset"
-    end repeat
-end tell
-EOF
+    /Applications/iTerm.app/Contents/Resources/it2run \
+        ~/Library/Application\ Support/iTerm2/Scripts/toggle-solarized.py
 fi
