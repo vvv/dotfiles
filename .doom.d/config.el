@@ -72,6 +72,8 @@
 
 ;; Don't register jumps between marks in the better-jumper's history.
 (setq better-jumper-use-evil-jump-advice nil)
+;; Let jump list behave like a backtrace (stack), not an ever-growing list.
+(setq better-jumper-add-jump-behavior 'replace)
 
 ;; Suppress the pesky warning
 ;; > There are <num> files in folder <repo-dir> so watching the repo may slow Emacs down.
