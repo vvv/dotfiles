@@ -70,6 +70,9 @@
 ;XXX-DELETEME       "SPC" #'avy-pop-mark)
 (setq avy-all-windows 'all-frames)
 
+;; Don't register jumps between marks in the better-jumper's history.
+(setq better-jumper-use-evil-jump-advice nil)
+
 ;; Suppress the pesky warning
 ;; > There are <num> files in folder <repo-dir> so watching the repo may slow Emacs down.
 ;; > Do you want to watch all files in <repo-dir>? (y or n) n
