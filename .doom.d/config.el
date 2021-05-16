@@ -64,9 +64,9 @@
 ;; they are implemented.
 
 ;XXX-DELETEME (map! :after iedit "C-;" #'iedit-mode)
-;XXX-DELETEME (map! :map evilem-map
-;XXX-DELETEME       "s" #'evil-avy-goto-word-or-subword-1
-;XXX-DELETEME       "SPC" #'avy-pop-mark)
+(map! :map evilem-map
+      "s" #'evil-avy-goto-word-or-subword-1
+      "SPC" #'avy-pop-mark)
 (setq avy-all-windows 'all-frames)
 
 ;; Don't register jumps between marks in the better-jumper's history.
