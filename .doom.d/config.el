@@ -63,7 +63,9 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;XXX-DELETEME (map! :after iedit "C-;" #'iedit-mode)
+(map! :after iedit
+      :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
+
 (map! :map evilem-map
       "s" #'evil-avy-goto-word-or-subword-1
       "SPC" #'avy-pop-mark)
