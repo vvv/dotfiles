@@ -66,8 +66,8 @@
 (map! :after iedit
       :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
 
-(map! :map evilem-map
-      "s" #'evil-avy-goto-word-or-subword-1
+(map! :after evil-easymotion :map evilem-map
+      "s" #'avy-goto-word-or-subword-1
       "SPC" #'avy-pop-mark)
 (setq avy-all-windows 'all-frames)
 
@@ -131,3 +131,16 @@
 
   ;; Show inlay type hints for method chains.
   (setq lsp-rust-analyzer-display-chaining-hints t))
+
+;; This thing started to cover the code with documentation windows quite aggressively
+;; (I kinda know what `let' keyword does, thank you very much).  I am probably
+;; missing something useful, but for now it's easier to just disable the whole package.
+(after! lsp-ui-doc
+  (setq lsp-ui-doc-enable nil))
+
+;; Swap these bindings.  I use `+workspace/other' more often and want it to be
+;; easily accessible.
+(map! (:when (featurep! :ui workspaces))
+      :leader
+      :desc "Switch to last workspace" "TAB TAB" #'+workspace/other
+      :desc "Display tab bar" "TAB `" #'+workspace/display)
