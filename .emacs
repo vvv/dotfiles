@@ -3,7 +3,6 @@
 (eval-when-compile (require 'subr-x))  ; string-empty-p, string-trim-right
 
 (require 'server)
-;; (setq server-use-tcp t)
 (unless (server-running-p)
   (server-start))
 
@@ -57,6 +56,7 @@
     (s (list "s-+" "s-=" "s--" "s-0"))
   (global-set-key (kbd s) 'text-scale-adjust))
 
+(global-set-key (kbd "s-u") 'revert-buffer)
 (global-set-key (kbd "s-b") 'switch-to-buffer)
 (global-set-key (kbd "s-g") 'goto-line)
 
@@ -77,7 +77,9 @@
 (when (memq window-system '(mac ns x))
   (use-package exec-path-from-shell
     :ensure t
-    :config (exec-path-from-shell-initialize)))
+    :config
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "OPENSSL_ROOT_DIR"))
+    (exec-path-from-shell-initialize)))
 
 ;; Always perform yes-or-no prompts using the echo area and keyboard input.
 (setq use-dialog-box nil)
@@ -144,8 +146,18 @@ in case that file does not provide any feature."
   (define-key ggtags-navigation-map "\M-*" 'ggtags-navigation-mode-abort)
   (define-key ggtags-mode-map "\M-*" 'ggtags-find-tag-continue))
 
-; XXX Use `hl-todo' package instead?
-; [https://github.com/tarsius/hl-todo]
+(use-package hl-todo
+  :ensure t
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  ;; Add `("REVIEW" . <color>)' to the front of `hl-todo-keyword-faces',
+  ;; using the <color> of the "HACK" keyword.
+  (let ((color (cdr (assoc "HACK" hl-todo-keyword-faces))))
+    (setq hl-todo-keyword-faces
+          (cons (cons "REVIEW" color) hl-todo-keyword-faces))))
+
+;; ; XXX Use `hl-todo' package instead?
+;; ; [https://github.com/tarsius/hl-todo]
 (dolist
     (m '(c-mode dhall-mode elm-mode emacs-lisp-mode haskell-mode
          html-mode js-mode makefile-mode markdown-mode org-mode
@@ -208,9 +220,9 @@ asking user for confirmation."
   (setq org-startup-indented t
         org-directory "~/.org")
 
-  ;; capture
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
-  (global-set-key "\C-cc" 'org-capture)
+;XXX   ;; capture
+;XXX   (setq org-default-notes-file (concat org-directory "/notes.org"))
+;XXX   (global-set-key "\C-cc" 'org-capture)
 
   ;; http://doc.norang.ca/org-mode.html#TodoKeywords
   (setq org-todo-keywords
@@ -287,11 +299,11 @@ asking user for confirmation."
   :config
     (editorconfig-mode 1))
 
-(use-package treemacs
-  :ensure t
-  :config
-  (global-set-key (kbd "C-c r") 'treemacs)
-  (global-set-key (kbd "s-r") 'treemacs))
+;XXX; (use-package treemacs
+;XXX;   :ensure t
+;XXX;   :config
+;XXX;   (global-set-key (kbd "C-c r") 'treemacs)
+;XXX;   (global-set-key (kbd "s-r") 'treemacs))
 
 (use-package which-key
   :ensure t
@@ -361,14 +373,6 @@ asking user for confirmation."
   (setq lsp-rust-analyzer-display-chaining-hints t))
 ;;; ------------------------------------------------------------------
 
-;XXX; (use-package lsp-treemacs
-;XXX;   :ensure t
-;XXX;   :commands lsp-treemacs-errors-list)
-
-;XXX; (use-package lsp-ivy
-;XXX;   :ensure t
-;XXX;   :commands lsp-ivy-workspace-symbol)
-
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode)
@@ -376,16 +380,6 @@ asking user for confirmation."
 (use-package company
   :ensure t
   :diminish company-mode)
-
-;; (use-package yasnippet
-;;   :ensure t)
-
-;; (use-package projectile
-;;   :ensure t
-;;   :config
-;;   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-;;   ;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-;;   (projectile-mode +1))
 
 (use-package counsel-projectile
   :ensure t
@@ -401,22 +395,22 @@ asking user for confirmation."
   (add-hook 'dhall-mode-hook
             (lambda () (setq indent-tabs-mode nil))))
 
-(defun vvv/reload-tags-table (arg)
-  "A combination of `tags-reset-tags-tables' and `visit-tags-table'."
-  (interactive "P")
-  (tags-reset-tags-tables)
-  (if (null current-prefix-arg)
-      (let ((tags-file (locate-dominating-file default-directory "TAGS")))
-        (when tags-file
-          (visit-tags-table tags-file)
-          (message "Loaded tags file: %s" tags-file-name)))
-    (call-interactively 'visit-tags-table)))
-(global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
+;; (defun vvv/reload-tags-table (arg)
+;;   "A combination of `tags-reset-tags-tables' and `visit-tags-table'."
+;;   (interactive "P")
+;;   (tags-reset-tags-tables)
+;;   (if (null current-prefix-arg)
+;;       (let ((tags-file (locate-dominating-file default-directory "TAGS")))
+;;         (when tags-file
+;;           (visit-tags-table tags-file)
+;;           (message "Loaded tags file: %s" tags-file-name)))
+;;     (call-interactively 'visit-tags-table)))
+;; (global-set-key (kbd "C-c .") 'vvv/reload-tags-table)
 
-(with-eval-after-load "ps-print"
-  (setq ps-paper-type 'a4
-        ps-print-header nil
-        ps-multibyte-buffer 'bdf-font-except-latin))
+;; (with-eval-after-load "ps-print"
+;;   (setq ps-paper-type 'a4
+;;         ps-print-header nil
+;;         ps-multibyte-buffer 'bdf-font-except-latin))
 
 ;;; http://www.emacswiki.org/emacs/HideRegion
 (let ((fn "~/lib/emacs/hide-region/hide-region.el"))
@@ -630,13 +624,6 @@ asking user for confirmation."
          ("M-O" . ace-swap-window)))
 ;;; ----------------------------------------------------------------------
 
-;;; https://github.com/yjwen/Org-Reveal
-(let ((d "~/src/reveal.js"))
-  (when (file-directory-p d)
-    (use-package ox-reveal
-      :ensure t
-      :config (setq org-reveal-root (concat "file://" (expand-file-name d))))))
-
 ;;; http://emacsredux.com/blog/2014/04/05/which-function-mode/
 (setq mode-line-misc-info
       ;; We remove Which Function Mode from the mode line, because it's mostly
@@ -826,25 +813,40 @@ Version 2017-09-01"
 
 (global-set-key (kbd "C-c F") 'display-fill-column-indicator-mode)
 
+(defun vvv/download-url (url path &optional sha1)
+  "Download a file from URL, check its SHA1 checksum (if provided), save as PATH.
+If the destination file exists, it will be overwritten."
+  (url-copy-file url path 'overwrite)
+  (when sha1
+    (let ((checksum)
+          (buf (find-file-noselect path nil t)))
+      (setq checksum (secure-hash 'sha1 buf))
+      (kill-buffer buf)
+      (unless (string= checksum sha1)
+        (error "%s: checksum doesn't match" path)))))
+
 ;;; ------------------------------------------------------------------
 ;;; Solarized color theme
 ;;; - http://ethanschoonover.com/solarized
 ;;; - https://github.com/sellout/emacs-color-theme-solarized
 
-(let ((path "~/.emacs.d/emacs-color-theme-solarized"))
-  (when (file-directory-p path)
-    (add-to-list 'custom-theme-load-path path)
-    (load-theme 'solarized t))
-
-  (defun toggle-solarized-light ()
-    "Switch dark/light modes of Solarized color theme."
-    (interactive)
-    (setq frame-background-mode
-          (if (eq frame-background-mode 'dark) 'light 'dark))
-    (load-theme 'solarized t)
-    (mapc 'frame-set-background-mode (frame-list)))
-
-  (global-set-key (kbd "C-M-8") 'toggle-solarized-light))
+(use-package solarized-theme
+  :ensure t
+  :config
+  (progn
+    (defun vvv/toggle-solarized-light ()
+      "Switch between dark/light modes of the Solarized color theme."
+      (interactive)
+      (setq frame-background-mode
+            (if (eq frame-background-mode 'dark) 'light 'dark))
+      (load-theme
+       (intern
+        (format "solarized-%s" frame-background-mode))
+        ;; (format "solarized-%s-high-contrast" frame-background-mode))
+       t)
+      (mapc 'frame-set-background-mode (frame-list)))
+    (global-set-key (kbd "C-M-8") 'vvv/toggle-solarized-light)
+    (vvv/toggle-solarized-light)))
 ;;; ------------------------------------------------------------------
 
 ;;; "Undo" (and "redo") changes in the window configuration with the
@@ -862,29 +864,32 @@ Version 2017-09-01"
 
 ;;; https://www.emacswiki.org/emacs/VlineMode
 (unless (fboundp 'vline-mode)
-  (let ((path "~/.emacs.d/vline.el")
-        (checksum))
+  (let ((path "~/.emacs.d/vline.el"))
     (unless (file-exists-p path)
-      ;; download the file
-      (url-copy-file "http://www.emacswiki.org/emacs/download/vline.el" path))
-
-    ;; calculate checksum
-    (let ((buf (find-file-noselect path nil t)))
-      (setq checksum (secure-hash 'sha1 buf))
-      (kill-buffer buf))
-
-    (if (string= checksum "c4f5ea2731d8b89e24eec5e9be98e2652b54bdbc")
-      (progn (load-file path)
-             (global-set-key (kbd "C-c h") 'vline-mode))
-      (message "%s: checksum doesn't match" path))))
+      (vvv/download-url "http://www.emacswiki.org/emacs/download/vline.el"
+                        "c4f5ea2731d8b89e24eec5e9be98e2652b54bdbc"))
+    (load-file path)
+    (global-set-key (kbd "C-c h") 'vline-mode)))
 
 (use-package nlinum
   :ensure t
   :bind (("C-c n" . nlinum-mode)
          ("s-n" . nlinum-mode)))
 
-(use-package dockerfile-mode
-  :ensure t)
+(defun vvv/kill-current-buffer ()
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key (kbd "s-k") #'vvv/kill-current-buffer)
+
+;; (use-package org-roam
+;;   :bind ("C-c c" . org-roam-find-file)
+;;   :init
+;;   (add-hook 'after-init-hook #'org-roam-mode)
+;;   :config
+;;   (let ((d "~/.org-roam"))
+;;     (unless (file-directory-p d)
+;;       (make-directory d))
+;;     (setq org-roam-directory d)))
 
 ;;; Set default font.
 ;;;
@@ -910,10 +915,14 @@ Version 2017-09-01"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-highlight-mode nil)
+ '(custom-safe-themes
+   '("7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+ '(mac-command-modifier 'super)
+ '(mac-option-modifier 'meta)
  '(mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control))))
  '(org-modules nil)
  '(package-selected-packages
-   '(json-mode typescript-mode terraform-mode rustic org-roam org-roam-server counsel-projectile feature-mode flycheck company company-mode which-key protobuf-mode lsp-ivy p editorconfig lsp-treemacs treemacs lsp-mode nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp fill-column-indicator yaml-mode org ace-window swiper ggtags))
+   '(solarized-theme color-theme-sanityinc-solarized hl-todo toml-mode just-mode json-mode typescript-mode terraform-mode rustic org-roam org-roam-server counsel-projectile feature-mode flycheck company company-mode which-key protobuf-mode lsp-ivy p editorconfig lsp-treemacs lsp-mode nlinum clojure-mode salt-mode dockerfile-mode dhall-mode flycheck-elm elm-mode ox-reveal exec-path-from-shell use-package-chords outshine iedit htmlize diminish use-package color-theme-solarized markdown-mode col-highlight indent-tools lua-mode hide-region counsel command-log-mode visual-regexp fill-column-indicator yaml-mode org ace-window swiper ggtags))
  '(which-function-mode nil)
  '(which-key-mode t))
 
@@ -922,4 +931,5 @@ Version 2017-09-01"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((((class color) (min-colors 89)) (:foreground "#839496" :background "#002b36"))))
  '(which-func ((t (:foreground "dark cyan")))))

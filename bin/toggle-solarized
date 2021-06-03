@@ -16,7 +16,7 @@ case "${1:-}" in
     -h|--help) usage; exit;;
 esac
 
-emacsclient -n -e '(vvv/toggle-solarized-light)' >/dev/null
+emacsclient -n -e '(vvv/toggle-solarized-light)' >/dev/null || true
 
 if [[ -n ${ITERM_SESSION_ID:-} ]]; then
     /Applications/iTerm.app/Contents/Resources/it2run \

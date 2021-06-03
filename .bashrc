@@ -38,6 +38,7 @@ if [[ $(uname) == Darwin ]]; then
     # are installed; see https://docs.brew.sh/Homebrew-and-Python
     _path_prepend_safe $(brew --prefix)/opt/python/libexec/bin
 fi
+_path_prepend_safe ~/doom-emacs/bin
 _path_prepend_safe ~/.cargo/bin
 _path_prepend_safe ~/.local/bin
 _path_prepend_safe ~/bin
@@ -109,6 +110,19 @@ __prompt_command() {
 }
 export -f __prompt_command
 PROMPT_COMMAND=__prompt_command
+# --------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# Homebrew, shell completions; see https://docs.brew.sh/Shell-Completion
+
+if type brew &>/dev/null; then
+    for d in $(brew --prefix)/etc/bash_completion.d/*; do
+        if [[ -r $d ]]; then
+            . $d
+        fi
+    done
+    unset d
+fi
 # --------------------------------------------------------------------
 
 if [[ $(uname) == Darwin ]]; then
