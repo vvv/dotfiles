@@ -42,7 +42,7 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type nil)
 
 (display-time)  ; show time in the mode line
 
@@ -84,9 +84,8 @@
   (setq lsp-enable-file-watchers nil
         ;; Do NOT display signature documentation in eldoc.
         lsp-signature-render-documentation nil
-        ;XXX; ;; Do not display hover info.
-        ;XXX; lsp-eldoc-enable-hover nil
-        ))
+        ;; Highlighted symbols are invisible in `doom-tomorrow-night' color theme.
+        lsp-enable-symbol-highlighting nil))
 
 ;; Don't show information of the symbols, flycheck diagnostics, and LSP code actions
 ;; on the current line; see https://emacs-lsp.github.io/lsp-ui/#lsp-ui-sideline
@@ -137,10 +136,3 @@
 ;; missing something useful, but for now it's easier to just disable the whole package.
 (after! lsp-ui-doc
   (setq lsp-ui-doc-enable nil))
-
-;; Swap these bindings.  I use `+workspace/other' more often and want it to be
-;; easily accessible.
-(map! (:when (featurep! :ui workspaces))
-      :leader
-      :desc "Switch to last workspace" "TAB TAB" #'+workspace/other
-      :desc "Display tab bar" "TAB `" #'+workspace/display)
