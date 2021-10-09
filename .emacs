@@ -388,6 +388,7 @@ asking user for confirmation."
   (counsel-projectile-mode))
 
 (use-package dhall-mode
+  :ensure t
   :config
   (remove-hook 'after-change-functions 'dhall-after-change)
   (setq dhall-use-header-line nil
@@ -581,7 +582,6 @@ asking user for confirmation."
          ("C-c V" . ivy-pop-view)))
 
 (use-package counsel
-  :ensure t
   :bind (("M-x"     . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
          ("C-c j"   . counsel-git)
@@ -606,7 +606,6 @@ asking user for confirmation."
     (advice-add #'counsel-git-grep-function :filter-args #'vvv/first-line)))
 
 (use-package avy
-  :ensure t
   :config
     (setq avy-all-windows 'all-frames)
   :bind (("C-."     . avy-goto-word-or-subword-1)
@@ -614,7 +613,6 @@ asking user for confirmation."
          ("C-x SPC" . avy-pop-mark)))
 
 (use-package ace-window
-  :ensure t
   :config
   (setq aw-ignore-current t)
   (with-eval-after-load "diff-mode"

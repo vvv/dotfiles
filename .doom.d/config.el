@@ -27,6 +27,8 @@
 (when IS-MAC
   (setq doom-font (font-spec :family "Menlo" :size 14)))
 
+(setq doom-font-increment 1)
+
 ;; Position and size of the initial window frame.
 (setq initial-frame-alist '((top . 0) (left . 0) (width . 80) (height . 53)))
 

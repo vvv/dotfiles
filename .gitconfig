@@ -43,6 +43,12 @@
 [diff "sopsdiffer"]
 	textconv = sops -d
 [init]
-	defaultBranch = main
-[url "git@github.com:"]
-	insteadOf = https://github.com/
+    defaultBranch = main
+# [url "git@github.com:"]
+# 	insteadOf = https://github.com/
+[merge]
+	conflictStyle = diff3
+[credential]
+	helper = store
+[receive]
+	denyCurrentBranch = warn
