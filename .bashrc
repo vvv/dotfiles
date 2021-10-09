@@ -137,6 +137,16 @@ for f in $d/{completion,key-bindings}.bash; do
 done
 unset d
 
+# Set EDITOR to Vim for better `C-x C-e` experience;
+# see `edit-and-execute-command` in bash(1)
+for e in nvim vim vi; do
+    if [[ -n $(type -p $e) ]]; then
+        export EDITOR=$e
+        break
+    fi
+done
+unset e
+
 for f in \
     ~/.bash_aliases \
     ~/.functions \
@@ -146,6 +156,7 @@ do
         . $f
     fi
 done
+unset f
 
 # Ruby environment [https://github.com/rbenv/rbenv]
 if command -v rbenv >/dev/null; then
