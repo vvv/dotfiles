@@ -37,13 +37,15 @@
 [rebase]
 	autoSquash = true
 [log]
-        # `git log --follow`
-        # [https://twitter.com/mwotton/status/945049811010703360]
+	# Enable `git log --follow` by default
+	# (track the history of a moved file).
+	#
+	# via https://twitter.com/mwotton/status/945049811010703360
 	follow = true
 [diff "sopsdiffer"]
 	textconv = sops -d
-[init]
-    defaultBranch = main
+# [init]
+#     defaultBranch = main
 # [url "git@github.com:"]
 # 	insteadOf = https://github.com/
 [merge]
@@ -52,3 +54,8 @@
 	helper = store
 [receive]
 	denyCurrentBranch = warn
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
