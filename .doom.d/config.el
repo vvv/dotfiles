@@ -83,17 +83,33 @@
 ;; > Do you want to watch all files in <repo-dir>? (y or n) n
 ;; > LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
 (after! lsp-mode
+  ;; See also https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
   (setq lsp-enable-file-watchers nil
         ;; Do NOT display signature documentation in eldoc.
         lsp-signature-render-documentation nil
         ;; Highlighted symbols are invisible in `doom-tomorrow-night' color theme.
-        lsp-enable-symbol-highlighting nil))
+        lsp-enable-symbol-highlighting nil
+        ;; I don't want to see those pesky `‣ Run Test|Debug' things ever again.
+        lsp-lens-enable nil))
 
 ;; Don't show information of the symbols, flycheck diagnostics, and LSP code actions
 ;; on the current line; see https://emacs-lsp.github.io/lsp-ui/#lsp-ui-sideline
 (after! lsp-ui-sideline (setq lsp-ui-sideline-show-code-actions nil))
 
 (after! lsp-rust
+  ;; Don't let rust-analyzer block cargo check/test/build commands typed from
+  ;; the terminal.
+  ;;
+  ;; This value gets assigned to `rust-analyzer.checkOnSave.extraArgs' config
+  ;; option --- extra arguments for `cargo check'.
+  ;;
+  ;; See also
+  ;; - `lsp-rust-analyzer--make-init-options'
+  ;; - https://rust-analyzer.github.io/manual.html
+  ;; - https://github.com/rust-analyzer/rust-analyzer/issues/4616#issuecomment-633852029
+  ;; - `rust-analyzer --print-config-schema'
+  (setq lsp-rust-analyzer-cargo-watch-args ["--target-dir" "/tmp/rust-analyzer-check"])
+
   ;; Activate inlay type hints ..
   ;; [https://emacs-lsp.github.io/lsp-mode/page/lsp-rust/#inlay-hints]
   (setq lsp-rust-analyzer-server-display-inlay-hints t)
