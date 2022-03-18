@@ -16,7 +16,6 @@
 	cia = commit --amend
 	ciaH = commit --amend -C HEAD
 	co = checkout
-	f = fetch -p --all
 	fm = fetch -p origin master:master
 	g = grep -nHE
 	l1 = log --oneline
