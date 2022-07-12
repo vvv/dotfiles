@@ -135,7 +135,14 @@ for f in $d/{completion,key-bindings}.bash; do
         . $f
     fi
 done
-unset d
+unset f d
+
+if [[ $(uname) != Darwin && -d /home/linuxbrew/.linuxbrew/etc/bash_completion.d ]]; then
+    for f in /home/linuxbrew/.linuxbrew/etc/bash_completion.d/*; do
+        . $f
+    done
+fi
+unset f
 
 # Set EDITOR to Vim for better `C-x C-e` experience;
 # see `edit-and-execute-command` in bash(1)
