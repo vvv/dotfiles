@@ -5,28 +5,35 @@
 
 (setq confirm-kill-emacs 'yes-or-no-p)
 
+;; XXX-FIXME
 (setq uniquify-buffer-name-style 'forward)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
-(setq user-full-name "Valery V. Vorotyntsev"
+;; clients, file templates and snippets. It is optional.
+(setq user-full-name "Valeriy V. Vorotyntsev"
       user-mail-address "valery.vv@gmail.com")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
+;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;; - `doom-font' -- the primary font to use
+;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
 ;;   presentations or streaming.
+;; - `doom-unicode-font' -- for unicode glyphs
+;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
 ;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+;; See 'C-h v doom-font' for documentation and more examples of what they
+;; accept. For example:
+;;
+;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+;;
+;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
+;; refresh your font settings. If Emacs still can't find your font, it likely
+;; wasn't installed correctly. Font issues are rarely Doom issues!
 (when IS-MAC
   (setq doom-font (font-spec :family "Menlo" :size 14)))
-
 (setq doom-font-increment 1)
 
 ;; Position and size of the initial window frame.
@@ -38,17 +45,35 @@
 ;(setq doom-theme 'doom-one)
 (setq doom-theme (if IS-MAC 'doom-solarized-dark 'doom-tomorrow-night))
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/org/")
+
+(map! :after evil-easymotion :map evilem-map
+      "s" #'avy-goto-word-or-subword-1
+      "SPC" #'avy-pop-mark)
+(setq avy-all-windows 'all-frames)
+
 (display-time)  ; show time in the mode line
 
-;; Here are some additional functions/macros that could help you configure Doom:
+;; Whenever you reconfigure a package, make sure to wrap your config in an
+;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
+;;
+;;   (after! PACKAGE
+;;     (setq x y))
+;;
+;; The exceptions to this rule:
+;;
+;;   - Setting file/directory variables (like `org-directory')
+;;   - Setting variables which explicitly tell you to set them before their
+;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
+;;   - Setting doom variables (which start with 'doom-' or '+').
+;;
+;; Here are some additional functions/macros that will help you configure Doom.
 ;;
 ;; - `load!' for loading external *.el files relative to this one
 ;; - `use-package!' for configuring packages
@@ -61,36 +86,35 @@
 ;; To get information about any of these functions/macros, move the cursor over
 ;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
 ;; This will open documentation for it, including demos of how they are used.
+;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+;; etc).
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(map! :after iedit
-      :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
+;XXX ;; XXX-FIXME
+;XXX (map! :after iedit
+;XXX       :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
 
-(map! :after evil-easymotion :map evilem-map
-      "s" #'avy-goto-word-or-subword-1
-      "SPC" #'avy-pop-mark)
-(setq avy-all-windows 'all-frames)
+;XXX ;; Don't register jumps between marks in the better-jumper's history.
+;XXX (setq better-jumper-use-evil-jump-advice nil)
+;XXX ;; Let jump list behave like a backtrace (stack), not an ever-growing list.
+;XXX (setq better-jumper-add-jump-behavior 'replace)
 
-;; Don't register jumps between marks in the better-jumper's history.
-(setq better-jumper-use-evil-jump-advice nil)
-;; Let jump list behave like a backtrace (stack), not an ever-growing list.
-(setq better-jumper-add-jump-behavior 'replace)
-
-;; Suppress the pesky warning
-;; > There are <num> files in folder <repo-dir> so watching the repo may slow Emacs down.
-;; > Do you want to watch all files in <repo-dir>? (y or n) n
-;; > LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
 (after! lsp-mode
   ;; See also https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
-  (setq lsp-enable-file-watchers nil
-        ;; Do NOT display signature documentation in eldoc.
-        lsp-signature-render-documentation nil
-        ;; Highlighted symbols are invisible in `doom-tomorrow-night' color theme.
-        lsp-enable-symbol-highlighting nil
-        ;; I don't want to see those pesky `‣ Run Test|Debug' things ever again.
-        lsp-lens-enable nil))
+  (setq
+   ;; Suppress the pesky warning
+   ;; > There are <num> files in folder <repo-dir> so watching the repo may slow Emacs down.
+   ;; > Do you want to watch all files in <repo-dir>? (y or n) n
+   ;; > LSP :: You can configure this warning with the `lsp-enable-file-watchers' and `lsp-file-watch-threshold' variables
+   lsp-enable-file-watchers nil
+   ;; Do NOT display signature documentation in eldoc.
+   lsp-signature-render-documentation nil
+   ;; Highlighted symbols are invisible in `doom-tomorrow-night' color theme.
+   lsp-enable-symbol-highlighting nil
+   ;; I don't want to see those pesky `‣ Run Test|Debug' things ever again.
+   lsp-lens-enable nil))
 
 ;; Don't show information of the symbols, flycheck diagnostics, and LSP code actions
 ;; on the current line; see https://emacs-lsp.github.io/lsp-ui/#lsp-ui-sideline
@@ -154,3 +178,16 @@
 ;; missing something useful, but for now it's easier to just disable the whole package.
 (after! lsp-ui-doc
   (setq lsp-ui-doc-enable nil))
+
+;XXX ;; XXX https://github.com/zigtools/zls#doom-emacs
+;XXX (use-package! zig-mode
+;XXX   :hook ((zig-mode . lsp-deferred))
+;XXX   :custom (zig-format-on-save nil)
+;XXX   :config
+;XXX   (after! lsp-mode
+;XXX     (add-to-list 'lsp-language-id-configuration '(zig-mode . "zig"))
+;XXX     (lsp-register-client
+;XXX       (make-lsp-client
+;XXX         :new-connection (lsp-stdio-connection "~/zls/zls")
+;XXX         :major-modes '(zig-mode)
+;XXX         :server-id 'zls))))

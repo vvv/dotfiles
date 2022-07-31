@@ -8,9 +8,14 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
-(package! iedit)
-(package! protobuf-mode)
-(package! dhall-mode)
+;XXX (package! iedit)
+;XXX (package! protobuf-mode)
+;XXX (package! dhall-mode)
+;XXX (package! zig-mode)
+
+;; XXX-TODO: Remove this after https://github.com/doomemacs/doomemacs/pull/6395
+;; is merged.
+;XXX (package! lsp-mode :pin "11c0c7af611ecb63f7797caae66fb03ba10c8c1e")
 
 ;; XXX-TODO: Remove this after https://github.com/doomemacs/doomemacs/pull/6395
 ;; is merged.
@@ -18,7 +23,7 @@
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
-;; https://github.com/raxod502/straight.el#the-recipe-format
+;; https://github.com/radian-software/straight.el#the-recipe-format
 ;(package! another-package
 ;  :recipe (:host github :repo "username/repo"))
 
@@ -41,7 +46,7 @@
 
 ;; Specify a `:branch' to install a package from a particular branch or tag.
 ;; This is required for some packages whose default branch isn't 'master' (which
-;; our package manager can't deal with; see raxod502/straight.el#279)
+;; our package manager can't deal with; see radian-software/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
 ;; Use `:pin' to specify a particular commit to install.
