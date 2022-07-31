@@ -13,14 +13,6 @@
 ;XXX (package! dhall-mode)
 ;XXX (package! zig-mode)
 
-;; XXX-TODO: Remove this after https://github.com/doomemacs/doomemacs/pull/6395
-;; is merged.
-;XXX (package! lsp-mode :pin "11c0c7af611ecb63f7797caae66fb03ba10c8c1e")
-
-;; XXX-TODO: Remove this after https://github.com/doomemacs/doomemacs/pull/6395
-;; is merged.
-;XXX (package! lsp-mode :pin "11c0c7af611ecb63f7797caae66fb03ba10c8c1e")
-
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/radian-software/straight.el#the-recipe-format
