@@ -9,7 +9,7 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
 ;XXX (package! iedit)
-;XXX (package! protobuf-mode)
+(package! protobuf-mode)
 ;XXX (package! dhall-mode)
 ;XXX (package! zig-mode)
 

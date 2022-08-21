@@ -1,5 +1,5 @@
 [user]
-	name = Valery V. Vorotyntsev
+	name = Valeriy V. Vorotyntsev
 	email = valery.vv@gmail.com
 [filter "hawser"]
 	clean = git hawser clean %f

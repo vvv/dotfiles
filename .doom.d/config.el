@@ -43,6 +43,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;(setq doom-theme 'doom-one)
+;(setq doom-theme (if IS-MAC 'doom-solarized-light 'tsdh-light))
 (setq doom-theme (if IS-MAC 'doom-solarized-dark 'doom-tomorrow-night))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -96,10 +97,10 @@
 ;XXX (map! :after iedit
 ;XXX       :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
 
-;XXX ;; Don't register jumps between marks in the better-jumper's history.
-;XXX (setq better-jumper-use-evil-jump-advice nil)
-;XXX ;; Let jump list behave like a backtrace (stack), not an ever-growing list.
-;XXX (setq better-jumper-add-jump-behavior 'replace)
+;; Don't register jumps between marks in the better-jumper's history.
+(setq better-jumper-use-evil-jump-advice nil)
+;; Let jump list behave like a backtrace (stack), not an ever-growing list.
+(setq better-jumper-add-jump-behavior 'replace)
 
 (after! lsp-mode
   ;; See also https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/

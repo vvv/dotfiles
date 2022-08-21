@@ -38,7 +38,11 @@ if [[ $(uname) == Darwin ]]; then
     # are installed; see https://docs.brew.sh/Homebrew-and-Python
     _path_prepend_safe $(brew --prefix)/opt/python/libexec/bin
 fi
-_path_prepend_safe ~/doom-emacs/bin
+
+# https://github.com/hlissner/doom-emacs
+_path_prepend_safe ~/.emacs.d/bin
+
+_path_prepend_safe ~/zig
 _path_prepend_safe ~/.cargo/bin
 _path_prepend_safe ~/.local/bin
 _path_prepend_safe ~/bin
