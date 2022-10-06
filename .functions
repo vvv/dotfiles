@@ -24,70 +24,64 @@ which hd &>/dev/null || {
     export -f hd
 }
 
-### git helpers
-b() { git branch "$@"; }
-cl() {
+gicl() {
     local OPT='-n'
     [ "$*" = '-f' ] && OPT=''
     git clean -fdx $OPT
     git submodule -q foreach --recursive git clean -fdx $OPT
 }
-di() { git diff "$@"; }
-lo() { git log "$@"; }
-re() { git remote "$@"; }
-st() { git status "$@"; }
-export -f b cl di lo re st
+export -f gicl
 
-worktree() {
-    if (($# != 2)); then
-        cat >&2 <<EOF
-Usage: ${FUNCNAME[0]} <branch-name> <start-point>
+#XXX worktree() {
+#XXX     if (($# != 2)); then
+#XXX         cat >&2 <<EOF
+#XXX Usage: ${FUNCNAME[0]} <branch-name> <start-point>
+#XXX 
+#XXX Example: ${FUNCNAME[0]} feature origin/master
+#XXX EOF
+#XXX         return 1
+#XXX     fi
+#XXX     local branch=$1
+#XXX     local start=$2
+#XXX 
+#XXX     local toplevel=$(git rev-parse --show-toplevel)
+#XXX     [[ -n $toplevel ]] || return 1
+#XXX     local newdir=${toplevel%/*}/_${toplevel##*/}.$branch
+#XXX 
+#XXX     if [[ -d $newdir ]]; then
+#XXX         echo "$newdir already exists" >&2
+#XXX         return 1
+#XXX     fi
+#XXX 
+#XXX     local opt_new_branch=
+#XXX     git rev-parse --verify $branch >&/dev/null ||
+#XXX         # branch doesn't exist ==> create it
+#XXX         opt_new_branch="-b $branch"
+#XXX 
+#XXX     git worktree add $opt_new_branch $newdir $start && cd $newdir
+#XXX }
+#XXX export -f worktree
 
-Example: ${FUNCNAME[0]} feature origin/master
-EOF
-        return 1
-    fi
-    local branch=$1
-    local start=$2
+#XXX which gtags &>/dev/null && {
+#XXX     gt() {
+#XXX         (
+#XXX             set -eu -o pipefail
+#XXX             d=$(git rev-parse --show-toplevel 2>/dev/null || true)
+#XXX             cd ${d:-~/src/mero}
+#XXX             if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
+#XXX                 global -u 2>/dev/null
+#XXX             else
+#XXX                 gtags 2>/dev/null
+#XXX             fi
+#XXX             mkid &>/dev/null || true
+#XXX         )
+#XXX     }
+#XXX     export -f gt
+#XXX }
 
-    local toplevel=$(git rev-parse --show-toplevel)
-    [[ -n $toplevel ]] || return 1
-    local newdir=${toplevel%/*}/_${toplevel##*/}.$branch
-
-    if [[ -d $newdir ]]; then
-        echo "$newdir already exists" >&2
-        return 1
-    fi
-
-    local opt_new_branch=
-    git rev-parse --verify $branch >&/dev/null ||
-        # branch doesn't exist ==> create it
-        opt_new_branch="-b $branch"
-
-    git worktree add $opt_new_branch $newdir $start && cd $newdir
-}
-export -f worktree
-
-which gtags &>/dev/null && {
-    gt() {
-        (
-            set -eu -o pipefail
-            d=$(git rev-parse --show-toplevel 2>/dev/null || true)
-            cd ${d:-~/src/mero}
-            if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
-                global -u 2>/dev/null
-            else
-                gtags 2>/dev/null
-            fi
-            mkid &>/dev/null || true
-        )
-    }
-    export -f gt
-}
-
-which hasktags &>/dev/null && {
-    ht() { hasktags --etags .; }
-}
+#XXX which hasktags &>/dev/null && {
+#XXX     ht() { hasktags --etags .; }
+#XXX }
 
 ### Alternative (and better) approach is to use `errno' (Debian) or
 ### `perror' (from `mysql-server' yum package).
