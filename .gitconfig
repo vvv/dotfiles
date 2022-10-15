@@ -8,11 +8,14 @@
 [alias]
 	D1 = branch -D @{-1}
 	author = log -1 --pretty='%an <%ae>' --author
+	b = branch
+	co = checkout
 	fm = fetch -p origin master:master
 	mg = "!f() { git merge --ff-only ${*:-'@{upstream}'}; }; f"
 	pf = push --force-with-lease
 	ph = "!f() { local cmd='git push'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
 	phf = "!f() { local cmd='git push --force-with-lease'; if [ $# -lt 2 ]; then $cmd origin ${1:-HEAD}; else $cmd $@; fi; }; f"
+	sb = show-branch
 	st = status -sb
 	wt = worktree
 [rerere]

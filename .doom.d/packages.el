@@ -10,8 +10,6 @@
 ;(package! some-package)
 ;XXX (package! iedit)
 (package! protobuf-mode)
-;XXX (package! dhall-mode)
-;XXX (package! zig-mode)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

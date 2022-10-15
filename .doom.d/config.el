@@ -54,9 +54,8 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(map! :after evil-easymotion :map evilem-map
-      "s" #'avy-goto-word-or-subword-1
-      "SPC" #'avy-pop-mark)
+(map! :n "g /" #'avy-goto-word-or-subword-1)
+(map! :n "g SPC" #'avy-pop-mark)
 (setq avy-all-windows 'all-frames)
 
 (display-time)  ; show time in the mode line
