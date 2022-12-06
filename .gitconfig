@@ -7,6 +7,7 @@
 	required = true
 [alias]
 	D1 = branch -D @{-1}
+	actions = "!f() { gh run list --branch $(git rev-parse --abbrev-ref HEAD); }; f"
 	author = log -1 --pretty='%an <%ae>' --author
 	b = branch
 	co = checkout
