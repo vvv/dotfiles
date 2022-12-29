@@ -1,9 +1,7 @@
 alias cg=cargo
-alias cgb='cargo build'
 alias cgc='cargo clippy'
 alias cgcl='cargo clean'
 alias cgf='cargo fmt'
-alias cgt='cargo test'
 
 alias dk=docker
 alias dkr='docker run --rm -it'
