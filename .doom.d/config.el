@@ -3,8 +3,6 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-(setq confirm-kill-emacs 'yes-or-no-p)
-
 ;; XXX-FIXME
 (setq uniquify-buffer-name-style 'forward)
 
