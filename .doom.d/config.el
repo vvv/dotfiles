@@ -52,9 +52,10 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(map! :n "g /" #'avy-goto-word-or-subword-1)
-(map! :n "g SPC" #'avy-pop-mark)
-(setq avy-all-windows 'all-frames)
+(map!
+ (:when IS-MAC
+   :gn "s-RET"    #'toggle-frame-fullscreen
+   :gn [s-return] #'toggle-frame-fullscreen))
 
 (display-time)  ; show time in the mode line
 
