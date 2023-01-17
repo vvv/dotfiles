@@ -158,6 +158,10 @@ for e in nvim vim vi; do
 done
 unset e
 
+if type -p direnv >&/dev/null; then
+    eval "$(direnv hook bash)"
+fi
+
 for f in \
     ~/.bash_aliases \
     ~/.functions \
@@ -168,8 +172,3 @@ do
     fi
 done
 unset f
-
-# Ruby environment [https://github.com/rbenv/rbenv]
-if command -v rbenv >/dev/null; then
-    eval "$(rbenv init -)"
-fi
