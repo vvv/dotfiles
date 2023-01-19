@@ -91,9 +91,9 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;XXX ;; XXX-FIXME
-;XXX (map! :after iedit
-;XXX       :map doom-leader-search-map :desc "Toggle Iedit mode" "e" #'iedit-mode)
+(map! :n "g /" #'avy-goto-word-or-subword-1)
+(map! :n "g SPC" #'avy-pop-mark)
+(setq avy-all-windows 'all-frames)
 
 ;; Don't register jumps between marks in the better-jumper's history.
 (setq better-jumper-use-evil-jump-advice nil)
