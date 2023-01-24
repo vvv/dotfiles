@@ -6,17 +6,17 @@ mkcd() {
 }
 export -f mkcd
 
-### Create a scratch dir.
-### See http://ku1ik.com/2012/05/04/scratch-dir.html
-scratch() {
-    local link=~/scratch
-    local dir=/tmp/scratch-`date +%s`
-
-    mkdir -p $dir
-    ln -nfs $dir $link
-    cd $link
-}
-export -f scratch
+#XXX ### Create a scratch dir.
+#XXX ### See http://ku1ik.com/2012/05/04/scratch-dir.html
+#XXX scratch() {
+#XXX     local link=~/scratch
+#XXX     local dir=/tmp/scratch-`date +%s`
+#XXX 
+#XXX     mkdir -p $dir
+#XXX     ln -nfs $dir $link
+#XXX     cd $link
+#XXX }
+#XXX export -f scratch
 
 which hd &>/dev/null || {
     hd() { hexdump -C "$@"; }
@@ -83,24 +83,25 @@ export -f gicl
 #XXX     ht() { hasktags --etags .; }
 #XXX }
 
-### Alternative (and better) approach is to use `errno' (Debian) or
-### `perror' (from `mysql-server' yum package).
-errgrep() {
-    if [[ -z $(tr -d '0-9' <<<$*) ]]; then
-        local errno=$*
-        cpp -dM /usr/include/errno.h | grep '^#define E' |
-            grep -E "\<$errno\>" | tr -d \\n
-        perl -E '$!=shift; say " /* $! */"' $errno
-    else
-        cpp -dM /usr/include/errno.h | grep '^#define E' | grep "$@"
-    fi
-}
-export -f errgrep
+#XXX ### Alternative (and better) approach is to use `errno' (Debian) or
+#XXX ### `perror' (from `mysql-server' yum package).
+#XXX errgrep() {
+#XXX     if [[ -z $(tr -d '0-9' <<<$*) ]]; then
+#XXX         local errno=$*
+#XXX         cpp -dM /usr/include/errno.h | grep '^#define E' |
+#XXX             grep -E "\<$errno\>" | tr -d \\n
+#XXX         perl -E '$!=shift; say " /* $! */"' $errno
+#XXX     else
+#XXX         cpp -dM /usr/include/errno.h | grep '^#define E' | grep "$@"
+#XXX     fi
+#XXX }
+#XXX export -f errgrep
 
 ### http://wttr.in/:bash.function
 wttr() {
-    curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
+    curl -H 'Accept-Language: uk' wttr.in/"${1:-Kyiv}?m"
 }
+export -f wttr
 
 ### `ez` --- fuzzy-find a file and open it in Emacs.
 if which fzf >&/dev/null; then

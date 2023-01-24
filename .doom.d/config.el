@@ -35,7 +35,7 @@
 (setq doom-font-increment 1)
 
 ;; Position and size of the initial window frame.
-(setq initial-frame-alist '((top . 0) (left . 0) (width . 80) (height . 53)))
+(setq initial-frame-alist '((top . 0) (left . 0) (width . 100) (height . 77)))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -100,10 +100,15 @@
 (map! :n "g SPC" #'avy-pop-mark)
 (setq avy-all-windows 'all-frames)
 
-;; Don't register jumps between marks in the better-jumper's history.
-(setq better-jumper-use-evil-jump-advice nil)
-;; Let jump list behave like a backtrace (stack), not an ever-growing list.
-(setq better-jumper-add-jump-behavior 'replace)
+(after! hl-todo (when-let ((unwanted-entry (assoc "XXX" hl-todo-keyword-faces)))
+  (delete unwanted-entry hl-todo-keyword-faces))
+  (add-to-list 'hl-todo-keyword-faces '("XXX" error bold)))
+
+(after! better-jumper
+  ;; Don't register jumps between marks in the better-jumper's history.
+  (setq better-jumper-use-evil-jump-advice nil)
+  ;; Let jump list behave like a backtrace (stack), not an ever-growing list.
+  (setq better-jumper-add-jump-behavior 'replace))
 
 (after! lsp-mode
   ;; See also https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
@@ -195,3 +200,6 @@
 ;XXX         :new-connection (lsp-stdio-connection "~/zls/zls")
 ;XXX         :major-modes '(zig-mode)
 ;XXX         :server-id 'zls))))
+
+;; Remove unwanted key bindings
+(global-unset-key (kbd "C-/"))  ; `undo-fu-only-undo'

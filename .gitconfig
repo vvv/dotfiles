@@ -1,6 +1,16 @@
 [user]
 	name = Valeriy V. Vorotyntsev
-	email = valery.vv@gmail.com
+	email = valeriy.vorotyntsev@evinced.com
+
+#XXX [user]
+#XXX 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcmHSh826LnibSJGYK5GsoxohR4cALOCf8/N7gTnSpw
+#XXX [gpg]
+#XXX 	format = ssh
+#XXX [gpg "ssh"]
+#XXX 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+#XXX [commit]
+#XXX 	gpgsign = true
+
 [filter "hawser"]
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f
