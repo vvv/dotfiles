@@ -1,5 +1,17 @@
 # -*- sh -*-
 
+UU() {
+    local ssh_env=
+    ssh_env=$(tmux show-environment -s SSH_AUTH_SOCK)
+    if [[ "${ssh_env#unset}" == "$ssh_env" ]]; then
+        eval "$ssh_env"
+    else
+        eval $(ssh-agent)
+	ssh-add ~/.ssh/gh_ed25519
+    fi
+    /home/linuxbrew/.linuxbrew/bin/emacsclient -e "(setenv \"SSH_AUTH_SOCK\" \"$SSH_AUTH_SOCK\")"
+}
+
 mkcd() {
     [ $# -eq 1 ] || { echo 'Usage: mkcd <dir>' >&2; return 1; }
     mkdir "$1" && cd "$1"
