@@ -33,11 +33,6 @@ _path_prepend_safe /sbin
 _path_prepend_safe /usr/sbin
 _path_prepend_safe /usr/local/sbin
 _path_prepend_safe /usr/local/bin
-if [[ $(uname) == Darwin ]]; then
-    # This is where unversioned symlinks for python, python-config, pip, &c.
-    # are installed; see https://docs.brew.sh/Homebrew-and-Python
-    _path_prepend_safe $(brew --prefix)/opt/python/libexec/bin
-fi
 
 # https://github.com/hlissner/doom-emacs
 _path_prepend_safe ~/.emacs.d/bin
@@ -106,7 +101,7 @@ __prompt_command() {
         local boom='\xf0\x9f\x92\xa5'
         PS1+="${red}$rc${reset}$(printf $boom) "
     fi
-    PS1+='\A \h:\W'
+    PS1+='\h:\W'
     if command -v __git_ps1 >/dev/null; then
         PS1+='$(__git_ps1 " (%s)")'
     fi
@@ -117,15 +112,23 @@ PROMPT_COMMAND=__prompt_command
 # --------------------------------------------------------------------
 
 # --------------------------------------------------------------------
-# Homebrew, shell completions; see https://docs.brew.sh/Shell-Completion
+# Homebrew
 
-if type brew &>/dev/null; then
-    for d in $(brew --prefix)/etc/bash_completion.d/*; do
-        if [[ -r $d ]]; then
-            . $d
-        fi
+# Set PATH, MANPATH, etc., for Homebrew.
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# https://docs.brew.sh/Shell-Completion
+if type -p brew &>/dev/null; then
+    for f in $(brew --prefix)/etc/bash_completion.d/*; do
+        [[ -r $f ]] && . $f
     done
-    unset d
+    unset f
+fi
+
+if [[ $(uname) == Darwin ]]; then
+    # This is where unversioned symlinks for python, python-config, pip, &c.
+    # are installed; see https://docs.brew.sh/Homebrew-and-Python
+    _path_prepend_safe $(brew --prefix)/opt/python/libexec/bin
 fi
 # --------------------------------------------------------------------
 
@@ -151,7 +154,7 @@ unset f
 # Set EDITOR to Vim for better `C-x C-e` experience;
 # see `edit-and-execute-command` in bash(1)
 for e in nvim vim vi; do
-    if [[ -n $(type -p $e) ]]; then
+    if type -p $e >&/dev/null; then
         export EDITOR=$e
         break
     fi
