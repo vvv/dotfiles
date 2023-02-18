@@ -139,7 +139,7 @@
   (setq lsp-rust-analyzer-cargo-watch-args ["--target-dir" "/tmp/rust-analyzer-check"])
 
   ;; Activate inlay type hints ..
-  ;; [https://emacs-lsp.github.io/lsp-mode/page/lsp-rust/#inlay-hints]
+  ;; https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust-analyzer/#inlay-hints
   (setq lsp-rust-analyzer-server-display-inlay-hints t)
   ;; .. but keep them hidden.
   (defvar vvv/hide-inlay-hints t "Whether to hide inlay type hints.")
