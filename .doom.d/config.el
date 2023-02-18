@@ -52,12 +52,17 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
+(display-time)  ; show time in the mode line
+
 (map!
  (:when IS-MAC
    :gn "s-RET"    #'toggle-frame-fullscreen
-   :gn [s-return] #'toggle-frame-fullscreen))
+   :gn [s-return] #'toggle-frame-fullscreen)
 
-(display-time)  ; show time in the mode line
+ (:when (modulep! :ui workspaces)
+   :n "C-t" #'transpose-chars  ; original value is `+workspace/new'
+   (:when IS-MAC
+     :n "s-0" #'doom/reset-font-size)))  ; original value is `+workspace/switch-to-final'
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
