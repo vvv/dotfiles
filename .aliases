@@ -29,19 +29,6 @@ alias gir='git rev-parse'
 alias girs='git rev-parse --short'
 alias gis='git status'
 alias gisb='git show-branch'
-# `gisbo` is not an alias, but it belongs `gi*` group of commands
-gisbo() {
-    local ref
-    for ref in {origin,upstream}/{master,main}; do
-        if git rev-parse --quiet --verify $ref >/dev/null; then
-            git show-branch HEAD $ref "$@"
-            return
-        fi
-    done
-    echo >&2 'Cannot find the "main" reference'
-    return 1
-}
-export -f gisbo
 alias gisbu='git show-branch HEAD @{upstream}'
 
 alias j=just

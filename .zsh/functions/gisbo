@@ -1,0 +1,11 @@
+gisbo() {
+    local ref
+    for ref in {origin,upstream}/{master,main}; do
+        if git rev-parse --quiet --verify $ref >/dev/null; then
+            git show-branch HEAD $ref "$@"
+            return
+        fi
+    done
+    echo >&2 'Cannot find the "main" reference'
+    return 1
+}

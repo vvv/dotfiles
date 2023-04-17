@@ -6,6 +6,7 @@ setopt interactivecomments
 if [[ -d ~/.zsh/functions ]]; then
     fpath=( ~/.zsh/functions "${fpath[@]}" )
     autoload -Uz gicl
+    autoload -Uz gisbo
     autoload -Uz mkcd
     autoload -Uz wttr
 fi
