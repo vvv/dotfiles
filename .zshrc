@@ -1,7 +1,14 @@
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#XXX [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Allow comments even in interactive shells.
 setopt interactivecomments
+
+if [[ -d ~/.zsh/functions ]]; then
+    fpath=( ~/.zsh/functions "${fpath[@]}" )
+    autoload -Uz gicl
+    autoload -Uz mkcd
+    autoload -Uz wttr
+fi
 
 # Enable Git completions;
 # see https://git-scm.com/book/en/v2/Appendix-A:-Git-in-Other-Environments-Git-in-Zsh

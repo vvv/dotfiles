@@ -5,13 +5,10 @@ if [ -d ~/.emacs.d/bin ]; then
     export PATH="$HOME/.emacs.d/bin:$PATH"
 fi
 
-for f in \
-    ~/.aliases \
-    ~/.functions \
-    ~/.zsh-private \
-    /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-do
-    if [ -f $f ]; then
-        source $f
-    fi
-done; unset f
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
+if [ -d ~/.functions ]; then
+    fpath=( ~/.functions "${fpath[@]}" )
+fi

@@ -1,0 +1,6 @@
+gicl() {
+    local opt='-n'
+    [ "$*" = '-f' ] && opt=''
+    git clean -fdx $opt
+    git submodule -q foreach --recursive git clean -fdx $opt
+}

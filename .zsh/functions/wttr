@@ -1,0 +1,3 @@
+wttr() {
+    curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
+}
