@@ -6,24 +6,6 @@ mkcd() {
 }
 export -f mkcd
 
-### Create a scratch dir.
-### See http://ku1ik.com/2012/05/04/scratch-dir.html
-scratch() {
-    local link=~/scratch
-    local dir=/tmp/scratch-`date +%s`
-
-    mkdir -p $dir
-    ln -nfs $dir $link
-    cd $link
-}
-export -f scratch
-
-which hd &>/dev/null || {
-    hd() { hexdump -C "$@"; }
-#    hd() { xxd "$@"; }
-    export -f hd
-}
-
 gicl() {
     local OPT='-n'
     [ "$*" = '-f' ] && OPT=''
@@ -32,81 +14,7 @@ gicl() {
 }
 export -f gicl
 
-#XXX worktree() {
-#XXX     if (($# != 2)); then
-#XXX         cat >&2 <<EOF
-#XXX Usage: ${FUNCNAME[0]} <branch-name> <start-point>
-#XXX 
-#XXX Example: ${FUNCNAME[0]} feature origin/master
-#XXX EOF
-#XXX         return 1
-#XXX     fi
-#XXX     local branch=$1
-#XXX     local start=$2
-#XXX 
-#XXX     local toplevel=$(git rev-parse --show-toplevel)
-#XXX     [[ -n $toplevel ]] || return 1
-#XXX     local newdir=${toplevel%/*}/_${toplevel##*/}.$branch
-#XXX 
-#XXX     if [[ -d $newdir ]]; then
-#XXX         echo "$newdir already exists" >&2
-#XXX         return 1
-#XXX     fi
-#XXX 
-#XXX     local opt_new_branch=
-#XXX     git rev-parse --verify $branch >&/dev/null ||
-#XXX         # branch doesn't exist ==> create it
-#XXX         opt_new_branch="-b $branch"
-#XXX 
-#XXX     git worktree add $opt_new_branch $newdir $start && cd $newdir
-#XXX }
-#XXX export -f worktree
-
-#XXX which gtags &>/dev/null && {
-#XXX     gt() {
-#XXX         (
-#XXX             set -eu -o pipefail
-#XXX             d=$(git rev-parse --show-toplevel 2>/dev/null || true)
-#XXX             cd ${d:-~/src/mero}
-#XXX             if [ -r GPATH -a -r GRTAGS -a -r GTAGS ]; then
-#XXX                 global -u 2>/dev/null
-#XXX             else
-#XXX                 gtags 2>/dev/null
-#XXX             fi
-#XXX             mkid &>/dev/null || true
-#XXX         )
-#XXX     }
-#XXX     export -f gt
-#XXX }
-
-#XXX which hasktags &>/dev/null && {
-#XXX     ht() { hasktags --etags .; }
-#XXX }
-
-### Alternative (and better) approach is to use `errno' (Debian) or
-### `perror' (from `mysql-server' yum package).
-errgrep() {
-    if [[ -z $(tr -d '0-9' <<<$*) ]]; then
-        local errno=$*
-        cpp -dM /usr/include/errno.h | grep '^#define E' |
-            grep -E "\<$errno\>" | tr -d \\n
-        perl -E '$!=shift; say " /* $! */"' $errno
-    else
-        cpp -dM /usr/include/errno.h | grep '^#define E' | grep "$@"
-    fi
-}
-export -f errgrep
-
 ### http://wttr.in/:bash.function
 wttr() {
     curl -H "Accept-Language: uk" wttr.in/"${1:-Kyiv}?m"
 }
-
-### `ez` --- fuzzy-find a file and open it in Emacs.
-if which fzf >&/dev/null; then
-    ez() {
-        local f=$(fzf)
-        [[ -z $f ]] || emacsclient --no-wait $f
-    }
-    export -f ez
-fi
