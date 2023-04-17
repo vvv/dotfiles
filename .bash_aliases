@@ -24,13 +24,26 @@ alias gig='git grep -nHE'
 alias gil='git log'
 alias gil1='git log --oneline'
 alias gilb='git log --pretty=%B'
-alias gim='git merge --ff-only $*'
+alias gim='git merge --ff-only'
 alias gir='git rev-parse'
 alias girs='git rev-parse --short'
 alias gis='git status'
 alias gisb='git show-branch'
-alias gisbo='git show-branch HEAD origin/master'
+# `gisbo` is not an alias, but it belongs `gi*` group of commands
+gisbo() {
+    local ref
+    for ref in {origin,upstream}/{master,main}; do
+        if git rev-parse --quiet --verify $ref >/dev/null; then
+            git show-branch HEAD $ref "$@"
+            return
+        fi
+    done
+    echo >&2 'Cannot find the "main" reference'
+    return 1
+}
+export -f gisbo
 alias gisbu='git show-branch HEAD @{upstream}'
 
 alias j=just
 alias l=exa
+alias vi=nvim
