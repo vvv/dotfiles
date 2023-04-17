@@ -31,7 +31,7 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 (when IS-MAC
-  (setq doom-font (font-spec :family "Menlo" :size 14)))
+  (setq doom-font (font-spec :family "Menlo" :size 13)))
 (setq doom-font-increment 1)
 
 ;; Position and size of the initial window frame.
