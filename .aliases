@@ -33,4 +33,5 @@ alias gisbu='git show-branch HEAD @{upstream}'
 
 alias j=just
 alias l=exa
+alias k=kubectl
 alias vi=nvim

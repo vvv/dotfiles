@@ -44,3 +44,15 @@ alias help=run-help
 if type -p direnv >&/dev/null; then
     eval "$(direnv hook zsh)"
 fi
+
+if type -p zoxide >&/dev/null; then
+    eval "$(zoxide init zsh)"
+fi
+
+if type -p starship >&/dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+if type -p atuin >&/dev/null; then
+    eval "$(atuin init zsh --disable-up-arrow)"
+fi
