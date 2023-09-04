@@ -1,6 +1,10 @@
 # Set PATH, MANPATH, etc., for Homebrew.
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+if [ -d ~/bin ]; then
+    export PATH="$HOME/bin:$PATH"
+fi
+
 if [ -d ~/.emacs.d/bin ]; then
     export PATH="$HOME/.emacs.d/bin:$PATH"
 fi

@@ -1,6 +1,6 @@
 alias cg=cargo
 alias cgc='cargo clippy'
-alias cgcl='cargo clean'
+alias cgC='cargo clean'
 alias cgf='cargo fmt'
 
 alias dk=docker
