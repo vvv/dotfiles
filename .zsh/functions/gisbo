@@ -1,6 +1,6 @@
 gisbo() {
     local ref
-    for ref in {origin,upstream}/{master,main}; do
+    for ref in {origin,upstream}/{main,master}; do
         if git rev-parse --quiet --verify $ref >/dev/null; then
             git show-branch HEAD $ref "$@"
             return
