@@ -34,12 +34,20 @@ select-word-style bash
 # See https://superuser.com/a/1563859
 unalias run-help
 autoload run-help
+
 if [ -n "$HOMEBREW_PREFIX" ]; then
     HELPDIR=$(brew --prefix)/share/zsh/help
 else
     HELPDIR=/usr/share/zsh/${ZSH_VERSION}/help
 fi
 alias help=run-help
+
+if type -p nvim >&/dev/null; then
+    export EDITOR=nvim
+fi
+
+# Emacs key bindings; see zshzle(1).
+bindkey -e
 
 if type -p direnv >&/dev/null; then
     eval "$(direnv hook zsh)"
