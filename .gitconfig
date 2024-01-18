@@ -1,10 +1,6 @@
 [user]
 	name = Valeriy V. Vorotyntsev
 	email = valery.vv@gmail.com
-[filter "hawser"]
-	clean = git hawser clean %f
-	smudge = git hawser smudge %f
-	required = true
 [alias]
 	D1 = branch -D @{-1}
 	actions = "!f() { gh run list --branch $(git rev-parse --abbrev-ref HEAD); }; f"
@@ -19,6 +15,8 @@
 	sb = show-branch
 	st = status -sb
 	wt = worktree
+[merge]
+	conflictStyle = diff3
 [rerere]
 	enabled = true
 [rebase]
@@ -29,22 +27,22 @@
 	#
 	# via https://twitter.com/mwotton/status/945049811010703360
 	follow = true
-[diff "sopsdiffer"]
-	textconv = sops -d
-# [init]
-#     defaultBranch = main
-# [url "git@github.com:"]
-# 	insteadOf = https://github.com/
-[merge]
-	conflictStyle = diff3
-[credential]
-	helper = store
+[init]
+	defaultBranch = main
 [receive]
 	denyCurrentBranch = warn
+[diff "sopsdiffer"]
+	textconv = sops -d
+# [url "git@github.com:"]
+# 	insteadOf = https://github.com/
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[init]
-	defaultBranch = master
+[credential]
+	helper = store
+	helper =
+	helper = /usr/local/share/gcm-core/git-credential-manager
+[credential "https://dev.azure.com"]
+	useHttpPath = true
