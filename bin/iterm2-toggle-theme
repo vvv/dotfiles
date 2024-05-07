@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+# set -x
+export PS4='+ [${BASH_SOURCE[0]##*/}:${LINENO}${FUNCNAME[0]:+:${FUNCNAME[0]}}] '
+
+get_color_preset() {
+    osascript <<EOF
+tell application "iTerm"
+    tell current session of current window
+        get color preset
+    end tell
+end tell
+EOF
+}
+
+set_color_preset() {
+    local color_preset=$1
+    osascript <<EOF
+tell application "iTerm"
+    tell current session of current window
+        set color preset to "$color_preset"
+    end tell
+end tell
+EOF
+}
+
+main() {
+    if [[ "$(get_color_preset)" == 'DoomOne' ]]; then
+	set_color_preset 'Solarized Light'
+    else
+	set_color_preset 'DoomOne'
+    fi
+}
+
+main "$@"
