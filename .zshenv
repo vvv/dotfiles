@@ -1,0 +1,19 @@
+# Set PATH, MANPATH, etc., for Homebrew.
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+if [ -d "$(brew --prefix)/share/google-cloud-sdk" ]; then
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
+
+. "$HOME/.cargo/env"
+
+for d in \
+    ~/.emacs.d/bin \
+    ~/.local/bin \
+    ~/bin \
+    ; do
+    if [ -d "$d" ]; then
+	export PATH="$d:$PATH"
+    fi
+done

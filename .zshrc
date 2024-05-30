@@ -1,4 +1,4 @@
-#XXX [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Allow comments even in interactive shells.
 setopt interactivecomments
@@ -53,9 +53,9 @@ if type -p direnv >&/dev/null; then
     eval "$(direnv hook zsh)"
 fi
 
-if type -p zoxide >&/dev/null; then
-    eval "$(zoxide init zsh)"
-fi
+#XXX if type -p zoxide >&/dev/null; then
+#XXX     eval "$(zoxide init zsh)"
+#XXX fi
 
 if type -p starship >&/dev/null; then
     eval "$(starship init zsh)"
