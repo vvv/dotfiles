@@ -1,4 +1,6 @@
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if type -p fzf >&/dev/null; then
+    source <(fzf --zsh)
+fi
 
 # Allow comments even in interactive shells.
 setopt interactivecomments
