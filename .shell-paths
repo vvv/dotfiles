@@ -6,7 +6,7 @@ if [ -d "$(brew --prefix)/share/google-cloud-sdk" ]; then
     source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 fi
 
-. "$HOME/.cargo/env"
+source "$HOME/.cargo/env"
 
 for d in \
     ~/.emacs.d/bin \
@@ -14,6 +14,6 @@ for d in \
     ~/bin \
     ; do
     if [ -d "$d" ]; then
-	export PATH="$d:$PATH"
+        export PATH="$d:$PATH"
     fi
 done

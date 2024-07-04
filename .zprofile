@@ -1,3 +1,7 @@
+if [ -f ~/.shell-paths ]; then
+    source ~/.shell-paths
+fi
+
 if [ -f ~/.aliases ]; then
     source ~/.aliases
 fi
