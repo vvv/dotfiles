@@ -25,13 +25,13 @@ alias gig='git grep -nHE'
 alias gil='git log'
 alias gil1='git log --oneline'
 alias gilb='git log --pretty=%B'
-alias gilg='git log --graph --oneline --decorate --all'
+alias gilg='git log --graph --oneline --decorate'
 alias gim='git merge --ff-only'
 alias gir='git rev-parse'
 alias girs='git rev-parse --short'
 alias gis='git status'
-alias gisb='git show-branch'
-alias gisbu='git show-branch HEAD @{upstream}'
+alias gisb='git show-branch --sparse'
+alias gisbu='git show-branch --sparse HEAD @{upstream}'
 
 alias j=just
 alias l=exa
