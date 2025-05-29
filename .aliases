@@ -1,12 +1,11 @@
-alias cg=cargo
 alias cgc='cargo clippy'
 alias cgC='cargo clean'
 alias cgf='cargo fmt'
 
+alias diffc='diff -u --color=always'
+
 alias dk=docker
 alias dkr='docker run --rm -it'
-
-alias e='emacsclient --no-wait'
 
 alias gia='git add --patch'
 alias gib='git branch'
@@ -34,6 +33,7 @@ alias gisb='git show-branch --sparse'
 alias gisbu='git show-branch --sparse HEAD @{upstream}'
 
 alias j=just
-alias l=exa
-alias k=kubectl
+if type -p exa &>/dev/null; then
+    alias l=exa
+fi
 alias vi=nvim

@@ -33,8 +33,16 @@
 	denyCurrentBranch = warn
 [diff "sopsdiffer"]
 	textconv = sops -d
-# [url "git@github.com:"]
-# 	insteadOf = https://github.com/
+[url "https://github.com/"]
+	insteadOf = ssh://git@github.com/
+#XXX [url "git@github.com:"]
+#XXX 	insteadOf = https://github.com/
+#XXX [url "ssh://git@github.com/"]
+#XXX 	insteadOf = https://github.com/
+#XXX # - https://github.com/rust-lang/cargo/issues/8172#issuecomment-659066173
+#XXX # - https://stackoverflow.com/a/71835896/136238
+#XXX [url "https://github.com/rust-lang/crates.io-index"]
+#XXX 	insteadOf = https://github.com/rust-lang/crates.io-index
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

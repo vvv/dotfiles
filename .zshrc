@@ -1,3 +1,7 @@
+#XXX-DELETEME if [ -f ~/.shell-paths ]; then
+#XXX-DELETEME     source ~/.shell-paths
+#XXX-DELETEME fi
+
 if type -p fzf >&/dev/null; then
     source <(fzf --zsh)
 fi
@@ -7,6 +11,7 @@ setopt interactivecomments
 
 if [[ -d ~/.zsh/functions ]]; then
     fpath=( ~/.zsh/functions "${fpath[@]}" )
+    autoload -Uz cg
     autoload -Uz gicl
     autoload -Uz gisbo
     autoload -Uz mkcd
@@ -50,6 +55,9 @@ fi
 
 # Emacs key bindings; see zshzle(1).
 bindkey -e
+
+# Use `C-x C-e` to edit the current command line in the editor.
+bindkey '^Xe' edit-command-line
 
 if type -p direnv >&/dev/null; then
     eval "$(direnv hook zsh)"

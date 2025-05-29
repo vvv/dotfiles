@@ -1,0 +1,7 @@
+cg() {
+    if [ -t 1 ]; then
+        CARGO_TERM_COLOR=always cargo "$@" |& less -R
+    else
+        cargo "$@"
+    fi
+}
