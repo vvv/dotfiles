@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu -o pipefail
+set -eu
 # set -x
 export PS4='+ [${BASH_SOURCE[0]##*/}:${LINENO}${FUNCNAME[0]:+:${FUNCNAME[0]}}] '
 
@@ -26,9 +26,9 @@ EOF
 
 main() {
     if [[ "$(get_color_preset)" == 'DoomOne' ]]; then
-	set_color_preset 'Solarized Light'
+        set_color_preset 'Solarized Light'
     else
-	set_color_preset 'DoomOne'
+        set_color_preset 'DoomOne'
     fi
 }
 
