@@ -6,6 +6,20 @@ if type -p fzf >&/dev/null; then
     source <(fzf --zsh)
 fi
 
+# Stop eating space before pipe symbol!
+ZLE_REMOVE_SUFFIX_CHARS=''
+
+# Don't auto-remove the trailing slash from directory names.
+setopt no_auto_remove_slash
+
+# Don't add command line to history when it starts with space.
+setopt HIST_IGNORE_SPACE
+
+# Colored Tab completions.
+# Similar to `set colored-completion-prefix` in ~/.inputrc for Bash.
+zstyle -e ':completion:*:default' list-colors \
+    'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==1;35=0}:${(s.:.)LS_COLORS}")'
+
 # Allow comments even in interactive shells.
 setopt interactivecomments
 
