@@ -23,6 +23,9 @@ zstyle -e ':completion:*:default' list-colors \
 # Allow comments even in interactive shells.
 setopt interactivecomments
 
+# Do not query the user before executing `rm *` or `rm path/*`.
+setopt rmstarsilent
+
 if [[ -d ~/.zsh/functions ]]; then
     fpath=( ~/.zsh/functions "${fpath[@]}" )
     autoload -Uz cg
