@@ -11,6 +11,8 @@ alias gia='git add --patch'
 alias gib='git branch'
 alias gibr='git branch --remotes'
 alias gibrc='git branch --remotes --contains'
+alias gibrs='git branch --remotes --sort=-committerdate'
+alias gibs='git branch --sort=-committerdate'
 alias gic='git commit'
 alias gica='git commit --amend'
 alias gicaH='git commit --amend --reuse-message=HEAD'
@@ -21,8 +23,8 @@ alias gid='git diff'
 alias gidc='git diff --cached'
 alias gif='git fetch --prune --all'
 alias gig='git grep -nHE'
-alias gil='git log'
 alias gil1='git log --oneline'
+alias gil='git log'
 alias gilb='git log --pretty=%B'
 alias gilg='git log --graph --oneline --decorate'
 alias gim='git merge --ff-only'
@@ -30,10 +32,14 @@ alias gir='git rev-parse'
 alias girs='git rev-parse --short'
 alias gis='git status'
 alias gisb='git show-branch --sparse'
+alias gisbs='git show-branch --sparse --sha1-name'
 alias gisbu='git show-branch --sparse HEAD @{upstream}'
 
 alias j=just
+alias ja='just all'
+
 if type -p exa &>/dev/null; then
     alias l=exa
 fi
+
 alias vi=nvim
